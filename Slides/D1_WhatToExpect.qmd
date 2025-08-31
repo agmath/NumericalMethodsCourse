@@ -774,6 +774,7 @@ plt.show()
       + Tuesdays 11:00am - 12:30pm
       + Wednesdays 9:00am - 10:30am
       + Fridays 1:00pm - 3:00pm
+    + Slack for communication -- see the Welcome Announcement on BrightSpace for how to join
 
 ## Required Resources
 
@@ -790,7 +791,7 @@ plt.show()
   -------------------------------|-----------
   Participation                  |  5%
   Homework (~8)                  | 40%
-  Unit Problem Sets / Exams      | 40%
+  Unit Problem Sets / Exams (2)  | 40%
   Final Project and Reflection   | 15%
   </center>
 
@@ -823,7 +824,6 @@ I've built a [webpage to organize our course content](https://agmath.github.io/N
   
   + Links to *notes* (in Jupyter/Colab notebook format)
   + Assignment reminders
-  + Optional, but recommended, [3Blue1Brown](https://www.3blue1brown.com/) high-level overview videos
 
 ## What's Class Like?
 
@@ -831,7 +831,7 @@ I've built a [webpage to organize our course content](https://agmath.github.io/N
 + I have nearly complete sets of notes for you
 
     + The Python routines we need to build are scaffolded, with blanks for us to fill in
-+ Generally, we'll spend class time slowly solving one problem, identifying the steps required to solve those problems, and then writing Python code to implement the solution strategy.
++ Generally, we'll spend class time slowly solving one problem, identifying the steps required to solve problems of that type, and then writing Python code to implement the solution strategy.
 + You'll use the functionality we develop in class on homework assignments and unit problem sets.
 
 ## A Note on Approach to Class
