@@ -70,6 +70,7 @@ plt.axhline(0, color='black', linewidth=0.5)
 plt.axvline(0, color='black', linewidth=0.5)
 plt.xlabel("x_1")
 plt.ylabel("x_2")
+plt.title("Solving Systems")
 
 
 plt.show()
@@ -103,6 +104,7 @@ plt.axhline(0, color='black', linewidth=0.5)
 plt.axvline(0, color='black', linewidth=0.5)
 plt.xlabel("x_1")
 plt.ylabel("x_2")
+plt.title("Solving Systems")
 
 plt.subplot(2, 3, 2)
 x_vals = np.random.uniform(0, 10, 4)
@@ -125,6 +127,7 @@ plt.axvline(x = 0, color = "black")
 
 plt.ylim((-100, 50));
 plt.grid()
+plt.title("Interpolation and Fitting")
 
 plt.show()
 ```
@@ -157,6 +160,7 @@ plt.axhline(0, color='black', linewidth=0.5)
 plt.axvline(0, color='black', linewidth=0.5)
 plt.xlabel("x_1")
 plt.ylabel("x_2")
+plt.title("Solving Systems")
 
 plt.subplot(2, 3, 2)
 x_vals = np.random.uniform(0, 10, 4)
@@ -179,6 +183,7 @@ plt.axvline(x = 0, color = "black")
 
 plt.ylim((-100, 50));
 plt.grid()
+plt.title("Interpolation and Fitting")
 
 plt.subplot(2, 3, 3)
 x_vals = np.linspace(0, 10, 250)
@@ -199,6 +204,7 @@ plt.ylabel("y")
 plt.grid()
 plt.axhline(y = 0, color = "black")
 plt.axvline(x = 0, color = "black")
+plt.title("Root Finding")
 
 
 plt.show()
@@ -232,6 +238,7 @@ plt.axhline(0, color='black', linewidth=0.5)
 plt.axvline(0, color='black', linewidth=0.5)
 plt.xlabel("x_1")
 plt.ylabel("x_2")
+plt.title("Solving Systems")
 
 plt.subplot(2, 3, 2)
 x_vals = np.random.uniform(0, 10, 4)
@@ -254,6 +261,7 @@ plt.axvline(x = 0, color = "black")
 
 plt.ylim((-100, 50));
 plt.grid()
+plt.title("Interpolation and Fitting")
 
 plt.subplot(2, 3, 3)
 x_vals = np.linspace(0, 10, 250)
@@ -274,6 +282,7 @@ plt.ylabel("y")
 plt.grid()
 plt.axhline(y = 0, color = "black")
 plt.axvline(x = 0, color = "black")
+plt.title("Root Finding")
 
 plt.subplot(2, 3, 4)
 x_vals = np.linspace(0, 10, 500)
@@ -301,6 +310,7 @@ plt.axhline(y = 0, color = "black")
 plt.xlabel("x")
 plt.ylabel("y")
 plt.ylim((-10, 10));
+plt.title("Differentiation / Approximation")
 
 plt.show()
 ```
@@ -333,6 +343,7 @@ plt.axhline(0, color='black', linewidth=0.5)
 plt.axvline(0, color='black', linewidth=0.5)
 plt.xlabel("x_1")
 plt.ylabel("x_2")
+plt.title("Solving Systems")
 
 plt.subplot(2, 3, 2)
 x_vals = np.random.uniform(0, 10, 4)
@@ -355,6 +366,7 @@ plt.axhline(y = 0, color = "black")
 plt.axvline(x = 0, color = "black")
 
 plt.ylim((-100, 50));
+plt.title("Interpolation and Fitting")
 
 plt.subplot(2, 3, 3)
 x_vals = np.linspace(0, 10, 250)
@@ -375,127 +387,7 @@ plt.ylabel("y")
 plt.grid()
 plt.axhline(y = 0, color = "black")
 plt.axvline(x = 0, color = "black")
-
-plt.subplot(2, 3, 4)
-#@title
-x_vals = np.linspace(0, 10, 500)
-y_vals = x_vals*np.sin(x_vals)
-
-x0 = 6
-y0 = x0*np.sin(x0)
-
-m1 = x0*np.cos(x0) + np.sin(x0)
-m2 = -x0*np.sin(x0) + 2*np.cos(x0)
-m3 = -x0*np.cos(x0) - 3*np.sin(x0) 
-
-d1_vals = m1*(x_vals - x0) + y0
-d2_vals = m2*(x_vals - x0)**2/2 + m1*(x_vals - x0) + y0
-d3_vals = m3*(x_vals - x0)**3/6 + m2*(x_vals - x0)**2/2 + m1*(x_vals - x0) + y0
-
-plt.plot(x_vals, y_vals)
-plt.plot(x_vals, d1_vals, color = "green", ls = "--")
-plt.plot(x_vals, d2_vals, color = "orange", ls = "--")
-plt.plot(x_vals, d3_vals, color = "red", ls = "--")
-plt.scatter(x0, y0, color = "black", s = 100)
-plt.grid()
-plt.axvline(x = 0, color = "black")
-plt.axhline(y = 0, color = "black")
-plt.xlabel("x")
-plt.ylabel("y")
-
-plt.ylim((-10, 10));
-
-plt.subplot(2, 3, 5)
-x_vals = np.linspace(0, 10, 500)
-y_vals = x_vals + np.sin(2*x_vals)
-
-x_abscissas = np.linspace(0, 10, 10)
-y_abscissas = x_abscissas + np.sin(2*x_abscissas)
-
-plt.plot(x_vals, y_vals, color = "purple")
-plt.plot(x_abscissas, y_abscissas, color = "red")
-plt.fill_between(x_abscissas, y_abscissas, color = "red", alpha = 0.2)
-plt.scatter(x_abscissas, y_abscissas, color = "red", s = 25)
-plt.vlines(x = x_abscissas, ymin = 0, ymax= y_abscissas, color = "red", ls = "--")
-plt.grid()
-plt.axvline(x = 0, color = "black")
-plt.axhline(y = 0, color = "black")
-plt.xlabel("x")
-plt.ylabel("y")
-
-plt.show()
-```
-
-## What Are We Here For?
-
-```{python}
-#| echo: false
-#| message: false
-
-np.random.seed(123)
-
-x1_vals = np.linspace(-10, 15, 200)
-sys1_x2_vals1 = (13 - 5*x1_vals)/2
-sys1_x2_vals2 = (11 - 3*x1_vals)/(-2)
-
-sys2_x2_vals1 = (10 - 2*x1_vals)/4
-sys2_x2_vals2 = (15 - 4*x1_vals)/8
-
-sys3_x2_vals1 = (10 - 2*x1_vals)/4
-sys3_x2_vals2 = (-20 + 4*x1_vals)/(-8)
-
-plt.figure(figsize = (15, 9))
-plt.subplot(2, 3, 1)
-plt.plot(x1_vals, sys1_x2_vals1, color = "red")
-plt.plot(x1_vals, sys1_x2_vals2, color = "purple")
-
-plt.grid()
-plt.axhline(0, color='black', linewidth=0.5)
-plt.axvline(0, color='black', linewidth=0.5)
-plt.xlabel("x_1")
-plt.ylabel("x_2")
-
-plt.subplot(2, 3, 2)
-x_vals = np.random.uniform(0, 10, 4)
-y_vals = (x_vals-4)*(x_vals-7)**2
-
-x_new = np.linspace(0, 10, 100)
-y_interp = (x_new - 4)*(x_new - 7)**2
-lin_fit = np.polyfit(x_vals, y_vals, deg = 1)
-lin_fit_fn = np.poly1d(lin_fit)
-y_fit = lin_fit_fn(x_new)
-
-plt.scatter(x_vals, y_vals)
-plt.plot(x_new, y_interp, color = "red")
-plt.plot(x_new, y_fit, color = "green")
-plt.xlabel("x")
-plt.ylabel("y")
-
-plt.grid()
-plt.axhline(y = 0, color = "black")
-plt.axvline(x = 0, color = "black")
-
-plt.ylim((-100, 50));
-
-plt.subplot(2, 3, 3)
-x_vals = np.linspace(0, 10, 250)
-y1_vals = np.sin(x_vals)
-y2_vals = np.sin(5*x_vals)
-y3_vals = np.tan(x_vals)
-
-x0 = 2
-y0 = np.sin(x0)
-x1 = 4
-y1 = np.sin(x1)
-
-plt.plot(x_vals, y1_vals, color = "purple")
-plt.scatter([x0, x1], [y0, y1], color = "black", s = 100)
-plt.xlabel("x")
-plt.ylabel("y")
-
-plt.grid()
-plt.axhline(y = 0, color = "black")
-plt.axvline(x = 0, color = "black")
+plt.title("Root Finding")
 
 plt.subplot(2, 3, 4)
 #@title
@@ -525,6 +417,7 @@ plt.xlabel("x")
 plt.ylabel("y")
 
 plt.ylim((-10, 10));
+plt.title("Differentiation / Approximation")
 
 plt.subplot(2, 3, 5)
 x_vals = np.linspace(0, 10, 500)
@@ -543,9 +436,135 @@ plt.axvline(x = 0, color = "black")
 plt.axhline(y = 0, color = "black")
 plt.xlabel("x")
 plt.ylabel("y")
+plt.title("Integration")
+
+plt.show()
+```
+
+## What Are We Here For?
+
+```{python}
+#| echo: false
+#| message: false
+
+np.random.seed(123)
+
+x1_vals = np.linspace(-10, 15, 200)
+sys1_x2_vals1 = (13 - 5*x1_vals)/2
+sys1_x2_vals2 = (11 - 3*x1_vals)/(-2)
+
+sys2_x2_vals1 = (10 - 2*x1_vals)/4
+sys2_x2_vals2 = (15 - 4*x1_vals)/8
+
+sys3_x2_vals1 = (10 - 2*x1_vals)/4
+sys3_x2_vals2 = (-20 + 4*x1_vals)/(-8)
+
+plt.figure(figsize = (15, 9))
+plt.subplot(2, 3, 1)
+plt.plot(x1_vals, sys1_x2_vals1, color = "red")
+plt.plot(x1_vals, sys1_x2_vals2, color = "purple")
+
+plt.grid()
+plt.axhline(0, color='black', linewidth=0.5)
+plt.axvline(0, color='black', linewidth=0.5)
+plt.xlabel("x_1")
+plt.ylabel("x_2")
+plt.title("Solving Systems")
+
+plt.subplot(2, 3, 2)
+x_vals = np.random.uniform(0, 10, 4)
+y_vals = (x_vals-4)*(x_vals-7)**2
+
+x_new = np.linspace(0, 10, 100)
+y_interp = (x_new - 4)*(x_new - 7)**2
+lin_fit = np.polyfit(x_vals, y_vals, deg = 1)
+lin_fit_fn = np.poly1d(lin_fit)
+y_fit = lin_fit_fn(x_new)
+
+plt.scatter(x_vals, y_vals)
+plt.plot(x_new, y_interp, color = "red")
+plt.plot(x_new, y_fit, color = "green")
+plt.xlabel("x")
+plt.ylabel("y")
+
+plt.grid()
+plt.axhline(y = 0, color = "black")
+plt.axvline(x = 0, color = "black")
+
+plt.ylim((-100, 50));
+plt.title("Interpolation and Fitting")
+
+plt.subplot(2, 3, 3)
+x_vals = np.linspace(0, 10, 250)
+y1_vals = np.sin(x_vals)
+y2_vals = np.sin(5*x_vals)
+y3_vals = np.tan(x_vals)
+
+x0 = 2
+y0 = np.sin(x0)
+x1 = 4
+y1 = np.sin(x1)
+
+plt.plot(x_vals, y1_vals, color = "purple")
+plt.scatter([x0, x1], [y0, y1], color = "black", s = 100)
+plt.xlabel("x")
+plt.ylabel("y")
+
+plt.grid()
+plt.axhline(y = 0, color = "black")
+plt.axvline(x = 0, color = "black")
+plt.title("Root Finding")
+
+plt.subplot(2, 3, 4)
+#@title
+x_vals = np.linspace(0, 10, 500)
+y_vals = x_vals*np.sin(x_vals)
+
+x0 = 6
+y0 = x0*np.sin(x0)
+
+m1 = x0*np.cos(x0) + np.sin(x0)
+m2 = -x0*np.sin(x0) + 2*np.cos(x0)
+m3 = -x0*np.cos(x0) - 3*np.sin(x0) 
+
+d1_vals = m1*(x_vals - x0) + y0
+d2_vals = m2*(x_vals - x0)**2/2 + m1*(x_vals - x0) + y0
+d3_vals = m3*(x_vals - x0)**3/6 + m2*(x_vals - x0)**2/2 + m1*(x_vals - x0) + y0
+
+plt.plot(x_vals, y_vals)
+plt.plot(x_vals, d1_vals, color = "green", ls = "--")
+plt.plot(x_vals, d2_vals, color = "orange", ls = "--")
+plt.plot(x_vals, d3_vals, color = "red", ls = "--")
+plt.scatter(x0, y0, color = "black", s = 100)
+plt.grid()
+plt.axvline(x = 0, color = "black")
+plt.axhline(y = 0, color = "black")
+plt.xlabel("x")
+plt.ylabel("y")
+
+plt.ylim((-10, 10));
+plt.title("Differentiation / Approximation")
+
+plt.subplot(2, 3, 5)
+x_vals = np.linspace(0, 10, 500)
+y_vals = x_vals + np.sin(2*x_vals)
+
+x_abscissas = np.linspace(0, 10, 10)
+y_abscissas = x_abscissas + np.sin(2*x_abscissas)
+
+plt.plot(x_vals, y_vals, color = "purple")
+plt.plot(x_abscissas, y_abscissas, color = "red")
+plt.fill_between(x_abscissas, y_abscissas, color = "red", alpha = 0.2)
+plt.scatter(x_abscissas, y_abscissas, color = "red", s = 25)
+plt.vlines(x = x_abscissas, ymin = 0, ymax= y_abscissas, color = "red", ls = "--")
+plt.grid()
+plt.axvline(x = 0, color = "black")
+plt.axhline(y = 0, color = "black")
+plt.xlabel("x")
+plt.ylabel("y")
+plt.title("Integration")
 
 plt.subplot(2, 3, 6)
-#@title
 x, y = np.meshgrid(np.linspace(-5, 5, 15),
 				np.linspace(-5, 5, 15))
 
@@ -575,6 +594,7 @@ plt.ylim(-5, 5);
 
 # Show plot with grid
 plt.grid()
+plt.title("Initial Value Problems")
 
 plt.show()
 ```
@@ -607,6 +627,7 @@ plt.axhline(0, color='black', linewidth=0.5)
 plt.axvline(0, color='black', linewidth=0.5)
 plt.xlabel("x_1")
 plt.ylabel("x_2")
+plt.title("Solving Systems")
 
 plt.subplot(2, 3, 2)
 x_vals = np.random.uniform(0, 10, 4)
@@ -623,6 +644,7 @@ plt.plot(x_new, y_interp, color = "red")
 plt.plot(x_new, y_fit, color = "green")
 plt.xlabel("x")
 plt.ylabel("y")
+plt.title("Interpolation and Fitting")
 
 plt.grid()
 plt.axhline(y = 0, color = "black")
@@ -649,6 +671,7 @@ plt.ylabel("y")
 plt.grid()
 plt.axhline(y = 0, color = "black")
 plt.axvline(x = 0, color = "black")
+plt.title("Root Finding")
 
 plt.subplot(2, 3, 4)
 #@title
@@ -678,6 +701,7 @@ plt.xlabel("x")
 plt.ylabel("y")
 
 plt.ylim((-10, 10));
+plt.title("Differentiation / Approximation")
 
 plt.subplot(2, 3, 5)
 x_vals = np.linspace(0, 10, 500)
@@ -696,9 +720,9 @@ plt.axvline(x = 0, color = "black")
 plt.axhline(y = 0, color = "black")
 plt.xlabel("x")
 plt.ylabel("y")
+plt.title("Integration")
 
 plt.subplot(2, 3, 6)
-#@title
 x, y = np.meshgrid(np.linspace(-5, 5, 15),
 				np.linspace(-5, 5, 15))
 
@@ -728,6 +752,7 @@ plt.ylim(-5, 5);
 
 # Show plot with grid
 plt.grid()
+plt.title("Initial Value Problems")
 
 plt.suptitle("We'll Revisit PreCalculus Through Differential Equations", fontsize = 36)
 
