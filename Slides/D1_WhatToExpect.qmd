@@ -781,7 +781,7 @@ plt.show()
 + **Main Textbook:** We are following *Numerical Methods for Engineering with Python 3* by Jaan Kiusalaas
 + [Python via Google Colab](https://colab.research.google.com/) or a local Python installation is required (Colab recommended)
 
-    + Note, I'll assume you've never seen Python before and that you haven't even written a single line of code. We'll start from the ground.
+    + Note, I'll assume you've never seen Python before and that you haven't even written a single line of code. We'll start from the ground (today!).
     + You'll also use $\LaTeX$ for typesetting mathematics, but I'll give you a primer in that as well.
 
 ## Grading Scheme
