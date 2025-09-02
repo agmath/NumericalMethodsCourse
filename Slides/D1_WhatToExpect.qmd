@@ -844,6 +844,19 @@ I've built a [webpage to organize our course content](https://agmath.github.io/N
 
 My goal in this course is for all of you to learn as much about numerical methods as possible -- we can't achieve that if you don't feel like you are benefiting from our class meetings.
 
+## A Note on AI Use
+
++ Large language models like ChatGPT and friends are powerful and valuable tools for increasing productivity.
++ The production you are seeking here, in coursework, is *learning* though -- not simply churning out correct answers
++ American science fiction writer Ted Chiang says that "Using ChatGPT to complete assignments is like bringing a forklift into the weight room; you'll never improve your cognitive fitness that way."
+
+    + You'll churn out content but, within 5 minutes of speaking with someone, it will be obvious that you don't have an actual foundation.
+    
++ Andrew Heiss has published [some thoughts about AI use](https://www.andrewheiss.com/ai/), and I agree with much of what he's said.
++ In this course, please stick to using AI for (i) troubleshooting broken python code or (ii) helping you with $\LaTeX$.
+
+    + You should be first-author on everything you write -- code or otherwise. Please do not ask the AI to write or solve anything for you.
+
 ## Let's Get Our Hands Dirty!
 
 . . .
