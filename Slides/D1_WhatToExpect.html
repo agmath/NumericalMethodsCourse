@@ -11,7 +11,7 @@
   <meta name="generator" content="quarto-1.5.43">
 
   <meta name="author" content="Dr.&nbsp;Gilbert">
-  <meta name="dcterms.date" content="2025-09-02">
+  <meta name="dcterms.date" content="2025-12-24">
   <title>MAT 370: Introduction and What to Expect</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -30,6 +30,71 @@
       margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
       vertical-align: middle;
     }
+    /* CSS for syntax highlighting */
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      { color: #003b4f; background-color: #f1f3f5; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #003b4f; } /* Normal */
+    code span.al { color: #ad0000; } /* Alert */
+    code span.an { color: #5e5e5e; } /* Annotation */
+    code span.at { color: #657422; } /* Attribute */
+    code span.bn { color: #ad0000; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #003b4f; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #20794d; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #5e5e5e; } /* Comment */
+    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+    code span.dt { color: #ad0000; } /* DataType */
+    code span.dv { color: #ad0000; } /* DecVal */
+    code span.er { color: #ad0000; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #ad0000; } /* Float */
+    code span.fu { color: #4758ab; } /* Function */
+    code span.im { color: #00769e; } /* Import */
+    code span.in { color: #5e5e5e; } /* Information */
+    code span.kw { color: #003b4f; font-weight: bold; } /* Keyword */
+    code span.op { color: #5e5e5e; } /* Operator */
+    code span.ot { color: #003b4f; } /* Other */
+    code span.pp { color: #ad0000; } /* Preprocessor */
+    code span.sc { color: #5e5e5e; } /* SpecialChar */
+    code span.ss { color: #20794d; } /* SpecialString */
+    code span.st { color: #20794d; } /* String */
+    code span.va { color: #111111; } /* Variable */
+    code span.vs { color: #20794d; } /* VerbatimString */
+    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
   <link rel="stylesheet" href="D1_WhatToExpect_files/libs/revealjs/dist/theme/quarto.css">
   <link href="D1_WhatToExpect_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
@@ -337,7 +402,7 @@ Dr.&nbsp;Gilbert
 </div>
 </div>
 
-  <p class="date">September 2, 2025</p>
+  <p class="date">December 24, 2025</p>
 </section>
 <section class="slide level2">
 
@@ -364,6 +429,42 @@ a:visited {
 </section>
 <section id="what-are-we-here-for" class="slide level2">
 <h2>What Are We Here For?</h2>
+<p><br> <br></p>
+<div class="figure">
+<div style="display: flex; justify-content: center; align-items: center; height: 100%;">
+<div id="player">
+
+</div>
+</div>
+<script>
+  var player;
+
+  function onYouTubeIframeAPIReady() {
+    player = new YT.Player('player', {
+      videoId: 'qFJGMBDfFMY',
+      playerVars: {
+        start: 40
+      },
+      events: {
+        onStateChange: onPlayerStateChange
+      }
+    });
+  }
+
+  function onPlayerStateChange(event) {
+    if (event.data === YT.PlayerState.PLAYING) {
+      setTimeout(() => {
+        player.pauseVideo();
+      }, (133 - 40) * 1000);
+    }
+  }
+</script>
+<script src="https://www.youtube.com/iframe_api"></script>
+<p>▶ Video excerpted from <a href="https://youtube.com/playlist?list=PLkZjai-2Jcxn35XnijUtqqEg0Wi5Sn8ab&amp;si=p3I-fV8vOIYWovoo">Dr.&nbsp;Jeffrey Chasnov’s Numerical Methods for Engineers playlist on YouTube</a>.</p>
+</div>
+</section>
+<section id="contexts-well-encounter" class="slide level2">
+<h2>Contexts We’ll Encounter</h2>
 <div class="fragment">
 <div class="cell">
 <div class="cell-output-display">
@@ -413,9 +514,9 @@ a:visited {
 <li class="fragment"><p>Office: Robert Frost Hall, Room 311</p></li>
 <li class="fragment"><p>Office Hours (please visit!):</p>
 <ul>
-<li class="fragment">Tuesdays 11:00am - 12:30pm</li>
-<li class="fragment">Wednesdays 9:00am - 10:30am</li>
-<li class="fragment">Fridays 1:00pm - 3:00pm</li>
+<li class="fragment">Wednesdays 1:00pm - 2:00pm</li>
+<li class="fragment">Thursdays 9:00am - 11:00am</li>
+<li class="fragment">Fridays 9:00am - 11:00am</li>
 </ul></li>
 <li class="fragment"><p>Slack for communication – see the Welcome Announcement on BrightSpace for how to join</p></li>
 </ul></li>
@@ -428,7 +529,7 @@ a:visited {
 <li class="fragment"><p><a href="https://colab.research.google.com/">Python via Google Colab</a> or a local Python installation is required (Colab recommended)</p>
 <ul>
 <li class="fragment">Note, I’ll assume you’ve never seen Python before and that you haven’t even written a single line of code. We’ll start from the ground (today!).</li>
-<li class="fragment">You’ll also use <span class="math inline">\(\LaTeX\)</span> for typesetting mathematics, but I’ll give you a primer in that as well.</li>
+<li class="fragment">You’ll also use <span class="math inline">\(\LaTeX\)</span> inside of the Colab environemtn for typesetting mathematics, but I’ll give you a primer in that as well.</li>
 </ul></li>
 </ul>
 </section>
@@ -453,11 +554,15 @@ a:visited {
 </tr>
 <tr class="odd">
 <td>Unit Problem Sets / Exams (2)</td>
-<td>40%</td>
+<td>30%</td>
 </tr>
 <tr class="even">
 <td>Final Project and Reflection</td>
 <td>15%</td>
+</tr>
+<tr class="odd">
+<td>Debrief Interviews</td>
+<td>10%</td>
 </tr>
 </tbody>
 </table>
@@ -465,6 +570,7 @@ a:visited {
 </section>
 <section id="explanations-of-grade-items" class="slide level2">
 <h2>Explanations of Grade Items</h2>
+<div style="font-size:20pt">
 <ul>
 <li class="fragment"><p><strong>Participation:</strong> Your collaboration in developing and implementing routines for solving problems is critical to our success in this course. You’ll earn credit for that work.</p></li>
 <li class="fragment"><p><strong>Homework:</strong> We’ll develop our routines in class together and you’ll apply those routines to solving problems on homework assignments.</p></li>
@@ -472,12 +578,10 @@ a:visited {
 <ul>
 <li class="fragment">These will stay unit problem sets unless unauthorized collaboration with AI, websites, or people becomes a problem.</li>
 </ul></li>
-<li class="fragment"><p><strong>Final Project and Reflection:</strong> In the final weeks of the semester, you’ll complete a short project that combines reflection and application.</p>
-<ul>
-<li class="fragment">Choose a numerical method we’ve studied and apply it to a meaningful problem in a domain you care about.</li>
-<li class="fragment">Submit a short paper, a slide presentation, and give a brief (~7 – 10 minute) presentation explaining your work and what it means to you.</li>
-</ul></li>
+<li class="fragment"><p><strong>Final Project and Reflection:</strong> In the final weeks of the semester, you’ll complete a short project that combines reflection and application. You’ll choose a numerical method we’ve studied and apply it to a meaningful problem in a domain you care about, resulting in a short paper and five slides.</p></li>
+<li class="fragment"><p><strong>Debrief Interviews:</strong> In the final two weeks of the semester, you’ll meet briefly with me to talk through a few problems and ideas from the course, explaining what you’ve learned in your own words. This conversation is an important part of your course assessment and focuses on understanding rather than memorization.</p></li>
 </ul>
+</div>
 </section>
 <section id="brightspace" class="slide level2">
 <h2>Brightspace</h2>
@@ -496,6 +600,7 @@ a:visited {
 <li class="fragment"><p>Tentative timeline</p>
 <ul>
 <li class="fragment">Links to <em>notes</em> (in Jupyter/Colab notebook format)</li>
+<li class="fragment">Links to class discussion companion slides in both slide and pdf formats</li>
 <li class="fragment">Assignment reminders</li>
 </ul></li>
 </ul>
@@ -526,7 +631,7 @@ a:visited {
 <section id="a-note-on-ai-use" class="slide level2">
 <h2>A Note on AI Use</h2>
 <ul>
-<li class="fragment"><p>Large language models like ChatGPT and friends are powerful and valuable tools for increasing productivity.</p></li>
+<li class="fragment"><p>Large language models like ChatGPT, Copilot, and friends are powerful and valuable tools for increasing productivity.</p></li>
 <li class="fragment"><p>The production you are seeking here, in coursework, is <em>learning</em> though – not simply churning out correct answers</p></li>
 <li class="fragment"><p>American science fiction writer Ted Chiang says that “Using ChatGPT to complete assignments is like bringing a forklift into the weight room; you’ll never improve your cognitive fitness that way.”</p>
 <ul>
@@ -547,6 +652,790 @@ a:visited {
 <center>
 <p>Open our <a href="https://colab.research.google.com/drive/1HI1jjQwaNEvCqhO0oB6G0poNf8U0xhAR?usp=share_link">Day 1 Notebook</a> and let’s get started.</p>
 </center>
+</div>
+</section>
+<section id="jupyter-notebooks-via-google-colab" class="slide level2">
+<h2>Jupyter Notebooks via Google Colab</h2>
+<ul>
+<li class="fragment"><p>Jupyter notebooks allow mixtures of executable Python code along with formatted text.</p></li>
+<li class="fragment"><p>In Google Colab, there is support for “click-button” formatting.</p></li>
+<li class="fragment"><p>The environment supports markdown syntax for formatting as well.</p></li>
+<li class="fragment"><p>These notebooks consist of two types of cells – text/markdown or code cells</p>
+<ul>
+<li class="fragment">By default, text cells are over a white background and code cells are over a grey-ish background.</li>
+<li class="fragment">This may differ depending on your web-browser’s settings.</li>
+</ul></li>
+</ul>
+</section>
+<section id="textmarkdown-cells" class="slide level2">
+<h2>Text/Markdown Cells</h2>
+<ul>
+<li class="fragment">Double-click into an existing text cell to edit it.</li>
+<li class="fragment">Type freely, using markdown or the formatting buttons to format text as you like.</li>
+<li class="fragment">To split text across separate paragraphs, leave a blank line between the paragraphs in the text cell.</li>
+<li class="fragment">A preview of the rendered text will appear to the right of the cell editor.</li>
+<li class="fragment">To fully render the cell, hold down <code>Shift</code> and hit <code>Enter</code> (or <code>Return</code>)</li>
+<li class="fragment">To create a new text cell, hover your mouse between existing cells (or just beyond the last cell in the notebook) and click the <code>+ Text</code> button to add a text cell.</li>
+</ul>
+</section>
+<section id="code-cells" class="slide level2">
+<h2>Code Cells</h2>
+<ul>
+<li class="fragment"><p>Code cells must consist of valid Python code or comments.</p>
+<ul>
+<li class="fragment">Anything beyond a hashtag (<code>#</code>) on a line will be ignored as a <em>comment</em>.</li>
+<li class="fragment">You may start a line with a hashtag and that entire line will be interpreted as a comment.</li>
+<li class="fragment">You can include multi-line comments by using triple-quotes (<code>"""</code>) in the line before the comment and the line after the comment.</li>
+</ul></li>
+<li class="fragment"><p>Execute a code cell by holding down <code>Shift</code> and hitting <code>Enter</code> (or <code>Return</code>)</p></li>
+</ul>
+</section>
+<section id="basic-python-python-as-a-calculator" class="slide level2">
+<h2>Basic Python: Python as a Calculator</h2>
+<div class="fragment">
+<p>At its most basic level, Python can function as a calculator. There are a few things to remember:</p>
+<ul>
+<li class="fragment">Parentheses – <code>(</code> and <code>)</code> – can be used for grouping operations, but other types of brackets cannot be used since they are special characters.</li>
+<li class="fragment">Multiplication must be explicitly defined with the use of the asterisk (<code>*</code>).</li>
+</ul>
+</div>
+<div class="fragment">
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href=""></a><span class="dv">5</span><span class="op">*</span>(<span class="dv">6</span> <span class="op">+</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>45</code></pre>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href=""></a><span class="dv">5</span>(<span class="dv">6</span> <span class="op">+</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>TypeError: 'int' object is not callable</code></pre>
+</div>
+</div>
+</div>
+</div>
+<ul>
+<li class="fragment">Exponentiation is signified by a double asterisk (<code>**</code>)</li>
+</ul>
+</div>
+<div class="fragment">
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href=""></a><span class="dv">4</span><span class="op">**</span><span class="dv">2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>16</code></pre>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href=""></a><span class="dv">4</span><span class="op">^</span><span class="dv">2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>6</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="displaying-output" class="slide level2">
+<h2>Displaying Output</h2>
+<ul>
+<li class="fragment">By default, in a Jupyter notebook environment only the result of the last line of code will be printed.</li>
+<li class="fragment">Explicitly use <code>print()</code> if you want to see multiple lines of output.</li>
+</ul>
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href=""></a><span class="bu">print</span>(<span class="dv">5</span><span class="op">*</span>(<span class="dv">6</span> <span class="op">+</span> <span class="dv">3</span>))</span>
+<span id="cb9-2"><a href=""></a><span class="bu">print</span>(<span class="dv">4</span><span class="op">**</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>45</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>16</code></pre>
+</div>
+</div>
+</div>
+</section>
+<section id="variable-assignment" class="slide level2">
+<h2>Variable Assignment</h2>
+<ul>
+<li class="fragment">Variable assignment in Python is done via the equal sign (<code>=</code>) operator.</li>
+<li class="fragment">Data types are inferred, so there is no need to declare the type for a variable before using it.</li>
+</ul>
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href=""></a>x <span class="op">=</span> <span class="fl">2.0</span></span>
+<span id="cb12-2"><a href=""></a><span class="dv">3</span><span class="op">*</span>x <span class="op">+</span> x<span class="op">**</span><span class="dv">2</span> <span class="op">-</span> <span class="dv">19</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>-9.0</code></pre>
+</div>
+</div>
+</div>
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href=""></a>y <span class="op">=</span> <span class="st">"Hello"</span></span>
+<span id="cb14-2"><a href=""></a>z <span class="op">=</span> <span class="st">"Friends"</span></span>
+<span id="cb14-3"><a href=""></a></span>
+<span id="cb14-4"><a href=""></a>y <span class="op">+</span> <span class="st">" "</span> <span class="op">+</span> z</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>'Hello Friends'</code></pre>
+</div>
+</div>
+</div>
+</section>
+<section id="variable-naming-requirements-and-conventions" class="slide level2">
+<h2>Variable Naming Requirements and Conventions</h2>
+<div style="font-size:18pt">
+<ul>
+<li class="fragment">Variable names cannot begin with a number</li>
+<li class="fragment">Variable names cannot contain spaces</li>
+</ul>
+</div>
+<div class="fragment">
+<div style="font-size:18pt">
+<p>Beyond this, Python will essentially let you do whatever you want. There are some additional rules you should strive to follow to make your own life easier:</p>
+<ul>
+<li class="fragment"><p><strong>Do not</strong> use keywords as names for your variables.</p>
+<ul>
+<li class="fragment">Don’t let <code>int = 34</code> – instead, use <code>my_int = 34</code>.</li>
+</ul></li>
+<li class="fragment"><p><strong>Do</strong> use meaningful names for your variables.</p>
+<ul>
+<li class="fragment">Don’t let <code>xxyy = 17</code> – instead, use <code>initial_guess = 17</code>.</li>
+</ul></li>
+<li class="fragment"><p><strong>Do</strong> Be consistent with your naming conventions.</p>
+<ul>
+<li class="fragment">Don’t let <code>my_int = 34</code> and then use <code>initialGuess = 17</code> – commit to using <code>camelCase</code> or <code>snake_case</code>, but try not to mix the two.</li>
+</ul></li>
+<li class="fragment"><p><strong>Do</strong> use meaningful but concise names.</p>
+<ul>
+<li class="fragment">Don’t let <code>initial_guess_for_minimum_over_the_closed_interval = 17</code> – just let <code>initial_guess = 17</code> or <code>initial_guess_minimum = 17</code>.</li>
+</ul></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="a-first-data-structure-lists" class="slide level2">
+<h2>A First Data Structure: Lists</h2>
+<ul>
+<li class="fragment"><p>Python lists are sometimes convenient objects to work with.</p>
+<ul>
+<li class="fragment">We’ll find direct and intermediary uses for them from time to time.</li>
+</ul></li>
+<li class="fragment"><p>Lists are defined using square brackets, as seen below.</p></li>
+</ul>
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href=""></a>myList <span class="op">=</span> [<span class="dv">1</span>, <span class="dv">4</span>, <span class="dv">9</span>, <span class="dv">16</span>, <span class="dv">25</span>]</span>
+<span id="cb16-2"><a href=""></a>myList2 <span class="op">=</span> [<span class="dv">350</span>, <span class="dv">370</span>, <span class="dv">400</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href=""></a><span class="bu">print</span>(myList)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1, 4, 9, 16, 25]</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href=""></a><span class="bu">print</span>(myList2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[350, 370, 400]</code></pre>
+</div>
+</div>
+<ul>
+<li class="fragment">Lists don’t exactly work how you might want them to though (at least not in a math context).</li>
+</ul>
+</div>
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href=""></a><span class="bu">print</span>(myList <span class="op">+</span> myList2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1, 4, 9, 16, 25, 350, 370, 400]</code></pre>
+</div>
+</div>
+</div>
+</section>
+<section id="working-with-lists" class="slide level2">
+<h2>Working with Lists</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href=""></a><span class="bu">print</span>(myList)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1, 4, 9, 16, 25]</code></pre>
+</div>
+</div>
+<div class="fragment">
+<p>We can access particular list elements using square brackets.</p>
+</div>
+<div class="fragment">
+<p>We just need to remember two things when doing so:</p>
+<ul>
+<li class="fragment">Python starts counting from <span class="math inline">\(0\)</span></li>
+</ul>
+</div>
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href=""></a>myList[<span class="dv">2</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<div class="fragment">
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>9</code></pre>
+</div>
+</div>
+<ul>
+<li class="fragment">Python is <em>right-endpoint exclusive</em></li>
+</ul>
+</div>
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href=""></a>myList[<span class="dv">1</span>:<span class="dv">4</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<div class="fragment">
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>[4, 9, 16]</code></pre>
+</div>
+</div>
+</div>
+</section>
+<section id="editing-lists" class="slide level2">
+<h2>Editing Lists</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href=""></a><span class="bu">print</span>(myList)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1, 4, 9, 16, 25]</code></pre>
+</div>
+</div>
+<ul>
+<li class="fragment">One reason that lists are so convenient to work with is that it is easy to extend them.</li>
+<li class="fragment">For example, we can add the next perfect square to <code>myList</code> by using the <code>append()</code> method.</li>
+</ul>
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href=""></a>myList.append(<span class="dv">49</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href=""></a><span class="bu">print</span>(myList)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1, 4, 9, 16, 25, 49]</code></pre>
+</div>
+</div>
+<ul>
+<li class="fragment">We can also change the value of a list entry by accessing its position with square brackets and reassigning it.</li>
+</ul>
+</div>
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href=""></a>myList[<span class="dv">5</span>] <span class="op">=</span> <span class="dv">36</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href=""></a><span class="bu">print</span>(myList)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1, 4, 9, 16, 25, 36]</code></pre>
+</div>
+</div>
+</div>
+</section>
+<section id="a-warning-test-everything" class="slide level2">
+<h2>A Warning: Test Everything</h2>
+<div class="fragment">
+<p>Not everything works the way you would expect it to…</p>
+</div>
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href=""></a><span class="bu">print</span>(myList)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1, 4, 9, 16, 25, 36]</code></pre>
+</div>
+</div>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href=""></a>myNewList <span class="op">=</span> myList</span>
+<span id="cb39-2"><a href=""></a></span>
+<span id="cb39-3"><a href=""></a><span class="bu">print</span>(myNewList)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1, 4, 9, 16, 25, 36]</code></pre>
+</div>
+</div>
+</div>
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href=""></a>myNewList[<span class="dv">1</span>] <span class="op">=</span> <span class="dv">100</span></span>
+<span id="cb41-2"><a href=""></a></span>
+<span id="cb41-3"><a href=""></a><span class="bu">print</span>(myNewList)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1, 100, 9, 16, 25, 36]</code></pre>
+</div>
+</div>
+</div>
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href=""></a><span class="bu">print</span>(myList)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1, 100, 9, 16, 25, 36]</code></pre>
+</div>
+</div>
+</div>
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href=""></a>myNewList_copy <span class="op">=</span> myNewList.copy()</span>
+<span id="cb45-2"><a href=""></a>myNewList_copy[<span class="dv">1</span>] <span class="op">=</span> <span class="dv">4</span></span>
+<span id="cb45-3"><a href=""></a></span>
+<span id="cb45-4"><a href=""></a><span class="bu">print</span>(myNewList)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1, 100, 9, 16, 25, 36]</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a href=""></a><span class="bu">print</span>(myNewList_copy)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1, 4, 9, 16, 25, 36]</code></pre>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<div style="font-size:18pt">
+<div class="fragment">
+<p>Sometimes behaviors are unexpected, like overwriting the entry of <code>myList</code> in index <code>1</code> resulting in the same change in <code>myNewList</code>.</p>
+</div>
+<div class="fragment">
+<p>There are always reasons for this…For example, when we assigned <code>myNewList = myList</code>, Python saves space by just having both objects reference the same location in memory.</p>
+</div>
+<div class="fragment">
+<p>Requesting a true copy of the object with <code>.copy()</code> was the appropriate thing to do, but such a thing is not <em>obviously</em> required.</p>
+</div>
+<div class="fragment">
+<p>Always check your work.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="arrays-and-numpy" class="slide level2">
+<h2>Arrays and <code>{numpy}</code></h2>
+<div class="fragment">
+<p>We won’t actually use lists very often in our course</p>
+</div>
+<div class="fragment">
+<p>We’re much more interested in special structures, like arrays (think: vectors or matrices)</p>
+</div>
+<div class="fragment">
+<p>We can import the <code>{numpy}</code> module and use it to create these special structures</p>
+</div>
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href=""></a><span class="im">import</span> numpy <span class="im">as</span> np</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<div class="fragment">
+<p><em>Note.</em> We used the <em>alias</em> <code>np</code> so that we can type <code>np.function_name()</code> instead of <code>numpy.function_name()</code> when we want to use functionality from this module. Doing this is common in Python.</p>
+</div>
+<div class="fragment">
+<p>Now we can use <code>np.array()</code> with lists to define our structures.</p>
+</div>
+<div class="fragment">
+<div class="columns">
+<div class="column" style="width:55%;">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb50-1"><a href=""></a>myVector <span class="op">=</span> np.array([<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>])</span>
+<span id="cb50-2"><a href=""></a>myMatrix <span class="op">=</span> np.array([</span>
+<span id="cb50-3"><a href=""></a>  [<span class="dv">4</span>, <span class="dv">5</span>], <span class="co">#row 1</span></span>
+<span id="cb50-4"><a href=""></a>  [<span class="dv">6</span>, <span class="dv">7</span>], <span class="co">#row 2</span></span>
+<span id="cb50-5"><a href=""></a>  [<span class="dv">8</span>, <span class="dv">9</span>]  <span class="co">#row 3</span></span>
+<span id="cb50-6"><a href=""></a>])</span>
+<span id="cb50-7"><a href=""></a></span>
+<span id="cb50-8"><a href=""></a><span class="bu">print</span>(<span class="st">"My vector is: "</span>, myVector)</span>
+<span id="cb50-9"><a href=""></a><span class="bu">print</span>(<span class="st">"My matrix is: "</span>, myMatrix)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div><div class="column" style="width:45%;">
+<div class="fragment">
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>My vector is:  [1 2 3]</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>My matrix is:  [[4 5]
+ [6 7]
+ [8 9]]</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="arithmetic-with-numpy-arrays" class="slide level2">
+<h2>Arithmetic with <code>{numpy}</code> Arrays</h2>
+<div class="fragment">
+<p>Arithmetic on arrays works the way you would want it to work, mathematically.</p>
+</div>
+<div class="fragment">
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb53-1"><a href=""></a>myVec_v1 <span class="op">=</span> np.array([<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>])</span>
+<span id="cb53-2"><a href=""></a>myVec_v2 <span class="op">=</span> np.array([<span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">6</span>])</span>
+<span id="cb53-3"><a href=""></a></span>
+<span id="cb53-4"><a href=""></a><span class="bu">print</span>(myVec_v1 <span class="op">+</span> myVec_v2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="fragment">
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>[5 7 9]</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="fragment">
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb55-1"><a href=""></a>myMatrix_A <span class="op">=</span> np.array([</span>
+<span id="cb55-2"><a href=""></a>  [<span class="dv">4</span>, <span class="dv">5</span>],</span>
+<span id="cb55-3"><a href=""></a>  [<span class="dv">6</span>, <span class="dv">7</span>],</span>
+<span id="cb55-4"><a href=""></a>  [<span class="dv">8</span>, <span class="dv">9</span>]</span>
+<span id="cb55-5"><a href=""></a>  ])</span>
+<span id="cb55-6"><a href=""></a></span>
+<span id="cb55-7"><a href=""></a><span class="bu">print</span>(<span class="dv">5</span><span class="op">*</span>myMatrix_A)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="fragment">
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>[[20 25]
+ [30 35]
+ [40 45]]</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="fragment">
+<p>Developers also build in some conveniences which aren’t mathematically meaningful, but are colloquially understandable and useful!</p>
+</div>
+<div class="fragment">
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb57-1"><a href=""></a>myVec_v3 <span class="op">=</span> myVec_v1 <span class="op">+</span> <span class="dv">7</span></span>
+<span id="cb57-2"><a href=""></a></span>
+<span id="cb57-3"><a href=""></a><span class="bu">print</span>(myVec_v3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="fragment">
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>[ 8  9 10]</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="programming-paradigm-loops" class="slide level2">
+<h2>Programming Paradigm: Loops</h2>
+<div class="fragment">
+<p>Computers are excellent at following instructions and performing tedious tasks.</p>
+</div>
+<div class="fragment">
+<p>It is often the case where we’ll want to perform the same set of instructions over and over again.</p>
+</div>
+<div class="fragment">
+<p>If we find ourselves in this situation, <em>loops</em> will be helpful.</p>
+</div>
+<div class="fragment">
+<p>We’ll encounter two types of loop in our course.</p>
+<ul>
+<li class="fragment"><p>A <code>for</code> loop is useful when we know ahead of time how many iterations our instructions must be run for.</p></li>
+<li class="fragment"><p>A <code>while</code> loop can be used when we would like to run a set of instructions over and over again until a condition is no longer satisfied.</p>
+<ul>
+<li class="fragment">Be careful with these <code>while</code> loops though – using the wrong stopping condition can lead to <em>infinite loops</em> or unnecessarily lengthy procedures.</li>
+</ul></li>
+</ul>
+</div>
+</section>
+<section id="programming-paradigm-loops-1" class="slide level2">
+<h2>Programming Paradigm: Loops</h2>
+<div>
+<ul>
+<li><p>A <code>for</code> loop is useful when we know ahead of time how many iterations our instructions must be run for.</p></li>
+<li><p>A <code>while</code> loop can be used when we would like to run a set of instructions over and over again until a condition is no longer satisfied.</p>
+<ul>
+<li>Be careful with these <code>while</code> loops though – using the wrong stopping condition can lead to <em>infinite loops</em> or unnecessarily lengthy procedures.</li>
+</ul></li>
+</ul>
+</div>
+<div class="fragment">
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb59-1"><a href=""></a><span class="co">#A for loop</span></span>
+<span id="cb59-2"><a href=""></a>my_sum <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb59-3"><a href=""></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">6</span>):</span>
+<span id="cb59-4"><a href=""></a>  my_sum <span class="op">=</span> my_sum <span class="op">+</span> i</span>
+<span id="cb59-5"><a href=""></a>  <span class="bu">print</span>(<span class="st">"i is "</span>, i, <span class="st">" and my_sum is "</span>, my_sum)</span>
+<span id="cb59-6"><a href=""></a></span>
+<span id="cb59-7"><a href=""></a></span>
+<span id="cb59-8"><a href=""></a><span class="bu">print</span>(<span class="st">"The total sum is: "</span>, my_sum)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="fragment">
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>i is  0  and my_sum is  0
+i is  1  and my_sum is  1
+i is  2  and my_sum is  3
+i is  3  and my_sum is  6
+i is  4  and my_sum is  10
+i is  5  and my_sum is  15</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>The total sum is:  15</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="programming-paradigm-loops-2" class="slide level2">
+<h2>Programming Paradigm: Loops</h2>
+<div>
+<ul>
+<li><p>A <code>for</code> loop is useful when we know ahead of time how many iterations our instructions must be run for.</p></li>
+<li><p>A <code>while</code> loop can be used when we would like to run a set of instructions over and over again until a condition is no longer satisfied.</p>
+<ul>
+<li>Be careful with these <code>while</code> loops though – using the wrong stopping condition can lead to <em>infinite loops</em> or unnecessarily lengthy procedures.</li>
+</ul></li>
+</ul>
+</div>
+<div class="fragment">
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb62-1"><a href=""></a><span class="co">#A while loop</span></span>
+<span id="cb62-2"><a href=""></a>x <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb62-3"><a href=""></a><span class="cf">while</span> x <span class="op">&lt;=</span> <span class="dv">100</span>:</span>
+<span id="cb62-4"><a href=""></a>  x <span class="op">=</span> <span class="dv">2</span><span class="op">*</span>x</span>
+<span id="cb62-5"><a href=""></a>  <span class="bu">print</span>(x)</span>
+<span id="cb62-6"><a href=""></a></span>
+<span id="cb62-7"><a href=""></a><span class="bu">print</span>(<span class="st">"The final value of x is: "</span>, x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="fragment">
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>2
+4
+8
+16
+32
+64
+128</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>The final value of x is:  128</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="programming-paradigm-conditional-statements" class="slide level2">
+<h2>Programming Paradigm: Conditional Statements</h2>
+<div class="fragment">
+<p>Another useful way to control your code is with the use of conditional statements.</p>
+</div>
+<div class="fragment">
+<p>This allows for code to be executed if a condition is true, and perhaps other (or no) code to be executed if it is false.</p>
+</div>
+<div class="fragment">
+<p>We use <code>if</code>, <code>elif</code>, and <code>else</code> statements for this.</p>
+</div>
+<div class="fragment">
+<p>For example, look at the following <code>for</code> loop which will print out values of <code>x</code> between <span class="math inline">\(0\)</span> and <span class="math inline">\(100\)</span> which are divisible by <span class="math inline">\(13\)</span>.</p>
+</div>
+<div class="fragment">
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb65-1"><a href=""></a>x <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb65-2"><a href=""></a></span>
+<span id="cb65-3"><a href=""></a><span class="cf">for</span> x <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">101</span>):</span>
+<span id="cb65-4"><a href=""></a>  <span class="cf">if</span> x <span class="op">%</span> <span class="dv">13</span> <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb65-5"><a href=""></a>    <span class="bu">print</span>(x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="fragment">
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>0
+13
+26
+39
+52
+65
+78
+91</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="programming-paradigm-functions" class="slide level2">
+<h2>Programming Paradigm: Functions</h2>
+<div class="fragment">
+<p>It will often be the case that we’d like to write functions in our course.</p>
+</div>
+<div class="fragment">
+<p>Functions begin with the <code>def</code> keyword and end with a <code>return</code> statement.</p>
+</div>
+<div class="fragment">
+<p>Consider the following silly function which multiplies two numbers together.</p>
+</div>
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb67-1"><a href=""></a><span class="kw">def</span> product(a, b):</span>
+<span id="cb67-2"><a href=""></a>  <span class="co">#Function instructions</span></span>
+<span id="cb67-3"><a href=""></a>  myProduct <span class="op">=</span> a<span class="op">*</span>b</span>
+<span id="cb67-4"><a href=""></a>  </span>
+<span id="cb67-5"><a href=""></a>  <span class="co">#What the function results in</span></span>
+<span id="cb67-6"><a href=""></a>  <span class="cf">return</span> myProduct</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<div class="fragment">
+<p>Now that the <code>product()</code> function has been defined, we can use it!</p>
+</div>
+<div class="fragment">
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb68-1"><a href=""></a>product(<span class="dv">3</span>, <span class="dv">6</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="fragment">
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>18</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="fragment">
+<p>Below is a perhaps more useful application.</p>
+</div>
+<div class="fragment">
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb70-1"><a href=""></a><span class="kw">def</span> f(x):</span>
+<span id="cb70-2"><a href=""></a>  <span class="co">#my_output = -3*(x**2) -5*x + 8</span></span>
+<span id="cb70-3"><a href=""></a>  term1 <span class="op">=</span> <span class="op">-</span><span class="dv">3</span><span class="op">*</span>x<span class="op">**</span><span class="dv">2</span></span>
+<span id="cb70-4"><a href=""></a>  term2 <span class="op">=</span> <span class="op">-</span><span class="dv">5</span><span class="op">*</span>x</span>
+<span id="cb70-5"><a href=""></a>  my_output <span class="op">=</span> term1 <span class="op">+</span> term2 <span class="op">+</span> <span class="dv">8</span></span>
+<span id="cb70-6"><a href=""></a>  <span class="cf">return</span> my_output</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb71-1"><a href=""></a>f(<span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>-60</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="summary-and-a-motivating-example" class="slide level2">
+<h2>Summary and a Motivating Example</h2>
+<div style="font-size:18pt">
+<ul>
+<li class="fragment">In this notebook, you learned some basics about Python and the Jupyter Notebook environment.</li>
+<li class="fragment">I expect (and you should, too) that you’ll come back here often over the next couple of weeks as you continue to gain familiarity with Python.</li>
+<li class="fragment">In particular, you should feel free to copy/paste/edit from this notebook, especially when you are constructing functions and/or loops.</li>
+</ul>
+<div class="fragment">
+<p>We’ll leave this notebook with a simple example which will motivate our study for the remainder of the semester.</p>
+</div>
+<div class="fragment">
+<p>In Python, and in many computing languages, we can use a double equal (<code>==</code>) operator to test equality. We can also use the usual inequalities to test sizes of numbers.</p>
+</div>
+</div>
+<div class="fragment">
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb73-1"><a href=""></a><span class="bu">print</span>(<span class="dv">7</span> <span class="op">&gt;=</span> <span class="dv">3</span>)</span>
+<span id="cb73-2"><a href=""></a><span class="bu">print</span>(<span class="fl">3.5</span> <span class="op">&lt;</span> <span class="dv">3</span>)</span>
+<span id="cb73-3"><a href=""></a><span class="bu">print</span>(<span class="dv">5</span> <span class="op">==</span> <span class="dv">3</span> <span class="op">+</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="fragment">
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>True</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>False</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>True</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="fragment">
+<div style="font-size:18pt">
+<p>Just once more, for good measure…</p>
+</div>
+</div>
+</div>
+<div class="fragment">
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb77-1"><a href=""></a><span class="bu">print</span>(<span class="fl">0.1</span> <span class="op">+</span> <span class="fl">0.2</span> <span class="op">==</span> <span class="fl">0.3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="fragment">
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>False</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="fragment">
+<div style="font-size:18pt">
+<p>…and everything had been going so well – we’ll investigate this next time!</p>
+</div>
 <div class="quarto-auto-generated-content">
 <div class="footer footer-default">
 

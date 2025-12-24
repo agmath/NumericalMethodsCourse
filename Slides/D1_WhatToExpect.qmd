@@ -8,6 +8,8 @@ date: today
 date-format: long
 theme: serif
 incremental: true
+execute: 
+  error: true
 ---
 
 ```{r global-options, include=FALSE}
@@ -42,6 +44,50 @@ a:visited {
 ```
 
 ## What Are We Here For?
+
+<br/>
+<br/>
+
+:::{.figure}
+
+<div style="display: flex; justify-content: center; align-items: center; height: 100%;">
+
+<div id="player"></div>
+
+</div>
+
+<script>
+  var player;
+
+  function onYouTubeIframeAPIReady() {
+    player = new YT.Player('player', {
+      videoId: 'qFJGMBDfFMY',
+      playerVars: {
+        start: 40
+      },
+      events: {
+        onStateChange: onPlayerStateChange
+      }
+    });
+  }
+
+  function onPlayerStateChange(event) {
+    if (event.data === YT.PlayerState.PLAYING) {
+      setTimeout(() => {
+        player.pauseVideo();
+      }, (133 - 40) * 1000);
+    }
+  }
+</script>
+
+<script src="https://www.youtube.com/iframe_api"></script>
+
+▶ Video excerpted from [Dr. Jeffrey Chasnov's Numerical Methods for Engineers playlist on YouTube](https://youtube.com/playlist?list=PLkZjai-2Jcxn35XnijUtqqEg0Wi5Sn8ab&si=p3I-fV8vOIYWovoo).
+
+:::
+
+
+## Contexts We'll Encounter
 
 . . .
 
@@ -771,9 +817,9 @@ plt.show()
     + Office: Robert Frost Hall, Room 311
     + Office Hours (please visit!): 
     
-      + Tuesdays 11:00am - 12:30pm
-      + Wednesdays 9:00am - 10:30am
-      + Fridays 1:00pm - 3:00pm
+      + Wednesdays 1:00pm - 2:00pm
+      + Thursdays 9:00am - 11:00am
+      + Fridays 9:00am - 11:00am
     + Slack for communication -- see the Welcome Announcement on BrightSpace for how to join
 
 ## Required Resources
@@ -782,7 +828,7 @@ plt.show()
 + [Python via Google Colab](https://colab.research.google.com/) or a local Python installation is required (Colab recommended)
 
     + Note, I'll assume you've never seen Python before and that you haven't even written a single line of code. We'll start from the ground (today!).
-    + You'll also use $\LaTeX$ for typesetting mathematics, but I'll give you a primer in that as well.
+    + You'll also use $\LaTeX$ inside of the Colab environemtn for typesetting mathematics, but I'll give you a primer in that as well.
 
 ## Grading Scheme
 
@@ -791,11 +837,14 @@ plt.show()
   -------------------------------|-----------
   Participation                  |  5%
   Homework (~8)                  | 40%
-  Unit Problem Sets / Exams (2)  | 40%
+  Unit Problem Sets / Exams (2)  | 30%
   Final Project and Reflection   | 15%
+  Debrief Interviews             | 10%
   </center>
 
 ## Explanations of Grade Items
+
+<div style="font-size:20pt">
 
 + **Participation:** Your collaboration in developing and implementing routines for solving problems is critical to our success in this course. You'll earn credit for that work.
 + **Homework:** We'll develop our routines in class together and you'll apply those routines to solving problems on homework assignments.
@@ -803,10 +852,10 @@ plt.show()
 + **Unit Problem Sets:** We will have two (2) unit problem sets (or exams) during our semester. 
 
     + These will stay unit problem sets unless unauthorized collaboration with AI, websites, or people becomes a problem. 
-+ **Final Project and Reflection:** In the final weeks of the semester, you’ll complete a short project that combines reflection and application. 
-  
-    + Choose a numerical method we’ve studied and apply it to a meaningful problem in a domain you care about. 
-    + Submit a short paper, a slide presentation, and give a brief (~7 – 10 minute) presentation explaining your work and what it means to you.
++ **Final Project and Reflection:** In the final weeks of the semester, you’ll complete a short project that combines reflection and application. You'll choose a numerical method we’ve studied and apply it to a meaningful problem in a domain you care about, resulting in a short paper and five slides. 
++ **Debrief Interviews:** In the final two weeks of the semester, you'll meet briefly with me to talk through a few problems and ideas from the course, explaining what you’ve learned in your own words. This conversation is an important part of your course assessment and focuses on understanding rather than memorization.
+
+</div>
 
 ## Brightspace
 
@@ -823,6 +872,7 @@ I've built a [webpage to organize our course content](https://agmath.github.io/N
 + Tentative timeline
   
   + Links to *notes* (in Jupyter/Colab notebook format)
+  + Links to class discussion companion slides in both slide and pdf formats
   + Assignment reminders
 
 ## What's Class Like?
@@ -846,7 +896,7 @@ My goal in this course is for all of you to learn as much about numerical method
 
 ## A Note on AI Use
 
-+ Large language models like ChatGPT and friends are powerful and valuable tools for increasing productivity.
++ Large language models like ChatGPT, Copilot, and friends are powerful and valuable tools for increasing productivity.
 + The production you are seeking here, in coursework, is *learning* though -- not simply churning out correct answers
 + American science fiction writer Ted Chiang says that "Using ChatGPT to complete assignments is like bringing a forklift into the weight room; you'll never improve your cognitive fitness that way."
 
@@ -871,3 +921,1023 @@ My goal in this course is for all of you to learn as much about numerical method
 Open our [Day 1 Notebook](https://colab.research.google.com/drive/1HI1jjQwaNEvCqhO0oB6G0poNf8U0xhAR?usp=share_link) and let's get started.
 
 </center>
+
+## Jupyter Notebooks via Google Colab
+
++ Jupyter notebooks allow mixtures of executable Python code along with formatted text.
++ In Google Colab, there is support for "click-button" formatting.
++ The environment supports markdown syntax for formatting as well.
++ These notebooks consist of two types of cells -- text/markdown or code cells
+
+    + By default, text cells are over a white background and code cells are over a grey-ish background.
+    + This may differ depending on your web-browser's settings.
+
+## Text/Markdown Cells
+
++ Double-click into an existing text cell to edit it.
++ Type freely, using markdown or the formatting buttons to format text as you like.
++ To split text across separate paragraphs, leave a blank line between the paragraphs in the text cell.
++ A preview of the rendered text will appear to the right of the cell editor.
++ To fully render the cell, hold down `Shift` and hit `Enter` (or `Return`)
++ To create a new text cell, hover your mouse between existing cells (or just beyond the last cell in the notebook) and click the `+ Text` button to add a text cell.
+
+## Code Cells
+
++ Code cells must consist of valid Python code or comments.
+
+    + Anything beyond a hashtag (`#`) on a line will be ignored as a *comment*.
+    + You may start a line with a hashtag and that entire line will be interpreted as a comment.
+    + You can include multi-line comments by using triple-quotes (`"""`) in the line before the comment and the line after the comment.
+
++ Execute a code cell by holding down `Shift` and hitting `Enter` (or `Return`)
+
+## Basic Python: Python as a Calculator
+
+. . .
+
+At its most basic level, Python can function as a calculator. There are a few things to remember:
+
++ Parentheses -- `(` and `)` -- can be used for grouping operations, but other types of brackets cannot be used since they are special characters.
++ Multiplication must be explicitly defined with the use of the asterisk (`*`).
+
+. . . 
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+```{python}
+#| echo: true
+
+5*(6 + 3)
+```
+
+:::
+
+:::{.column width="50%"}
+
+```{python}
+#| echo: true
+
+5(6 + 3)
+```
+
+:::
+
+::::
+
++ Exponentiation is signified by a double asterisk (`**`)
+
+. . . 
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+```{python}
+#| echo: true
+
+4**2
+```
+
+:::
+
+:::{.column width="50%"}
+
+```{python}
+#| echo: true
+
+4^2
+```
+
+:::
+
+::::
+
+## Displaying Output
+
++ By default, in a Jupyter notebook environment only the result of the last line of code will be printed.
++ Explicitly use `print()` if you want to see multiple lines of output.
+
+. . .
+
+```{python}
+#| echo: true
+#| eval: false
+
+print(5*(6 + 3))
+print(4**2)
+```
+
+```{python}
+#| echo: false
+#| eval: true
+
+print(5*(6 + 3))
+print(4**2)
+```
+
+## Variable Assignment
+
++ Variable assignment in Python is done via the equal sign (`=`) operator. 
++ Data types are inferred, so there is no need to declare the type for a variable before using it.
+
+. . . 
+
+```{python}
+#| echo: true
+
+x = 2.0
+3*x + x**2 - 19
+```
+
+. . .
+ 
+```{python}
+#| echo: true
+
+y = "Hello"
+z = "Friends"
+
+y + " " + z
+```
+
+## Variable Naming Requirements and Conventions
+
+<div style="font-size:18pt">
+
++ Variable names cannot begin with a number
++ Variable names cannot contain spaces
+
+</div>
+
+. . .
+
+<div style="font-size:18pt">
+
+Beyond this, Python will essentially let you do whatever you want. There are some additional rules you should strive to follow to make your own life easier:
+
++ **Do not** use keywords as names for your variables.
+
+  + Don't let `int = 34` -- instead, use `my_int = 34`.
+
++ **Do** use meaningful names for your variables.
+
+  + Don't let `xxyy = 17` -- instead, use `initial_guess = 17`.
+
++ **Do** Be consistent with your naming conventions.
+
+  + Don't let `my_int = 34` and then use `initialGuess = 17` -- commit to using `camelCase` or `snake_case`, but try not to mix the two.
+
++ **Do** use meaningful but concise names.
+
+  + Don't let `initial_guess_for_minimum_over_the_closed_interval = 17` -- just let `initial_guess = 17` or `initial_guess_minimum = 17`.
+
+</div>
+
+## A First Data Structure: Lists
+
++ Python lists are sometimes convenient objects to work with. 
+
+    + We'll find direct and intermediary uses for them from time to time.
++ Lists are defined using square brackets, as seen below.
+
+. . .
+
+```{python}
+#| echo: true
+
+myList = [1, 4, 9, 16, 25]
+myList2 = [350, 370, 400]
+```
+
+. . .
+
+```{python}
+#| echo: true
+
+print(myList)
+print(myList2)
+```
+
++ Lists don't exactly work how you might want them to though (at least not in a math context).
+
+. . .
+
+```{python}
+#| echo: true
+
+print(myList + myList2)
+```
+
+## Working with Lists
+
+```{python}
+#| echo: true
+
+print(myList)
+```
+
+. . .
+
+We can access particular list elements using square brackets. 
+
+. . .
+
+We just need to remember two things when doing so:
+
++ Python starts counting from $0$
+
+. . .
+
+```{python}
+#| echo: true
+#| eval: false
+
+myList[2]
+```
+
+. . .
+
+```{python}
+#| echo: false
+#| eval: true
+
+myList[2]
+```
+
++ Python is *right-endpoint exclusive*
+
+. . . 
+
+```{python}
+#| echo: true
+#| eval: false
+
+myList[1:4]
+```
+
+. . .
+
+```{python}
+#| echo: false
+#| eval: true
+
+myList[1:4]
+```
+
+## Editing Lists
+
+```{python}
+#| echo: true
+
+print(myList)
+```
+
++ One reason that lists are so convenient to work with is that it is easy to extend them. 
++ For example, we can add the next perfect square to `myList` by using the `append()` method.
+
+. . .
+
+```{python}
+#| echo: true
+
+myList.append(49)
+```
+
+. . .
+
+```{python}
+#| echo: true
+
+print(myList)
+```
+
++ We can also change the value of a list entry by accessing its position with square brackets and reassigning it.
+
+. . .
+
+```{python}
+#| echo: true
+
+myList[5] = 36
+```
+
+. . . 
+
+```{python}
+#| echo: true
+
+print(myList)
+```
+
+## A Warning: Test Everything
+
+. . . 
+
+Not everything works the way you would expect it to...
+
+. . . 
+
+```{python}
+#| echo: true
+
+print(myList)
+```
+
+:::::{.columns}
+
+::::{.column width="50%"}
+
+:::{.fragment}
+
+```{python}
+#| echo: true
+#| 
+myNewList = myList
+
+print(myNewList)
+```
+
+:::
+
+:::{.fragment}
+
+```{python}
+#| echo: true
+
+myNewList[1] = 100
+
+print(myNewList)
+```
+
+:::
+
+:::{.fragment}
+
+```{python}
+#| echo: true
+
+print(myList)
+```
+
+:::
+
+:::{.fragment}
+
+```{python}
+#| echo: true
+myNewList_copy = myNewList.copy()
+myNewList_copy[1] = 4
+
+print(myNewList)
+print(myNewList_copy)
+```
+
+:::
+
+::::
+
+::::{.column width="50%"}
+
+<div style="font-size:18pt">
+
+:::{.fragment}
+
+Sometimes behaviors are unexpected, like overwriting the entry of `myList` in index `1` resulting in the same change in `myNewList`.
+
+:::
+
+:::{.fragment}
+
+There are always reasons for this...For example, when we assigned `myNewList = myList`, Python saves space by just having both objects reference the same location in memory.
+
+:::
+
+:::{.fragment}
+
+Requesting a true copy of the object with `.copy()` was the appropriate thing to do, but such a thing is not *obviously* required.
+
+:::
+
+:::{.fragment}
+
+Always check your work.
+
+:::
+
+</div>
+
+::::
+
+:::::
+
+## Arrays and `{numpy}`
+
+. . . 
+
+We won't actually use lists very often in our course
+
+. . . 
+
+We're much more interested in special structures, like arrays (think: vectors or matrices)
+
+. . . 
+
+We can import the `{numpy}` module and use it to create these special structures
+
+. . .
+
+```{python}
+#| echo: true
+
+import numpy as np
+```
+
+. . . 
+
+*Note.* We used the *alias* `np` so that we can type `np.function_name()` instead of `numpy.function_name()` when we want to use functionality from this module. Doing this is common in Python.
+
+. . .
+
+Now we can use `np.array()` with lists to define our structures.
+
+. . .
+
+::::{.columns}
+
+:::{.column width="55%"}
+
+```{python}
+#| echo: true
+#| eval: false
+
+myVector = np.array([1, 2, 3])
+myMatrix = np.array([
+  [4, 5], #row 1
+  [6, 7], #row 2
+  [8, 9]  #row 3
+])
+
+print("My vector is: ", myVector)
+print("My matrix is: ", myMatrix)
+```
+
+:::
+
+:::{.column width="45%"}
+
+:::{.fragment}
+
+```{python}
+#| echo: false
+#| eval: true
+
+myVector = np.array([1, 2, 3])
+myMatrix = np.array([
+  [4, 5], #row 1
+  [6, 7], #row 2
+  [8, 9]  #row 3
+])
+
+print("My vector is: ", myVector)
+print("My matrix is: ", myMatrix)
+```
+
+:::
+
+:::
+
+::::
+
+## Arithmetic with `{numpy}` Arrays
+
+. . . 
+
+Arithmetic on arrays works the way you would want it to work, mathematically.
+
+. . . 
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+```{python}
+#| echo: true
+#| eval: false
+
+myVec_v1 = np.array([1, 2, 3])
+myVec_v2 = np.array([4, 5, 6])
+
+print(myVec_v1 + myVec_v2)
+```
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+```{python}
+#| echo: false
+#| eval: true
+
+myVec_v1 = np.array([1, 2, 3])
+myVec_v2 = np.array([4, 5, 6])
+
+print(myVec_v1 + myVec_v2)
+```
+
+:::
+
+:::
+
+::::
+
+. . . 
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+```{python}
+#| echo: true
+#| eval: false
+
+myMatrix_A = np.array([
+  [4, 5],
+  [6, 7],
+  [8, 9]
+  ])
+
+print(5*myMatrix_A)
+```
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+```{python}
+#| echo: false
+#| eval: true
+
+myMatrix_A = np.array([
+  [4, 5],
+  [6, 7],
+  [8, 9]
+  ])
+
+print(5*myMatrix_A)
+```
+
+:::
+
+:::
+
+::::
+
+. . . 
+
+Developers also build in some conveniences which aren't mathematically meaningful, but are colloquially understandable and useful!
+
+. . .
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+```{python}
+#| echo: true
+#| eval: false
+
+myVec_v3 = myVec_v1 + 7
+
+print(myVec_v3)
+```
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+```{python}
+#| echo: false
+#| eval: true
+
+myVec_v3 = myVec_v1 + 7
+
+print(myVec_v3)
+```
+
+:::
+
+:::
+
+::::
+
+## Programming Paradigm: Loops
+
+. . . 
+
+Computers are excellent at following instructions and performing tedious tasks. 
+
+. . .
+
+It is often the case where we'll want to perform the same set of instructions over and over again. 
+
+. . .
+
+If we find ourselves in this situation, *loops* will be helpful. 
+
+. . .
+
+We'll encounter two types of loop in our course.
+
++ A `for` loop is useful when we know ahead of time how many iterations our instructions must be run for.
++ A `while` loop can be used when we would like to run a set of instructions over and over again until a condition is no longer satisfied.  
+
+  + Be careful with these `while` loops though -- using the wrong stopping condition can lead to *infinite loops* or unnecessarily lengthy procedures.
+  
+## Programming Paradigm: Loops
+
+:::{.nonincremental}
+
++ A `for` loop is useful when we know ahead of time how many iterations our instructions must be run for.
++ A `while` loop can be used when we would like to run a set of instructions over and over again until a condition is no longer satisfied.  
+
+  + Be careful with these `while` loops though -- using the wrong stopping condition can lead to *infinite loops* or unnecessarily lengthy procedures.
+
+:::
+
+. . . 
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+```{python}
+#| echo: true
+#| eval: false
+
+#A for loop
+my_sum = 0
+for i in range(6):
+  my_sum = my_sum + i
+  print("i is ", i, " and my_sum is ", my_sum)
+
+
+print("The total sum is: ", my_sum)
+```
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+```{python}
+#| echo: false
+#| eval: true
+
+#A for loop
+my_sum = 0
+for i in range(6):
+  my_sum = my_sum + i
+  print("i is ", i, " and my_sum is ", my_sum)
+
+
+print("The total sum is: ", my_sum)
+```
+
+:::
+
+:::
+
+::::
+
+## Programming Paradigm: Loops
+
+:::{.nonincremental}
+
++ A `for` loop is useful when we know ahead of time how many iterations our instructions must be run for.
++ A `while` loop can be used when we would like to run a set of instructions over and over again until a condition is no longer satisfied.  
+
+  + Be careful with these `while` loops though -- using the wrong stopping condition can lead to *infinite loops* or unnecessarily lengthy procedures.
+
+:::
+
+. . .
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+```{python}
+#| echo: true
+#| eval: false
+
+#A while loop
+x = 1
+while x <= 100:
+  x = 2*x
+  print(x)
+
+print("The final value of x is: ", x)
+```
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+```{python}
+#| echo: false
+#| eval: true
+
+#A while loop
+x = 1
+while x <= 100:
+  x = 2*x
+  print(x)
+
+print("The final value of x is: ", x)
+```
+
+:::
+
+:::
+
+::::
+
+## Programming Paradigm: Conditional Statements
+
+. . .
+
+Another useful way to control your code is with the use of conditional statements. 
+
+. . .
+
+This allows for code to be executed if a condition is true, and perhaps other (or no) code to be executed if it is false. 
+
+. . .
+
+We use `if`, `elif`, and `else` statements for this. 
+
+. . .
+
+For example, look at the following `for` loop which will print out values of `x` between $0$ and $100$ which are divisible by $13$.
+
+. . .
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+```{python}
+#| echo: true
+#| eval: false
+
+x = 0
+
+for x in range(101):
+  if x % 13 == 0:
+    print(x)
+```
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+```{python}
+#| echo: false
+#| eval: true
+
+x = 0
+
+for x in range(101):
+  if x % 13 == 0:
+    print(x)
+```
+
+:::
+
+
+:::
+
+::::
+
+## Programming Paradigm: Functions
+
+. . .
+
+It will often be the case that we'd like to write functions in our course. 
+
+. . .
+
+Functions begin with the `def` keyword and end with a `return` statement. 
+
+. . . 
+
+Consider the following silly function which multiplies two numbers together.
+
+. . . 
+
+```{python}
+#| echo: true
+
+def product(a, b):
+  #Function instructions
+  myProduct = a*b
+  
+  #What the function results in
+  return myProduct
+```
+
+. . . 
+
+Now that the `product()` function has been defined, we can use it!
+
+. . .
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+```{python}
+#| echo: true
+#| eval: false
+
+product(3, 6)
+```
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+```{python}
+#| echo: false
+#| eval: true
+
+product(3, 6)
+```
+
+:::
+
+:::
+
+::::
+
+. . . 
+
+Below is a perhaps more useful application.
+
+. . . 
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+```{python}
+#| echo: true
+
+def f(x):
+  #my_output = -3*(x**2) -5*x + 8
+  term1 = -3*x**2
+  term2 = -5*x
+  my_output = term1 + term2 + 8
+  return my_output
+```
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+```{python}
+#| echo: true
+
+f(4)
+```
+
+:::
+
+:::
+
+::::
+
+## Summary and a Motivating Example
+
+<div style="font-size:18pt">
+
++ In this notebook, you learned some basics about Python and the Jupyter Notebook environment. 
++ I expect (and you should, too) that you'll come back here often over the next couple of weeks as you continue to gain familiarity with Python. 
++ In particular, you should feel free to copy/paste/edit from this notebook, especially when you are constructing functions and/or loops.
+
+:::{.fragment}
+
+We'll leave this notebook with a simple example which will motivate our study for the remainder of the semester. 
+
+:::
+
+:::{.fragment}
+
+In Python, and in many computing languages, we can use a double equal (`==`) operator to test equality. We can also use the usual inequalities to test sizes of numbers.
+
+:::
+
+</div>
+
+. . .
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+```{python}
+#| echo: true
+#| eval: false
+
+print(7 >= 3)
+print(3.5 < 3)
+print(5 == 3 + 2)
+```
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+```{python}
+#| echo: false
+#| eval: true
+
+print(7 >= 3)
+print(3.5 < 3)
+print(5 == 3 + 2)
+```
+
+:::
+
+:::
+
+::::
+
+:::{.fragment}
+
+<div style="font-size:18pt">
+
+Just once more, for good measure...
+
+</div>
+
+:::
+
+. . .
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+```{python}
+#| echo: true
+#| eval: false
+
+print(0.1 + 0.2 == 0.3)
+```
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+```{python}
+#| echo: false
+#| eval: true
+
+print(0.1 + 0.2 == 0.3)
+```
+
+:::
+
+:::
+
+::::
+
+. . . 
+
+<div style="font-size:18pt">
+
+...and everything had been going so well -- we'll investigate this next time!
+
+</div>
