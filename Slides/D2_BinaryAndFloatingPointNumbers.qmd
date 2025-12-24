@@ -1,0 +1,695 @@
+---
+title: "MAT 370: Binary and Floating Point Arithmetic"
+author: Dr. Gilbert
+format: 
+  revealjs:
+    smaller: true
+date: today
+date-format: long
+theme: serif
+incremental: true
+execute: 
+  error: true
+---
+
+```{r global-options, include=FALSE}
+library(tidyverse)
+library(reticulate)
+
+theme_set(theme_bw(base_size = 20))
+```
+
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+```
+
+```{css}
+code.sourceCode {
+  font-size: 1.3em;
+  /* or try font-size: xx-large; */
+}
+
+a {
+  color: purple;
+}
+
+a:link {
+  color: purple;
+}
+
+a:visited {
+  color: purple;
+}
+```
+
+## A Reminder From Last Time
+
+. . . 
+
+We concluded our *Day 1* discussion by seeing that Python does not recognize that `0.1 + 0.2` is equal to `0.3`. 
+
+. . . 
+
+We certainly recognize the equality, but why doesn't Python?
+
+. . . 
+
+Let's start with why it matters...
+
+:::{.figure}
+
+<div style="display: flex; justify-content: center;">
+  <div id="player"></div>
+</div>
+
+<script>
+  let player;
+  let stopTime = 276; // 4 minutes 35 seconds
+  let intervalId;
+
+  function onYouTubeIframeAPIReady() {
+    player = new YT.Player('player', {
+      videoId: '77YlwVKFp_4',
+      playerVars: {
+        start: 0
+      },
+      events: {
+        onReady: onPlayerReady,
+        onStateChange: onPlayerStateChange 
+      }
+    });
+  }
+
+  function onPlayerReady(event) {
+    event.target.setPlaybackRate(1.5);
+  }
+
+  function onPlayerStateChange(event) {
+    if (event.data === YT.PlayerState.PLAYING) {
+      // Clear any existing interval to avoid duplicates
+      clearInterval(intervalId);
+
+      // Check every 200ms whether to pause
+      intervalId = setInterval(() => {
+        if (player.getCurrentTime() >= stopTime) {
+          player.pauseVideo();
+          clearInterval(intervalId);
+        }
+      }, 200);
+    } else {
+      // Stop checking if video is paused or ended
+      clearInterval(intervalId);
+    }
+  }
+</script>
+
+<script src="https://www.youtube.com/iframe_api"></script>
+
+:::
+
+
+▶ Video from the [Rocket Surgery YouTube Channel](https://www.youtube.com/@rocketsurgerysci).
+
+## Binary Representations of Integers
+
+<div style="font-size:16pt">
+
++ Humans evolved to use a base-10 number system simply because we have 10 fingers and 10 toes to count on. 
++ Computers don't have fingers or toes and can only "think" in terms of electrical pulses. 
+
+    + For this reason, they work in binary -- you can think of this as $0$ indicating a low voltage value and $1$ indicating a high voltage value.
+
++ Since computers work in *binary*, they can't natively understand our base-10 number system. 
++ All information stored in a computer must be stored in binary. 
+
+    + Luckily, all numbers have a corresponding binary representation. 
+
+:::{.fragment}
+    
+Below we show how we can use the *Euclidean Algorithm* to convert an integer ($84$) into its binary representation.
+
+:::
+
+::::{.columns}
+
+:::{.column width="40%"}
+
+:::{.fragment}
+
+\begin{align*} 84 &= 2\left(42\right) + 0
+\end{align*}
+
+:::
+
+:::
+
+:::{.column width="60%"}
+
+
+:::
+
+::::
+
+</div>
+
+## Binary Representations of Integers
+
+<div style="font-size:16pt">
+
+:::{.nonincremental}
+
++ Humans evolved to use a base-10 number system simply because we have 10 fingers and 10 toes to count on. 
++ Computers don't have fingers or toes and can only "think" in terms of electrical pulses. 
+
+    + For this reason, they work in binary -- you can think of this as $0$ indicating a low voltage value and $1$ indicating a high voltage value.
+
++ Since computers work in *binary*, they can't natively understand our base-10 number system. 
++ All information stored in a computer must be stored in binary. 
+
+    + Luckily, all numbers have a corresponding binary representation. 
+
+:::
+
+Below we show how we can use the *Euclidean Algorithm* to convert an integer ($84$) into its binary representation.
+
+::::{.columns}
+
+:::{.column width="40%"}
+
+\begin{align*} 84 &= 2\left(42\right) + 0\\
+42 &= 2\left(21\right) + 0
+\end{align*}
+
+:::
+
+:::{.column width="60%"}
+
+
+:::
+
+::::
+
+</div>
+
+## Binary Representations of Integers
+
+<div style="font-size:16pt">
+
+:::{.nonincremental}
+
++ Humans evolved to use a base-10 number system simply because we have 10 fingers and 10 toes to count on. 
++ Computers don't have fingers or toes and can only "think" in terms of electrical pulses. 
+
+    + For this reason, they work in binary -- you can think of this as $0$ indicating a low voltage value and $1$ indicating a high voltage value.
+
++ Since computers work in *binary*, they can't natively understand our base-10 number system. 
++ All information stored in a computer must be stored in binary. 
+
+    + Luckily, all numbers have a corresponding binary representation. 
+
+:::
+
+Below we show how we can use the *Euclidean Algorithm* to convert an integer ($84$) into its binary representation.
+
+::::{.columns}
+
+:::{.column width="40%"}
+
+\begin{align*} 84 &= 2\left(42\right) + 0\\
+42 &= 2\left(21\right) + 0\\
+21 &= 2\left(10\right) + 1
+\end{align*}
+
+:::
+
+:::{.column width="60%"}
+
+
+:::
+
+::::
+
+</div>
+
+## Binary Representations of Integers
+
+<div style="font-size:16pt">
+
+:::{.nonincremental}
+
++ Humans evolved to use a base-10 number system simply because we have 10 fingers and 10 toes to count on. 
++ Computers don't have fingers or toes and can only "think" in terms of electrical pulses. 
+
+    + For this reason, they work in binary -- you can think of this as $0$ indicating a low voltage value and $1$ indicating a high voltage value.
+
++ Since computers work in *binary*, they can't natively understand our base-10 number system. 
++ All information stored in a computer must be stored in binary. 
+
+    + Luckily, all numbers have a corresponding binary representation. 
+
+:::
+
+Below we show how we can use the *Euclidean Algorithm* to convert an integer ($84$) into its binary representation.
+
+::::{.columns}
+
+:::{.column width="40%"}
+
+\begin{align*} 84 &= 2\left(42\right) + 0\\
+42 &= 2\left(21\right) + 0\\
+21 &= 2\left(10\right) + 1\\
+10 &= 2\left(5\right) + 1
+\end{align*}
+
+:::
+
+:::{.column width="60%"}
+
+
+:::
+
+::::
+
+</div>
+
+## Binary Representations of Integers
+
+<div style="font-size:16pt">
+
+:::{.nonincremental}
+
++ Humans evolved to use a base-10 number system simply because we have 10 fingers and 10 toes to count on. 
++ Computers don't have fingers or toes and can only "think" in terms of electrical pulses. 
+
+    + For this reason, they work in binary -- you can think of this as $0$ indicating a low voltage value and $1$ indicating a high voltage value.
+
++ Since computers work in *binary*, they can't natively understand our base-10 number system. 
++ All information stored in a computer must be stored in binary. 
+
+    + Luckily, all numbers have a corresponding binary representation. 
+
+:::
+
+Below we show how we can use the *Euclidean Algorithm* to convert an integer ($84$) into its binary representation.
+
+::::{.columns}
+
+:::{.column width="40%"}
+
+\begin{align*} 84 &= 2\left(42\right) + 0\\
+42 &= 2\left(21\right) + 0\\
+21 &= 2\left(10\right) + 1\\
+10 &= 2\left(5\right) + 1\\
+5 &= 2\left(2\right) + 1
+\end{align*}
+
+:::
+
+:::{.column width="60%"}
+
+
+:::
+
+::::
+
+</div>
+
+## Binary Representations of Integers
+
+<div style="font-size:16pt">
+
+:::{.nonincremental}
+
++ Humans evolved to use a base-10 number system simply because we have 10 fingers and 10 toes to count on. 
++ Computers don't have fingers or toes and can only "think" in terms of electrical pulses. 
+
+    + For this reason, they work in binary -- you can think of this as $0$ indicating a low voltage value and $1$ indicating a high voltage value.
+
++ Since computers work in *binary*, they can't natively understand our base-10 number system. 
++ All information stored in a computer must be stored in binary. 
+
+    + Luckily, all numbers have a corresponding binary representation. 
+
+:::
+
+Below we show how we can use the *Euclidean Algorithm* to convert an integer ($84$) into its binary representation.
+
+::::{.columns}
+
+:::{.column width="40%"}
+
+\begin{align*} 84 &= 2\left(42\right) + 0\\
+42 &= 2\left(21\right) + 0\\
+21 &= 2\left(10\right) + 1\\
+10 &= 2\left(5\right) + 1\\
+5 &= 2\left(2\right) + 1\\
+2 &= 2\left(1\right) + 0
+\end{align*}
+
+:::
+
+:::{.column width="60%"}
+
+
+:::
+
+::::
+
+</div>
+
+## Binary Representations of Integers
+
+<div style="font-size:16pt">
+
+:::{.nonincremental}
+
++ Humans evolved to use a base-10 number system simply because we have 10 fingers and 10 toes to count on. 
++ Computers don't have fingers or toes and can only "think" in terms of electrical pulses. 
+
+    + For this reason, they work in binary -- you can think of this as $0$ indicating a low voltage value and $1$ indicating a high voltage value.
+
++ Since computers work in *binary*, they can't natively understand our base-10 number system. 
++ All information stored in a computer must be stored in binary. 
+
+    + Luckily, all numbers have a corresponding binary representation. 
+
+Below we show how we can use the *Euclidean Algorithm* to convert an integer ($84$) into its binary representation.
+
+:::
+
+::::{.columns}
+
+:::{.column width="40%"}
+
+\begin{align*} 84 &= 2\left(42\right) + 0\\
+42 &= 2\left(21\right) + 0\\
+21 &= 2\left(10\right) + 1\\
+10 &= 2\left(5\right) + 1\\
+5 &= 2\left(2\right) + 1\\
+2 &= 2\left(1\right) + 0\\
+1 &= 2\left(0\right) + 1
+\end{align*}
+
+:::
+
+:::{.column width="60%"}
+
+:::{.fragment}
+
+Reading the remainders from bottom to top, we find that $\left(84\right)_{10} = \left(1011100\right)_{2}$. 
+
+:::
+
+:::{.fragment}
+
+Each *bi*nary dig*it* is referred to as a *bit*, and it is common to consider collections of $8$ bits together -- known as a *byte*. 
+
+:::
+
+:::{.fragment}
+
+That is, we would more commonly write $\left(01011100\right)_{2}$ as the binary representation of $84$.
+
+:::
+
+:::
+
+::::
+
+:::{.fragment}
+
+**Example:** Use the *Euclidean Algorithm* to find the binary representation of $\left(118\right)_{10}$.
+
+:::
+
+</div>
+
+## Binary Representations of Real Numbers
+
+<div style="font-size:16pt">
+
+:::{.fragment}
+
+There is more to the story with binary representations of integers. 
+
+:::
+
++ For example, there are several different representation schemes allowing for representation of positive, $0$, and negative integers. 
+
+  + Three popular schemes are *sign-and-magnitude*, *ones-complement*, and *twos-complement*.
+
+:::{.fragment}
+
+We'll be more interested in *floating point* numbers than in integers in our course, so we'll leave our discussion on integer representations here.
+
+:::
+
+:::{.fragment}
+
+It is possible to represent non-integer values using binary. 
+
+:::
+
+:::{.fragment}
+
+For example, $\frac{1}{8} = 0.125$ can be represented as $\left(0.001\right)_{2}$ with the justification shown below.
+
+:::
+
+::::{.columns}
+
+:::{.column width="40%"}
+
+:::{.fragment}
+
+\begin{align*} 2\left(0.125\right) &= 0.25 + 0
+\end{align*}
+
+:::
+
+:::
+
+:::{.column width="60%"}
+
+:::
+
+::::
+
+</div>
+
+## Binary Representations of Real Numbers
+
+<div style="font-size:16pt">
+
+There is more to the story with binary representations of integers. 
+
+:::{.nonincremental}
+
++ For example, there are several different representation schemes allowing for representation of positive, $0$, and negative integers. 
+
+  + Three popular schemes are *sign-and-magnitude*, *ones-complement*, and *twos-complement*.
+
+:::
+
+We'll be more interested in *floating point* numbers than in integers in our course, so we'll leave our discussion on integer representations here.
+
+It is possible to represent non-integer values using binary. 
+
+For example, $\frac{1}{8} = 0.125$ can be represented as $\left(0.001\right)_{2}$ with the justification shown below.
+
+::::{.columns}
+
+:::{.column width="40%"}
+
+\begin{align*} 2\left(0.125\right) &= 0.25 + 0\\
+2\left(0.25\right) &= 0.5 + 0
+\end{align*}
+
+:::
+
+:::{.column width="60%"}
+
+:::
+
+::::
+
+</div>
+
+## Binary Representations of Real Numbers
+
+<div style="font-size:16pt">
+
+There is more to the story with binary representations of integers. 
+
+:::{.nonincremental}
+
++ For example, there are several different representation schemes allowing for representation of positive, $0$, and negative integers. 
+
+  + Three popular schemes are *sign-and-magnitude*, *ones-complement*, and *twos-complement*.
+
+:::
+
+We'll be more interested in *floating point* numbers than in integers in our course, so we'll leave our discussion on integer representations here.
+
+It is possible to represent non-integer values using binary. 
+
+For example, $\frac{1}{8} = 0.125$ can be represented as $\left(0.001\right)_{2}$ with the justification shown below.
+
+::::{.columns}
+
+:::{.column width="40%"}
+
+\begin{align*} 2\left(0.125\right) &= 0.25 + 0\\
+2\left(0.25\right) &= 0.5 + 0\\
+2\left(0.5\right) &= 0 + 1
+\end{align*}
+
+:::
+
+:::{.column width="60%"}
+
+:::{.fragment}
+
+Collecting the integer components from top to bottom, we see that $0.125 = \left(0.001\right)_{2}$.
+
+:::
+
+:::
+
+::::
+
+:::{.fragment}
+
+Let's try one more.
+
+:::
+
+:::{.fragment}
+
+**Example:** Convert $53.7$ to binary.
+
+:::
+
+:::{.fragment}
+
+**Important Takeaway:** Notice that the decimal part (`0.7`) is repeating and non-terminating.
+
+::::
+
+</div>
+
+## Floating Point Representations
+
+:::{.fragment}
+
+Computer-based implementations of number systems don't actually use pure binary.
+
+:::
+
+:::{.fragment}
+
+Such a scheme would be too limited -- the scale at which we could represent numbers would be small.
+
+:::
+
+:::{.fragment}
+
+The standard for representing floating point numbers is identified in [IEEE 754](https://youtu.be/RuKkePyo9zk)
+
+:::
+
++ Floating point numbers can be represented with *single precision* (32-bits) or *double precision* (64-bits). 
++ A floating point representation consists of a *mantissa* (significant digits) and an *exponent* (magnitude). 
+
+## Single Precision Floating Points
+
+:::{.fragment}
+
+Single precision uses 32-bits to store numbers. Those bits include...
+
+:::
+
++ One sign bit (0 is positive, 1 is negative)
++ An 8-bit *exponent* 
+
+    + A bias of $127$ is subtracted from the exponent to allow for exponents ranging from $-126$ to $127$). 
+    + An exponent of $0$ is reserved for special cases such as $0$ or `NaN`.
+
++ A 23-bit *mantissa* which determines the precision of the number
+
+  + The mantissa is normalized so that the leftmost bit is always a $1$ and there is only a single $1$ to the left of the radix. This allows for a free extra bit of precision since that $1$ does not need to be stored.
+    
+:::{.fragment}
+
+The range for *single-precision* floats is approximately between $\pm 1.2\times 10^{-38}$ and $\pm 3.4\times 10^{38}$ with a precision of around $7$ decimal places.
+
+:::
+
+## Double Precision Floating Points
+
+Double precision uses 64-bits, including
+
++ One sign bit.
++ An 11-bit *exponent* is used .
+
+    + A bias of $1023$ is subtracted from the exponent, allowing for exponents between $-1022$ and $1023$.
+    + Like with single precision, an exponent of $0$ is reserved for $0$ or `NaN` values.
+    
++ A 52-bit *mantissa* determines the precision of the number.
+
+    + Again, the mantissa is normalized to gain an extra bit of precision.
+
+:::{.fragment}
+
+Similarly, the range for *double-precision* floats is approximately between $\pm 2.2\times 10^{-308}$ and $\pm 1.8\times 10^{308}$.
+
+:::
+
+## An Example: The Float $5$
+
+:::{.fragment}
+
+**Example:** Computers represent the integer $5$ in double precision as follows:
+
+:::
+
+
++ Notice that $5 = \left(101\right)_{2}$.
++ We can represent $5$ in double precision as $1.\underbrace{0100\cdots 0}_{\text{52 bits}}\times 2^2$ or $1.\underbrace{0100\cdots 0}_{\text{52 bits}}\times 2^\underbrace{100\cdots 01}_{\text{11 bits}}$ 
+
+    + Remember that the exponent has a bias adjustment of $1023$. 
+
++ According to IEEE 754, the number $5$ is represented in double-precision by
+
+:::{.fragment}
+
+$$\overbrace{0}^{\text{sign}}\underbrace{100\cdots 01}_{\text{Exponent, 11 bits}}\overbrace{0100\cdots 0}^{\text{mantissa, 52 bits}}$$
+
+:::
+
+## Closing Comments
+
+:::{.fragment}
+
+**Tieing Up a Loose End:** The real numbers $0.1$, $0.2$, and $0.3$ are all non-terminating decimals in binary. This is the reason that `0.1 + 0.2 != 0.3` -- the rounding errors in the floating point representations are the issue!
+
+:::
+
+:::{.fragment}
+
+**Important Concept (Machine Epsilon):** Machine epsilon is the smallest size step you can take from the number $1$. In double precision, that number is $2^{-53}$ since the *mantissa* contains $52$ precision bits, plus the extra precision due to normalization.
+
+:::
+
+:::{.fragment}
+
+*Question:* What is machine epsilon for a single precision float?
+
+:::
+
+:::{.fragment}
+
+***Next Time:*** A Crash Course in Numerical Python.
+
+:::
