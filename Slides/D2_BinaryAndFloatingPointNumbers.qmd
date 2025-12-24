@@ -693,3 +693,4 @@ $$\overbrace{0}^{\text{sign}}\underbrace{100\cdots 01}_{\text{Exponent, 11 bits}
 ***Next Time:*** A Crash Course in Numerical Python.
 
 :::
+

@@ -1064,10 +1064,11 @@ y + " " + z
 
 ## Variable Naming Requirements and Conventions
 
+. . . 
+
 <div style="font-size:18pt">
 
-+ Variable names cannot begin with a number
-+ Variable names cannot contain spaces
+Variable names cannot begin with a number or contain spaces
 
 </div>
 
