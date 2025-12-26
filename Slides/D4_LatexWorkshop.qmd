@@ -1,0 +1,517 @@
+---
+title: "MAT 370: $\LaTeX$ Workshop"
+author: Dr. Gilbert
+format: 
+  revealjs:
+    smaller: true
+date: today
+date-format: long
+theme: serif
+incremental: true
+execute: 
+  error: true
+---
+
+```{r global-options, include=FALSE}
+library(tidyverse)
+library(reticulate)
+
+theme_set(theme_bw(base_size = 20))
+```
+
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+```
+
+```{css}
+code.sourceCode {
+  font-size: 1.3em;
+  /* or try font-size: xx-large; */
+}
+
+a {
+  color: purple;
+}
+
+a:link {
+  color: purple;
+}
+
+a:visited {
+  color: purple;
+}
+```
+
+## Purpose
+
+:::{.fragment}
+
+We'll be making heavy use of the Jupyter Notebook environment via Google Colab in this course.
+
+:::
+
+:::{.fragment}
+
+I like to think of these notebooks as permitting us to mix three things.
+
+:::
+
++ Free-form text via markdown/text cells.
++ Formatting of mathematics via $\LaTeX$ and MathJax.
++ Executable Python code blocks and their corresponding output.
+
+
+:::{.fragment}
+
+Today's discussion will focus on typesettng with $\LaTeX$ but will also give us one more opportunity to gain comfort with all three of these before we move into our Numerical Methods course content.
+
+:::
+
+:::{.fragment}
+
+$\bigstar$ You shouldn't expect to feel fully confident, especially in using Python, after working through this content. Please know that I don't expect that from you either. You'll continue to gain comfort as we move through the semester -- please ask for help when you need it. Slack is great for that! $\bigstar$
+
+:::
+
+## Working Through Today's Content
+
+<br/>
+<br/>
+
+:::{.fragment}
+
+Navigate to your Google Drive and open a new Colab notebook.
+
+:::
+
+## Text Cells
+
+:::{.fragment}
+
+You can write anything you like in text cells. 
+
+:::
+
++ There is, unfortunately, no spell-check in these text cells.
++ To split text into paragraphs, leave an empty line between two blocks of text in your text cell.
++ You can make use of the formatting buttons, or of markdown syntax and basic HTML if you know any.
++ To finalize/render a text cell, you can use `Shift+Enter`.
++ To update a text cell, you can double-click inside of it to open up the editor.
+
+:::{.fragment}
+
+Text cells are the least frustrating component of the notebook environment because they "just work" no matter what you've written in them.
+
+:::
+
+:::{.fragment}
+
+*Disclaimer.* Adding $\LaTeX$ or images can complicate this a bit.
+
+:::
+
+## Code Cells
+
+:::{.fragment}
+
+Code cells are where you can write and execute Python$^*$ code.
+
+:::
+
++ To execute your code cell, you can use `Shift+Enter`.
++ If/when you write broken code, an error traceback will be printed out below the code cell. 
+
+    + The most informative portion of the traceback is generally the last line.
+    + Colab will generally underline the offending section(s) of code in red.
+    + It is important to note that code cells are generally "aware" of modules, variables, methods, routines, etc. that have been created as part of *previous* code cells, but not of objects created in later code cells.
+    
+        + This is true as long as those code cells have been run in the current session.
+
+    + Restarting your session (`Runtime -> Restart Session`) and then running your notebook from the top down every once in a while will keep you aware of any upstream/downstream issues you have.
+
+## Typing Mathematics with $\LaTeX$
+
+:::{.fragment}
+
+We'll often have the need to type mathematics as part of our explanations/solutions. 
+
+:::
+
+:::{.fragment} 
+
+$\bigstar$ For now, you should know that mathematics goes *between* dollar signs (\$).
+
+:::
+
+:::{.fragment}
+
+We'll start today's discussion with an overview of $\LaTeX$ since we've seen both text and code cells previously.
+
+:::
+
+:::{.fragment}
+
+*Note.* If you haven't used $\LaTeX$ before, then what appears below is new and perhaps overwhelming. I'd like you to type up the mathematics for our course, but you'll be able to collaborate with your favorite language model to obtain $\LaTeX$ commands if necessary.
+
+:::
+
+
+## Working with $\LaTeX$
+
+<div style="font-size:18pt">
+
+:::{.fragment}
+
+$\LaTeX$ is a very commonly used markup language in mathematics and the sciences -- it is how we'll format mathematics. We'll begin to get familiar with $\LaTeX$ below.
+
+:::
+
+:::{.fragment}
+
+Inside of notebook environments, you can write $\LaTeX$ in any text cell.
+
+:::
+
++ Any math type should go between dollar signs (\$).  
+  + For example, $e^{i\pi} + 1 = 0$ (written as \$e^{i\\pi} + 1 = 0\$) is one of the most beautiful identities in all of mathematics!
++ If your text $starts formatting like this, then you've forgotten a dollar sign somewhere.$
++ If you have a mathematical statement that formats like this: $\cos\left(e^{i\theta})$, then you have mismatches between opening and closing parentheses or brackets. This particular issue will happen quite often -- I'll help you troubleshoot and your favorite LLM will catch it quickly as well.
++ If you'd like to include a symbol, but you don't know the code for it, check [detexify](https://detexify.kirelabs.org/classify.html) or your favorite LLM (and you can also ask me, of course).
+
+:::{.fragment}
+
+The following slides contain some tasks to help you gain familiarity.
+
+:::
+
+</div>
+
+## Some Basic $\LaTeX$
+
+:::{.fragment}
+
+**Task 1:** Put a dollar sign before and after the function f(x) = x^2 - 4 in this markdown cell to format the mathematics correctly.
+
+:::
+
+:::{.fragment}
+
+**Task 2:** We'll sometimes want to utilize fractions, we can do this using \frac{numerator}{denominator}. Add the required dollar signs to format the rational function r(x) = (x + 3)/(x - 5)} as math type. Use \\frac{}{} to further format the function.
+
+:::
+
+## Aligned Environments and Equation Solving
+
+:::{.fragment data-fragment-index=1}
+
+Here's an example of some steps to solve the equation $2x - 8 = 14$.
+
+:::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment data-fragment-index=3}
+
+```{latex}
+#| echo: true
+#| eval: false
+
+\begin{align}
+2x - 8 &= 14\\
+\implies 2x &= 22\\
+\implies x &= 11
+\end{align}
+```
+
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment data-fragment-index=2}
+
+\begin{align} 2x - 8 &= 14\\
+\implies 2x &= 22\\
+\implies x &= 11
+\end{align}
+
+:::
+
+:::
+
+::::
+
+:::{.fragment data-fragment-index=4}
+
+In the aligned environment, the characters to the right of the ampersand (&) are vertically aligned with one another.
+
+:::
+
+:::{.fragment data-fragment-index=5}
+
+*Expectation.* You'll sometimes find use for aligned equations as you are showing steps in solving problems. In these cases, you'll likely copy an aligned environment that I've constructed, paste it into your notebook, and then edit it to fit your context. 
+
+:::
+
+:::{.fragment data-fragment-index=6}
+
+**Task 3:** Try typing your own step-by-step solution to the $\frac{3x - 5}{4} = 10$.
+
+:::
+
+## Arrays: Systems, Matrices, and Vectors
+
+<div style="font-size:20pt">
+
+:::{.fragment data-fragment-index=1}
+
+We'll be working with systems of equations, matrices, and vectors often in this course. 
+
+:::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment data-fragment-index=3}
+
+```{latex}
+#| echo: true
+#| eval: false
+
+%System
+$\left\{\begin{array}{rcr} 
+2x_1 + 3x_2 + 8x_3 & = & 0\\ 
+-4x_1 + x_2 - 2x_3 & = & 0
+\end{array}\right.$
+```
+
+:::
+
+:::{.fragment data-fragment-index=4}
+
+```{latex}
+#| echo: true
+#| eval: false
+
+%Matrix
+$\left[\begin{array}{rrr} 
+2 & 3 & 8\\ 
+-4 & 1 & -2
+\end{array}\right]$
+```
+
+:::
+
+:::{.fragment data-fragment-index=5}
+
+```{latex}
+#| echo: true
+#| eval: false
+
+%Vector
+$\left[\begin{array}{r} 0\\
+0\end{array}\right]
+```
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment data-fragment-index=2}
+
+For example, the system $\left\{\begin{array}{rcr} 2x_1 + 3x_2 + 8x_3 & = & 0\\ -4x_1 + x_2 - 2x_3 & = & 0\end{array}\right.$ corresponds to the coefficient matrix $\left[\begin{array}{rrr} 2 & 3 & 8\\ -4 & 1 & -2\end{array}\right]$ and constant vector $\left[\begin{array}{r} 0\\ 0\end{array}\right]$. 
+
+:::
+
+:::
+
+::::
+
+:::{.fragment}
+
+*Expectation.* While we'll find use for these objects often, you'll likely copy/paste an old system/matrix/vector and edit it for your needs rather than creating it from scratch.
+
+:::
+
+</div>
+
+## Things to Note
+
+<div style="font-size:18pt">
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+```{latex}
+#| echo: true
+#| eval: false
+
+%System
+$\left\{\begin{array}{rcr} 
+2x_1 + 3x_2 + 8x_3 & = & 0\\ 
+-4x_1 + x_2 - 2x_3 & = & 0
+\end{array}\right.$
+```
+
+```{latex}
+#| echo: true
+#| eval: false
+
+%Matrix
+$\left[\begin{array}{rrr} 
+2 & 3 & 8\\ 
+-4 & 1 & -2
+\end{array}\right]$
+```
+
+```{latex}
+#| echo: true
+#| eval: false
+
+%Vector
+$\left[\begin{array}{r} 0\\
+0\end{array}\right]
+```
+
+:::
+
+:::{.column width="50%"}
+
++ If you want the curly brace to show up, then you'll need to escape that special character with a backslash.
++ Every `\left` bracket must have a corresponding `\right` bracket (if you don't want the right bracket to show up, then you can just use a period, like `\right.`).
+
+:::
+
+::::
+
++ The array environment allows you to construct aligned columns.
+
+  + The number of columns is determined by the number of characters in the curly braces after `\begin{array}`.
+  + The `r` character indicates that a column should be *right*-aligned, while the `c` and `l` characters indicated *center*- and *left*-alignment, respectively.
+  + Columns in an array are separated by the ampersand (`&`).
+  + Rows in an array are separated using the double backslash (`\\`)
+
+</div>
+
+## Things to Note
+
+<div style="font-size:18pt">
+
+:::::{.nonincremental}
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+```{latex}
+#| echo: true
+#| eval: false
+
+%System
+$\left\{\begin{array}{rcr} 
+2x_1 + 3x_2 + 8x_3 & = & 0\\ 
+-4x_1 + x_2 - 2x_3 & = & 0
+\end{array}\right.$
+```
+
+```{latex}
+#| echo: true
+#| eval: false
+
+%Matrix
+$\left[\begin{array}{rrr} 
+2 & 3 & 8\\ 
+-4 & 1 & -2
+\end{array}\right]$
+```
+
+```{latex}
+#| echo: true
+#| eval: false
+
+%Vector
+$\left[\begin{array}{r} 0\\
+0\end{array}\right]
+```
+
+:::
+
+:::{.column width="50%"}
+
++ If you want the curly brace to show up, then you'll need to escape that special character with a backslash.
++ Every `\left` bracket must have a corresponding `\right` bracket (if you don't want the right bracket to show up, then you can just use a period, like `\right.`).
+
+**Task 4:** Define a $5\times 4$ matrix below, use any entries you like.
+
+:::
+
+::::
+
++ The array environment allows you to construct aligned columns.
+
+  + The number of columns is determined by the number of characters in the curly braces after `\begin{array}`.
+  + The `r` character indicates that a column should be *right*-aligned, while the `c` and `l` characters indicated *center*- and *left*-alignment, respectively.
+  + Columns in an array are separated by the ampersand (`&`).
+  + Rows in an array are separated using the double backslash (`\\`)
+
+:::::
+
+</div>
+
+## Putting Everything Together
+
+<div style="font-size:20pt">
+
+:::{.fragment}
+
+Over the past few class meetings, we've gotten more familiar with the Google Colab notebook environment, writing some Python, and now formatting mathematics using $\LaTeX$. In this final task, we'll try to put things together.
+
+:::
+
+:::{.fragment}
+
+**Task 5:** Build a mathematical function that you find interesting. 
+
+:::
+
+1. Use $\LaTeX$ to write the algebraic definition of the function -- ie. $f\left(x\right) = \sin\left(x\right)$ (but be more adventurous!). 
+2. Now, create a Python routine to evaluate your function. 
+3. Use `np.linspace()` to create an array of input values for your function. Use your Python routine to evaluate your function for these input values. 
+4. Finally, use `matplotlib.pyplot()` to draw a plot of your function. 
+
+:::{.fragment}
+
+*Hint.* Look back to our Day 3 notebook or slides for help.
+
+:::
+
+:::{.fragment}
+
+**Task 6:** Look up the *Collatz Conjecture*. Use $\LaTeX$ to type out the mathematical definition of the sequence involved in the conjecture. Build a Python routine to construct the Collatz Sequence for a given non-negative integer input and plot the results.
+
+:::
+
+</div>
+
+## Next Time...
+
+:::{.fragment}
+
+Our journey into Numerical Methods begins.
+
+:::
+
+:::{.fragment}
+
+We'll start by revisiting linear algebra and solving linear systems via Gaussian Elimination.
+
+:::
