@@ -1,0 +1,800 @@
+---
+title: "MAT 370: A Crash Course in Numerical Python"
+author: Dr. Gilbert
+format: 
+  revealjs:
+    smaller: true
+date: today
+date-format: long
+theme: serif
+incremental: true
+execute: 
+  error: true
+---
+
+```{r global-options, include=FALSE}
+library(tidyverse)
+library(reticulate)
+
+theme_set(theme_bw(base_size = 20))
+```
+
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+```
+
+```{css}
+code.sourceCode {
+  font-size: 1.3em;
+  /* or try font-size: xx-large; */
+}
+
+a {
+  color: purple;
+}
+
+a:link {
+  color: purple;
+}
+
+a:visited {
+  color: purple;
+}
+```
+
+## Reminders: Colab and Jupyter
+
+:::{.fragment}
+
+So far we've been exposed to the following ideas about Jupyter Notebooks and Google Colab
+
+:::
+
++ Google Colab provides an interface for writing Jupyter notebooks in your web browser via Google Drive
++ Jupyter notebooks allow you to mix text (white background) and executable Python code (grey background) in a single document. 
+
+  + You execute code cells by holding down `Shift` and hitting `Enter` (or `Return`).
+
+## Reminders: Python So Far...
+
+:::{.fragment}
+
+At our first class meeting, we got a broad overview of Python. We introduced the following ideas.
+
+:::
+
++ We can use Python as a calculator, to carry out mathematical operations.
++ We can store objects as variables to be reused later.
++ We can use `for` and `while` loops to carry out the same sets of instructions over and over again.
++ We can use conditional statements (`if`/`else if`/`else`) to control when certain instructions are to be run.
++ We can (and should!) organize code into functions that can be applied and used in different contexts.
+
+:::{.fragment}
+
+We also explored Python *lists* quite a bit and, while we won't often explicitly use them, they'll be part of how we define arrays (ie. vectors and matrices)
+
+:::
+
+## Setting Expectations
+
+<div style="font-size:18pt">
+
+:::{.fragment}
+
+This notebook covers a crash course in numerical python and the `numpy` module.
+
+:::
+
+:::{.fragment}
+
+After working through this notebook, you'll have enough to get you started, but we'll continue to learn more about python and `numpy` as the semester progresses.
+
+:::
+
+:::{.fragment}
+
+$\bigstar$ You will not, and should not expect to, be an expert or be fluent after today's discussion. Expect to come back here and to our initial slide deck often. $\bigstar$
+
+:::
+
+:::{.fragment}
+
+Today, we'll revisit items in greater detail and visit some new ones as well. We'll see...
+
+:::
+
++ Extending Python functionality by `import`ing modules -- specifically `{numpy}`
++ Defining vectors and matrices using `np.array()`
++ Looping operations
++ Using `print()` statements
++ Quickly initializing large arrays with specialized `{numpy}` functionality
++ Creating, and working with, functions
++ Plotting with `{matplotlib}`
+
+</div>
+
+## Importing and Using Modules
+
+<div style="font-size:18pt">
+
++ Base Python can do basic things like limited math, printing, etc.
++ When users want to engage in specialized activities, they'll `import` *modules* that extend Python's functionality by running `import module_name`. 
+
+    + `{numpy}` (*num*erical *py*thon) is a module that supports arrays and mathematics on arrays -- we'll make use of this module often.
+    + `{matplotlib}` is a plotting library that will also come in handy for us.
+
++ Using functionality from a module requires *namespacing* -- that is, we call `numpy.function_name()` to access and use a function from the `{numpy}` module.
+
+  + To reduce typing, people will often *alias* their modules with the `as` keyword.
+  + For example, `import numpy as np` is extremely common.
+
++ Many modules are nested.
+
+    + We can use `np.linalg.det()` to compute the determinant of a matrix.
+    + We'll often `import matplotlib.pyplot as plt` and then use `plt.function_name()` for plotting.
+
+</div>
+
+## Working with `{numpy}`
+
+<div style="font-size:16pt">
+
+:::{.fragment}
+
+The `{numpy}` module is one that we'll make extensive use of this semester.
+
+:::
+
++ In the majority of our work, we'll be using *scalars* (single component, numerical values) and *arrays*.
+
+    + A 1-D array is a vector. 
+    + A 2-D array is a matrix. 
+
++ In order to make use of arrays, we'll need to extend Python's functionality by `import`ing the `{numpy}` module.
+
+</div>
+
+. . .
+
+```{python}
+#| echo: true
+
+import numpy as np
+```
+
+::::{.columns}
+
+:::{.column width="40%"}
+
+<div style="font-size:16pt">
+
++ We can define arrays using `np.array()`. 
+    + It is easiest to pass a *list* to `np.array()` to create an array, as we did in our first notebook. 
+    + To the right, we create three vectors and a matrix, storing each in their own variables.
+
+</div>
+
+:::
+
+:::{.column width="60%"}
+
+:::{.fragment}
+
+```{python}
+#| echo: true
+
+myVec_v1 = np.array([1, -3, 8.5])
+myVec_v2 = np.array([4, 5, 6])
+myVec_v3 = np.array([10, -9. -4.5, 2, 6.3])
+
+myMatrix_A = np.array([
+  [1.1, 8, 3],
+  [-2, 6, -11.4]
+])
+```
+
+:::
+
+:::
+
+::::
+
+## Arithmetic on Arrays
+
+:::{.fragment}
+
+We can perform arithmetical operations on arrays as long as their dimensions are compatible. 
+
+:::
+
+::::{.columns}
+
+:::{.column width="45%"}
+
+:::{.fragment}
+
+Recall the contents of `myVec_v1`, `myVec_v2`, `myVec_v3`, and `myMatrix_A`.
+
+:::
+
+:::{.fragment}
+
+```{python}
+#| echo: true
+
+print("v1 = ", myVec_v1, "\n",
+      "v2 = ", myVec_v2, "\n",
+      "v3 = ", myVec_v3, "\n",
+      "A = ", myMatrix_A)
+```
+
+:::
+
+:::
+
+:::{.column width="55%"}
+
+:::{.fragment}
+
+We'll try executing arithmetic operations on these vectors and matrix below. 
+
+:::
+
+:::{.fragment}
+
+```{python}
+#| echo: true
+
+print(myVec_v1 + myVec_v2)
+```
+
+:::
+
+:::{.fragment}
+
+```{python}
+#| echo: true
+
+print(myVec_v1 - myVec_v3)
+```
+
+:::
+
+:::{.fragment}
+
+```{python}
+#| echo: true
+
+print(myVec_v1 + myMatrix_A)
+```
+
+:::
+
+:::{.fragment}
+
+```{python}
+#| echo: true
+
+print(np.matmul(myMatrix_A, myVec_v1))
+```
+
+:::
+
+:::
+
+::::
+
+:::{.fragment}
+
+Do you notice anything surprising or questionable?
+
+:::
+
+## A Note on Error Messages
+
+:::{.fragment}
+
+If you haven't been playing along in a Colab/Jupyter notebook, please consider doing it.
+
+:::
+
+:::{.fragment}
+
+You'll notice that the error messages in these slides are abridged versions of what you'll see in your notebook environment.
+
+:::
+
++ In the notebooks, you'll see a full error traceback.
+
+    + Generally, I find the last line of the error printout to be the most informative.
+    + After looking at that last line, I'll scroll up to the top of the error printout where there is an indication of where the error was encountered in the code that I attempted to run.
+    + There will be an arrow indicating the line of code causing the issue, and often a red squiggle in the actual code cell.
+
+:::{.fragment}
+
+$\bigstar$ Learn not to be afraid, intimidated, or frustrated by errors -- with practice, you will get better at deciphering them. $\bigstar$
+
+:::
+
+## Float Versus Integer Arrays
+
+:::{.fragment}
+
+We've already seen several examples of where Python might not behave in ways we would expect.
+
+:::
+
++ We've experienced the *pass by reference* pitfall with lists.
++ We've seen that Python will execute mathematically inappropriate expressions.
+
+    + Adding a scalar to a vector increases each entry by that scalar.
+    + Adding two arrays with incompatible sizes is sometimes executed without error or warning.
+
+:::{.fragment}
+
+All of this means we must be diligent, compare our results to our expectations, and not blindly trust that Python has done what we expected. 
+
+:::
+
+:::{.fragment}
+
+I'll try to highlight quirks that have bitten me in the past so that you don't get caught by them. Inevitably, we'll encounter new quirks as well.
+
+:::
+
+## Float Versus Integer Arrays
+
+**Importance of Explicitly Declaring Float Arrays:** Python will sometimes try to save space by storing numbers using an integer data type, but integer arithmetic is not the same as float arithmetic.
+
+:::{.fragment}
+
+We'll define two matrices below.
+
+:::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+```{python}
+#| echo: true
+
+myMatrix_B = np.array([
+  [1, 2, 3],
+  [4, 5, 6],
+  [7, 8, 9],
+  [10, 11, 12]
+])
+
+myMatrix_B
+```
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+```{python}
+#| echo: true
+
+myMatrix_C = np.array([
+  [1.0, 2, 3],
+  [4, 5, 6],
+  [7, 8, 9],
+  [10, 11, 12]
+])
+
+myMatrix_C
+```
+
+:::
+
+:::
+
+::::
+
+
+:::{.fragment}
+
+Can you tell that they are not treated the same by Python?
+
+:::
+
+## Defining Special Matrices
+
+<div style="font-size:20pt">
+
+:::{.fragment data-fragment-index=1}
+
+Sometimes we need to create somewhat large arrays, and typing in their entries one-by-one is not convenient or desirable.
+
+:::
+
+:::{.fragment data-fragment-index=2}
+
+We can construct an array of the appropriate size and then edit its contents via loops or accessing individual indices.
+
+:::
+
+:::{.fragment data-fragment-index=3}
+
+Each of the following are examples of methods that can be used to quickly construct arrays of a desired size.
+
+:::
+
+::::{.columns}
+
+:::{.column width="60%"}
+
+:::{.fragment data-fragment-index=4}
+
+```{python}
+#| echo: true
+#| eval: false
+
+my_2x5_zeros = np.zeros((2, 5))
+my_2x5_zeros
+```
+
+:::
+
+:::{.fragment data-fragment-index=5}
+
+```{python}
+#| echo: true
+#| eval: false
+
+my_4x4_id = np.identity(4)
+my_4x4_id
+```
+
+:::
+
+:::{.fragment data-fragment-index=6}
+
+```{python}
+#| echo: true
+#| eval: false
+
+my_dimC_ones = np.ones_like(myMatrix_C)
+my_dimC_ones
+```
+
+:::
+
+:::
+
+:::{.column width="40%"}
+
+:::{.fragment data-fragment-index=4}
+
+```{python}
+#| echo: false
+#| eval: true
+
+my_2x5_zeros = np.zeros((2, 5))
+my_2x5_zeros
+```
+
+:::
+
+:::{.fragment data-fragment-index=5}
+
+```{python}
+#| echo: false
+#| eval: true
+
+my_4x4_id = np.identity(4)
+my_4x4_id
+```
+
+:::
+
+:::{.fragment data-fragment-index=6}
+
+```{python}
+#| echo: false
+#| eval: true
+
+my_dimC_ones = np.ones_like(myMatrix_C)
+my_dimC_ones
+```
+
+:::
+
+:::
+
+
+::::
+
+:::{.fragment}
+
+If the top-left and bottom-right entries of the `my_2x5_zeros` matrix should be $2$ and $-8$, respectively, we can make that happen.
+
+:::
+
+:::::{.fragment}
+
+::::{.columns}
+
+:::{.column width="60%"}
+
+```{python}
+#| echo: true
+#| eval: false
+
+my_2x5_zeros[0, 0] = 2
+my_2x5_zeros[1, 4] = -8
+my_2x5_zeros
+```
+
+:::
+
+:::{.column width="40%"}
+
+```{python}
+#| echo: false
+#| eval: true
+
+my_2x5_zeros[0, 0] = 2
+my_2x5_zeros[1, 4] = -8
+my_2x5_zeros
+```
+
+:::
+
+::::
+
+:::::
+
+</div>
+
+## Example Sparse Matrix
+
+:::{.fragment}
+
+A *sparse matrix* (or *sparse array*) is a matrix/array whose entries are mostly $0$'s, but with a few non-zero entries. 
+
+:::
+
+:::{.fragment}
+
+If the array is large enough, using a specialized data structure can result in significant space savings.
+
+:::
+
+:::{.fragment}
+
+Below, we'll construct a $5\times 7$ matrix whose only non-zero entries are
+
++ a $2$ in row 1, column 3
++ a $-6$ in row 1, column 5
++ a $-3$ in row 4, column 2
++ an $11$ in row 5, column 1
+
+:::
+
+:::::{.fragment}
+
+::::{.columns}
+
+:::{.column width="60%"}
+
+```{python}
+#| echo: true
+#| eval: false
+
+my_sparse_matrix = np.zeros((5, 7))
+my_sparse_matrix[0, 2] = 2
+my_sparse_matrix[0, 4] = -6
+my_sparse_matrix[3, 1] = -3
+my_sparse_matrix[4, 0] = 11
+print(my_sparse_matrix)
+```
+
+:::
+
+:::{.column width="40%"}
+
+```{python}
+#| echo: false
+#| eval: true
+
+my_sparse_matrix = np.zeros((5, 7))
+my_sparse_matrix[0, 2] = 2
+my_sparse_matrix[0, 4] = -6
+my_sparse_matrix[3, 1] = -3
+my_sparse_matrix[4, 0] = 11
+print(my_sparse_matrix)
+```
+
+:::
+
+::::
+
+:::::
+
+## Plotting with `{matplotlib}`
+
+:::{.fragment}
+
+For low-dimensional problems, it is often useful to draw pictures. 
+
+:::
+
+:::{.fragment}
+
+We'll use this from time to time to motivate examples or to gain some intuition about problems. 
+
+:::
+
+:::{.fragment}
+
+The `{matplotlib}` module/library is quite useful for plotting -- in particular, we'll use `matplotlib.pyplot()`. 
+
+:::
+
+:::{.fragment}
+
+Below is an example of plotting a function.
+
+:::
+
+:::::{.fragment}
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+```{python}
+#| echo: true
+#| eval: false
+
+import matplotlib.pyplot as plt
+
+x_vals = np.linspace(-6, 6, num = 500)
+#y_vals = np.sin(x_vals)
+def sin_func(x):
+  y_vals = np.sin(x)
+  return y_vals
+
+y_vals = sin_func(x_vals)
+plt.figure(figsize = (9, 3))
+plt.plot(x_vals, y_vals)
+plt.show()
+```
+
+:::
+
+:::{.column width="50%"}
+
+```{python}
+#| echo: false
+#| eval: true
+
+import matplotlib.pyplot as plt
+
+x_vals = np.linspace(-6, 6, num = 500)
+#y_vals = np.sin(x_vals)
+def sin_func(x):
+  y_vals = np.sin(x)
+  return y_vals
+
+y_vals = sin_func(x_vals)
+plt.figure(figsize = (9, 3))
+plt.plot(x_vals, y_vals)
+plt.show()
+```
+
+:::
+
+::::
+
+:::::
+
+## Tricking Out Your Plots
+
+<div style="font-size:18pt">
+
+:::{.fragment data-fragment-index=1}
+
+The `{matplotlib.pyplot}` submodule provides lots of support for customizing your plots.
+
+:::
+
+:::{.fragment data-fragment-index=2}
+
+You can add axes, gridlines, axis labels and titles, plot multiple objects/functions, change colors, fonts, and more!
+
+:::
+
+:::{.fragment data-fragment-index=3}
+
+**Example:**  Below is a code cell that creates a function $f\left(x\right) = x\cos\left(x\right)$ and plot it with some extras to make the plot more readable.
+
+:::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment data-fragment-index=4}
+
+```{python}
+#| echo: true
+#| eval: false
+
+x_vals = np.linspace(-6, 6, num = 500)
+#y_vals = np.sin(x_vals)
+def f(x):
+  y_vals = x*np.cos(x)
+  return y_vals
+
+y_vals = f(x_vals)
+plt.figure(figsize = (9, 5))
+plt.plot(x_vals, y_vals, color = "purple",
+         linewidth = 5)
+plt.grid()
+plt.axhline(y = 0, color = "black")
+plt.axvline(x = 0, color = "black")
+plt.title("My function $f(x) = x\cos(x)$",
+          fontsize = 36))
+plt.xlabel("x", fontsize = 22)
+plt.ylabel("y", fontsize = 22)
+plt.show()
+```
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment data-fragment-index=4}
+
+```{python}
+#| echo: false
+#| eval: true
+
+x_vals = np.linspace(-6, 6, num = 500)
+#y_vals = np.sin(x_vals)
+def f(x):
+  y_vals = x*np.cos(x)
+  return y_vals
+
+y_vals = f(x_vals)
+plt.figure(figsize = (9, 5))
+plt.plot(x_vals, y_vals, color = "purple",
+         linewidth = 5)
+plt.grid()
+plt.axhline(y = 0, color = "black")
+plt.axvline(x = 0, color = "black")
+plt.title("My function $f(x) = x\cos(x)$",
+          fontsize = 36)
+plt.xlabel("x", fontsize = 22)
+plt.ylabel("y", fontsize = 22)
+plt.show()
+```
+
+:::
+
+:::{.fragment data-fragment-index=5}
+
+That's all for now. Next time, we'll have a Colab, Python, and $\LaTeX$ workshop.
+
+:::
+
+::::
+
+</div>
+
+
+
+
+
