@@ -1,0 +1,986 @@
+---
+title: "MAT 370: Linear Systems and Gaussian Elimination"
+author: Dr. Gilbert
+format: 
+  revealjs:
+    smaller: true
+date: today
+date-format: long
+theme: serif
+incremental: true
+execute: 
+  error: true
+---
+
+```{r global-options, include=FALSE}
+library(tidyverse)
+library(reticulate)
+
+theme_set(theme_bw(base_size = 20))
+```
+
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+```
+
+```{css}
+code.sourceCode {
+  font-size: 1.3em;
+  /* or try font-size: xx-large; */
+}
+
+a {
+  color: purple;
+}
+
+a:link {
+  color: purple;
+}
+
+a:visited {
+  color: purple;
+}
+```
+
+## Reminders: Simultaneous Systems
+
+:::{.fragment}
+
+You probably remember being asked to solve systems like: $\left\{\begin{array}{rcl} 2x_1 + 4x_2 &= & 10\\ x_1 - 3x_2 &= & 15\end{array}\right.$ in previous math courses. 
+
+:::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+As a reminder, the solution to such a system in two variables corresponds to a point of intersection between two straight lines. See the image to the right.
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+
+x1_vals = np.linspace(-10, 15, 200)
+x2_vals1 = (10 - 2*x1_vals)/4
+x2_vals2 = (15 - x1_vals)/(-3)
+
+plt.figure(figsize = (4, 4))
+plt.plot(x1_vals, x2_vals1, color = "red")
+plt.plot(x1_vals, x2_vals2, color = "purple")
+plt.xlabel("x_1")
+plt.ylabel("x_2")
+plt.show()
+```
+
+:::
+
+:::
+
+::::
+
+## Reminders: Simultaneous Systems
+
+<div style="font-size:18pt">
+
+We can see that the system $\left\{\begin{array}{rcl} 2x_1 + 4x_2 &= & 10\\ x_1 - 3x_2 &= & 15\end{array}\right.$ has a single solution from the plot. You may also remember that systems can also have no solutions or infinitely many solutions. For example, the system $\left\{\begin{array}{rcl} 2x_1 + 4x_2 &= & 10\\ 4x_1 +8x_2 &= & 15\end{array}\right.$ has no solutions, and the system $\left\{\begin{array}{rcl} 2x_1 + 4x_2 &= & 10\\ -4x_1 - 8x_2 &= & -20\end{array}\right.$ has infinitely many solutions, as can be seen in the middle and right plot respectively below.
+
+```{python}
+#@title
+x1_vals = np.linspace(-10, 15, 200)
+sys1_x2_vals1 = (10 - 2*x1_vals)/4
+sys1_x2_vals2 = (15 - x1_vals)/(-3)
+
+sys2_x2_vals1 = (10 - 2*x1_vals)/4
+sys2_x2_vals2 = (15 - 4*x1_vals)/8
+
+sys3_x2_vals1 = (10 - 2*x1_vals)/4
+sys3_x2_vals2 = (-20 + 4*x1_vals)/(-8)
+
+plt.figure(figsize = (20, 5))
+plt.subplot(1, 3, 1)
+plt.plot(x1_vals, sys1_x2_vals1, color = "red")
+plt.plot(x1_vals, sys1_x2_vals2, color = "purple")
+plt.title("Unique Solution", fontsize = 28)
+plt.xlabel("$x_1$", fontsize = 20)
+plt.ylabel("$x_2$", fontsize = 20)
+
+plt.subplot(1, 3, 2)
+plt.plot(x1_vals, sys2_x2_vals1, color = "red")
+plt.plot(x1_vals, sys2_x2_vals2, color = "purple")
+plt.title("No Solutions", fontsize = 28)
+plt.xlabel("$x_1$", fontsize = 20)
+plt.ylabel("$x_2$", fontsize = 20)
+
+plt.subplot(1, 3, 3)
+plt.plot(x1_vals, sys3_x2_vals1, color = "red", linewidth = 10, alpha = 0.35)
+plt.plot(x1_vals, sys3_x2_vals2, color = "purple")
+plt.title("Infinite Solutions", fontsize = 28)
+plt.xlabel("$x_1$", fontsize = 20)
+plt.ylabel("$x_2$", fontsize = 20)
+
+plt.show()
+```
+
+:::{.fragment}
+
+In the rightmost plot above, one of the lines is made artificially thick to show that both lines agree at all $\left(x_1, x_2\right)$ satisfying either equation.
+
+:::
+
+</div>
+
+## Solving Systems
+
+:::{.fragment}
+
+From Linear Algebra, we remember that we can efficiently solve linear systems by reducing an *augmented coefficient matrix*. 
+
+:::
+
+::::{.columns}
+
+:::{.column width="60%"}
+
+:::{.fragment}
+
+As a reminder, a system like the one we began with $\left\{\begin{array}{rcl} 2x_1 + 4x_2 &= & 10\\ x_1 - 3x_2 &= & 15\end{array}\right.$ can be described via matrix multiplication as
+
+:::
+
+:::
+
+:::{.column width="40%"}
+
+:::{.fragment}
+
+$$\left[\begin{array}{cc} 2 & 4\\ 1 & - 3\end{array}\right]\cdot\left[\begin{array}{c} x_1\\ x_2\end{array}\right] = \left[\begin{array}{c}10\\ 15\end{array}\right]$$
+
+:::
+
+:::
+
+::::
+
+:::{.fragment}
+
+The corresponding *augmented coefficient matrix* is of the form: $\left[\begin{array}{cc|c} 2 & 4 & 10\\ 1 & -3 & 15\end{array}\right]$
+
+:::
+
+:::{.fragment}
+
+To solve the system, we row-reduce to *row echelon form*, identify the pivots, and either solve via back-substitution or completely reduce to *reduced row echelon form* and read the solutionsfrom the reduced matrix. 
+
+:::
+
+:::{.fragment}
+
+We'll walk through a slightly larger example shortly. 
+
+:::
+
+## Special Matrix Forms
+
+<div style="font-size:18pt">
+
+:::{.fragment}
+
+Before we move to an example, its worth considering some common matrix forms that will motivate some of our future work.
+
+:::
+
++ Converting $A\vec{x} = \vec{b}$ to $I\vec{x} = \vec{c}$, where $I$ is the $n\times n$ identity matrix is known as Gauss-Jordan Elimination.
++ Converting $A\vec{x} = \vec{b}$ to $U\vec{x} = \vec{c}$, where $U$ is an *upper-triangular* matrix is known as Gaussian Elimination.
++ Converting $A\vec{x} = \vec{b}$ to $LU\vec{x} = \vec{b}$, where $L$ isa *lower-triangular* matrix and $U$ is an *upper-triangular* matrix is known as LU decomposition.
+
+:::{.fragment}
+
+In *Gauss-Jordan elimination*, we have the solution to the system just by reading the resulting augmented coefficient matrix. 
+
+:::
+
+:::{.fragment}
+
+In *Gaussian elimination*, we can obtain the solution to the system by using backward substitution -- avoiding several row reduction steps in favor of a little algebra. 
+
+:::
+
+:::{.fragment}
+
+In *LU decomposition*, we can obtain the solution to the system by first using backward substitution and then forward substitution.
+
+:::
+
+</div>
+
+## Gaussian Elimination
+
+<div style="font-size:18pt">
+
+:::{.fragment}
+
+The method of *Gaussian Elimination* involves converting the matrix equation $A\vec{x} = \vec{b}$ into $U\vec{x} = \vec{c}$ and then using *backward elimination* to solve the equivalent upper-triangular system.
+
+:::
+
+:::{.fragment}
+
+This technique is appropriate when working with linear systems, matrix equations, and vector equations.
+
+:::
+
+</div>
+
+:::{.fragment}
+
+<div style="font-size:12pt">
+
+$$\left\{\begin{array}{ccccccccc} A_{11}x_1 & + & A_{12}x_2 & + & \cdots & + & A_{1n}x_n & = & b_1\\
+A_{21}x_1 & + & A_{22}x_2 & + & \cdots & + & A_{2n}x_n & = & b_2\\
+\vdots &  &  &  &  &  &  & \vdots\\
+A_{n1}x_1 & + & A_{n2}x_2 & + & \cdots & + & A_{nn}x_n & = & b_n
+\end{array}\right.~~~~~~~~~~\left[\begin{array}{cccc} A_{11} & A_{12} & \cdots & A_{1n}\\
+A_{21} & A_{22} & \cdots & A_{2n}\\
+\vdots & \vdots & \ddots & \vdots\\
+A_{n1} & A_{n2} & \cdots & A_{nn}\end{array}\right]\cdot\left[\begin{array}{c} x_1\\ x_2\\ \vdots\\ x_{n}\end{array}\right] = \left[\begin{array}{c} b_1\\ b_2\\ \vdots\\ b_{n}\end{array}\right]~~~~~~~x_1\begin{bmatrix} A_{11}\\ A_{21}\\ \vdots\\ A_{n1}\end{bmatrix} + x_2\begin{bmatrix} A_{12}\\ A_{22}\\ \vdots\\ A_{n2}\end{bmatrix} + \cdots + x_n\begin{bmatrix} A_{1n}\\ A_{2n}\\ \vdots\\ A_{nn}\end{bmatrix} = \begin{bmatrix} b_1\\ b_2\\ \vdots\\ b_n\end{bmatrix}$$
+
+</div>
+
+:::
+
+<div style="font-size:18pt">
+
+:::{.fragment}
+
+Each of the above equations is associated with the augmented matrix 
+
+$$\left[\begin{array}{cccc|c} A_{11} & A_{12} & \cdots & A_{n1} & b_1\\
+A_{21} & A_{22} & \cdots & A_{2n} & b_2\\
+\vdots & \vdots & \ddots & \vdots & \vdots\\
+A_{n1} & A_{n2} & \cdots & A_{nn} & b_n\end{array}\right]$$
+
+:::
+
+</div>
+
+## Existence and Uniqueness of Solutions
+
+<div style="font-size:18pt">
+
++ A [square] system of linear equations has a *unique solution* if the coefficient matrix is *non-singular*. 
+
+  + If the determinant is not $0$, then a unique solution exists.
+  + If the determinant is $0$, then the system may have no solutions or infinitely many solutions.
+
++ If a linear system has no solutions, then we say it is and *inconsistent system*.
++ Linear systems with one or infinitely many solutions are said to be *consistent systems*.
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+In summary, if $\left|A\right| = 0$ then the system may be either *inconsistent* or have infinitely many solutions and if $\left|A\right| \neq 0$,then the system is *consistent* and has a unique solution.
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+**Example:** Compute the determinant for the matrix $A = \left[\begin{array}{ccc} 3.2 & 4.7 & -0.8\\
+6.2 & -13 & 8.2\\
+2.1 & -0.6 & 1.1\end{array}\right]$. You may utilize the `.det()` method from `{numpy}`'s `linalg` sub-module. What does this mean about solutions to $A\vec{x} = \vec{b}$ for any $\vec{b}$?
+
+:::
+
+:::
+
+::::
+
+</div>
+
+## Near-Singularity and Conditioning
+
+:::{.fragment}
+
+We've seen that symbolic mathematics and computational mathematics are not exactly identical. 
+
+:::
+
++ An attempt to store a theoretically infinite number system into a finite amount of memory is not possible. 
++ We encounter rounding errors with floating point numbers -- we saw this issue when running `0.1 + 0.2 == 0.3` returned a result of `False`. 
++ Considering whether numerically derived solutions are to be trusted will be a constant theme throughout our course.
+
+## Near-Singularity and Conditioning
+
+<div style="font-size:14pt">
+
+**Example:** Consider the following linear equations: (i) $\left\{\begin{array}{lcl} 2x_1 + x_2 & = & 3\\ 2x_1 + 1.001x_2 & = & 0\end{array}\right.$ and $\left\{\begin{array}{lcl} 2x_1 + x_2 & = & 3\\ 2x_1 + 1.002x_2 & = & 0\end{array}\right.$. The first system has solution $\boxed{~x_1 = 1501.5,~x_2 = -3000~}$ but the second system has solution $\boxed{~x_1 = 751.5,~x_2 = -1500~}$. A $0.1\%$ change in one of the coefficients produced a $100\%$ change in the solution.
+
+```{python}
+#@title
+x1_vals = np.linspace(500, 1750)
+
+sys1_x2_vals1 = 3 - 2*x1_vals
+sys1_x2_vals2 = -2*x1_vals/1.001
+
+sys2_x2_vals1 = 3 - 2*x1_vals
+sys2_x2_vals2 = -2*x1_vals/1.002
+
+plt.figure(figsize = (12, 3))
+plt.plot(x1_vals, sys1_x2_vals1, color = "blue", linewidth = 6, alpha = 0.3)
+plt.plot(x1_vals, sys1_x2_vals2, color = "blue", linewidth = 6, alpha = 0.3)
+
+plt.plot(x1_vals, sys2_x2_vals1, color = "purple")
+plt.plot(x1_vals, sys2_x2_vals2, color = "purple")
+
+plt.scatter(1501.5, -3000, s = 250, color = "black")
+plt.scatter(751.5, -1500, s = 250, color = "black")
+
+plt.xlabel("$x_1$", fontsize = 12)
+plt.ylabel("$x_2$", fontsize = 12)
+plt.title("Solutions to Nearly Identical Systems", fontsize = 18)
+
+plt.show()
+```
+
++ In the plot above it is difficult to identify that three distinct lines are being plotted. 
++ All of the lines are nearly parallel to one another. 
++ The black dot to the left is the solution to system (ii) while the black dot to the right is the solution to system (i). 
++ We can visually observe the impact that such a tiny change on the coefficient of $x_2$ had on the solution to our system.
+
+:::{.fragment}
+
+When such small changes (perhaps rounding errors) can lead to such drastic changes in a solution, we need to be worried that our numerical techniques may produce untrustowrthy results.
+
+:::
+</div>
+
+## Conditioning (Rule of Thumb)
+
+:::::{.fragment}
+
+::::{.columns}
+
+:::{.column width="60%"}
+
+For the system $\left\{\begin{array}{lcl} 2x_1 + x_2 & = & 3\\ 2x_1 + 1.001x_2 & = & 0\end{array}\right.$, the determinant of the coefficient matrix is:
+
+:::
+
+:::{.column width="40%"}
+
+\begin{align*} \det\left(\begin{array}{cc} 2 & 1\\ 2 & 1.001\end{array}\right) &= 2\left(1.001\right) - 1\left(2\right)\\
+&= 2.002 - 2\\
+&= 0.002
+\end{align*}
+
+:::
+
+::::
+
+:::::
+
+:::{.fragment}
+
+This determinant is close to $0$ and is on a much smaller scale than the coefficients of the system. We'll use this as a *rule of thumb*.
+
+:::
+
+:::{.fragment}
+
+**Rule of Thumb (Conditioning):** If $\det\left(A\right)$ is *much smaller* than the magnitudes of the individual elements in the matrix, then the coefficient matrix $A$ is said to be *ill-conditioned*.
+
+:::
+
+:::{.fragment}
+
+This rule of thumb is more convenient to follow than by using a *conditioning number* for a matrix since the *conditioning number* is expensive to compute for large matrices. For completeness, the definition of a conditioning number on a matrix appears on the next slide.
+
+:::
+
+## Conditioning: Formal Definition
+
+:::{.fragment}
+
+**Definition (Matrix Condition Number):** Given an invertible matrix $A$, the condition number is denoted by $\text{cond}\left(A\right)$ and is computed as $\text{cond}\left(A\right) = \|A\|\cdot\|A^{-1}\|$. If $A$ is a non-invertible matrix, then its condition number is defined to be $\infty$.
+
+:::
+
++ In the definition above, $\|M\|$ denotes a norm of the matrix $M$. Common norms are... 
+
+  + The *Euclidean norm*: $\displaystyle{\|M\|_{e} = \sqrt{\sum_{i = 1}^{n}{\sum_{j = 1}^{n}{M_{ij}^2}}}}$
+  + The *row-sum-norm* $\displaystyle{\|M\|_{\infty} = \max_{1\leq i\leq n}{\sum_{j = 1}^{n}{|M_{ij}|}}}$ (also called the *infinity norm*). 
+
+:::{.fragment}
+  
+Given that there are different choices for matrix norm, the condition number of a matrix is dependent on the chosen norm. This is another reason that we choose to proceed with our *rule of thumb* instead of insisting on using the condition number for our coefficient matrix.
+
+:::
+
+## Conditioning: An Example
+
+**Example (Conditioning):** Evaluate the determinant and use the result to determine whether the corresponding matrix is singular, ill-conditioned, or well-conditioned. Compute the determinant by hand and then use `np.linalg.inv()` to compute the inverse of the matrix and verify your results.
+
+$$B = \left[\begin{array}{rrr} 4 & -2 & 0\\ -2 & 4 & -2\\ 0 & -2 & 4\end{array}\right]$$
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+**Rule of Thumb Reminder:** If $\det\left(A\right)$ is much smaller than the entries of $A$, then $A$ is *ill-conditioned*.
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+**Formal Conditioning:** The condition number of the matrix $A$ is $\text{cond}\left(A\right) = \|A\|\cdot\|A^{-1}\|$. If $A$ is a non-invertible matrix, then its condition number is defined to be $\infty$. 
+
+:::
+
+:::{.fragment}
+
+Smaller condition numbers indicate greater suitability for numerical methods.
+
+:::
+
+:::
+
+::::
+
+## Gaussian Elimination: A Guiding Example
+
+<div style="font-size:18pt">
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+Consider $\left\{\begin{array}{lcl} 4x_1 - 2x_2 + x_3 & = & 11\\
+-2x_1 + 4x_2 - 2x_3 & = & -16\\
+x_1 - 2x_2 + 4x_3 & = & 17\end{array}\right.$
+
+:::
+
+:::
+
+:::{.column width="50%}
+
+:::{.fragment}
+
+Complete the following:
+
+:::
+
+1. Construct the coefficient matrix $A$ for the system.
+2. Find the determinant, $\det\left(A\right)$, and use our *rule of thumb* for determining whether the coefficient matrix is *ill-conditioned* and discuss what that means.
+3. Construct the system $A\vec{x} = \vec{b}$ and also write down the augmented coefficient matrix for the system.
+4. Use *elementary operations* to transform the system into an equivalent system of the form $U\vec{x} = \vec{c}$ where $U$ is an *upper triangular matrix*.
+5. Use backward substitution to obtain the solution to the system.
+
+:::
+
+::::
+
+</div>
+
+## Gaussian Elimination: A Guiding Example
+
+<div style="font-size:18pt">
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+Consider $\left\{\begin{array}{lcl} 4x_1 - 2x_2 + x_3 & = & 11\\
+-2x_1 + 4x_2 - 2x_3 & = & -16\\
+x_1 - 2x_2 + 4x_3 & = & 17\end{array}\right.$
+
+**Note:** $\det\left(A\right) = 0$ if and only if $\det\left(U\right) = 0$, although generally $\det\left(A\right) \neq \det\left(U\right)$. This is a nice property, since $\det\left(U\right)$ is much easier to compute than $\det\left(A\right)$.
+
+:::{.fragment}
+
+**Comment:** When making a row operation of the form $R_{i} \leftarrow R_i + \lambda R_j$, we call $R_j$ the *pivot row*.
+
+:::
+
+:::
+
+:::{.column width="50%}
+
+Complete the following:
+
+:::{.nonincremental}
+
+1. Construct the coefficient matrix $A$ for the system.
+2. Find the determinant, $\det\left(A\right)$, and use our *rule of thumb* for determining whether the coefficient matrix is *ill-conditioned* and discuss what that means.
+3. Construct the system $A\vec{x} = \vec{b}$ and also write down the augmented coefficient matrix for the system.
+4. Use *elementary operations* to transform the system into an equivalent system of the form $U\vec{x} = \vec{c}$ where $U$ is an *upper triangular matrix*.
+5. Use backward substitution to obtain the solution to the system.
+
+:::
+
+:::
+
+::::
+
+</div>
+
+## Gaussian Elimination: A Guiding Example (Solution?)
+
+Omitted for now...
+
+## Algorithm for Gaussian Elimination
+
+:::{.fragment}
+
+We'll derive and implement the *Gaussian Elimination* algorithm by picking apart our "by hand" approach to solving the previous system.
+
+:::
+
+:::{.fragment}
+
+The algorithm will come in two phases.
+
+:::
+
+1. *elimination*
+2. *back-substitution*
+
+## Elimination Phase
+
+<div style="font-size:16pt">
+
+:::{.fragment}
+
+Consider that the first $k-1$ rows of the augmented coefficient matrix have already been converted to upper triangular form:
+
+:::
+
+</div>
+
+::::{.columns}
+
+:::{.column width="60%"}
+
+<div style="font-size:14pt">
+
+:::{.fragment}
+
+$$\left[\begin{array}{ccccccccc|c} A_{11} & A_{12} & A_{13} & \cdots & A_{1k} & \cdots & A_{1j} & \cdots & A_{1n} & b_1\\
+0 & A_{22} & A_{23} & \cdots & A_{2k} & \cdots & A_{2j} & \cdots & A_{2n} & b_2\\
+0 & 0 & A_{33} & \cdots & A_{3k} & \cdots & A_{3j} & \cdots & A_{3n} & b_3\\
+\vdots & \vdots & \vdots &  & \vdots &  & \vdots & &  \vdots & \vdots\\
+0 & 0 & 0 & \cdots & A_{kk} & \cdots & A_{kj} & \cdots & A_{kn} & b_k\\
+\vdots & \vdots & \vdots &  & \vdots &  & \vdots & & \vdots & \vdots\\
+0 & 0 & 0 & \cdots & A_{ik} & \cdots & A_{ij} & \cdots & A_{in} & b_i\\
+\vdots & \vdots & \vdots &  & \vdots &  & \vdots & & \vdots & \vdots\\
+0 & 0 & 0 & \cdots & A_{nk} & \cdots & A_{nj} & \cdots & A_{nn} & b_n\end{array}\right]$$
+
+:::
+
+</div>
+
+:::
+
+:::{.column width="40%"}
+
+<div style="font-size:16pt">
+
+:::{.fragment} 
+
+The $i^{th}$ row is the current row to be transformed
+
+:::
+
++ $A_{ik}$ is to be transformed to $0$. 
++ This can be done by multiplying the *pivot row* (row $k$) by $\lambda = A_{ik}/A_{kk}$ and subtracting the result from row $i$.
+
+:::{.fragment}
+
+$$R_i \leftarrow R_i - \frac{A_{ik}}{A_{kk}}R_k$$
+
+:::
+
+</div>
+
+:::
+
+::::
+
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+
+:::{.fragment}
+
+<div style="font-size:14pt">
+
+Resulting in the following changes:
+
+</div>
+
+<div style="font-size:14pt">
+
+\begin{align*} A_{ij} &\leftarrow A_{ij} - \frac{A_{ik}}{A_{kk}}A_{kj} \text{, for}~j = k, k+1, \cdots, n \\
+b_i &\leftarrow b_i - \frac{A_{ik}}{A_{kk}}b_k
+\end{align*}
+
+</div>
+
+:::
+
+:::{.fragment}
+
+<div style="font-size:14pt">
+
+Remembering that python starts indexing from 0, this is to be done for $k = 0, 1, \cdots, n - 2$ and $i = k + 1, k + 2, \cdots, n - 1$.
+
+</div>
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+<div style="font-size:20pt">
+
+```
+#elimination phase
+for k in range(n):
+  for i in range(k+1, n+1):
+    if A[i, k] != 0:
+      lam = A[i, k]/A[k, k]
+      a[i, (k+1):n] = A[i, (k+1):n] - lam*A[k, (k+1):n]
+      b[i] = b[i] - lam*b[k]
+```
+
+</div>
+
+:::
+
+:::
+
+::::
+
+## Back-Substitution Phase
+
+<div style="font-size:16pt">
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment data-fragment-index=1}
+
+After the *elimination phase* has been completed, the result is a matrix of the following form:
+
+:::
+
+:::{.fragment data-fragment-index=3}
+
+The last line of the augmented coefficient matrix indicates that $A_{nn}x_n = b_n$, so $x_n = b_n/A_{nn}$. 
+
+:::
+
+:::{.fragment data-fragment-index=4}
+
+Now again, if we are at a situation where $x_n,~x_{n-1}, \cdots,~x_{k+1}$ have been solved for and we are ready to solve for $x_k$, we have
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment data-fragment-index=2}
+
+$$\left[\begin{array}{ccccc|c} A_{11} & A_{12} & A_{13} & \cdots & A_{1n} & b_1\\
+0 & A_{22} & A_{23} & \cdots & A_{2n} & b_2\\
+0 & 0 & A_{33} & \cdots & A_{3n} & b_3\\
+\vdots & \vdots & \vdots & \ddots & \vdots\\
+0 & 0 & 0 & \cdots & A_{nn} & b_n\end{array}\right]$$
+
+:::
+
+:::
+
+::::
+
+</div>
+
+<div style="font-size:14pt">
+
+:::{.fragment data-fragment-index=5}
+
+\begin{align*} A_{kk}x_k + A_{k,~k+1}x_{k+1} + \cdots A_{kn}x_n &= b_k\\
+\implies A_{kk}x_k &= b_k - \left(A_{k,~k+1}x_{k+1} + A_{k,~k+2}x_{k+2} + \cdots + A_{kn}x_n\right)\\
+\implies x_k &= \frac{1}{A_{kk}}\left(b_k - \sum_{i = k+1}^{n}{A_{ki}x_i}\right)\end{align*}
+
+:::
+
+</div>
+
+
+::::{.columns}
+
+:::{.column width="32%"}
+
+:::{.fragment data-fragment-index=6}
+
+<div style="font-size:16pt">
+
+This will need to be done for $k = n-1,~n-2,~\cdots, 1$. We are now ready to write the *back-substitution algorithm*.
+
+</div>
+
+:::
+
+:::
+
+:::{.column width="32%"}
+
+:::{.fragment data-fragment-index=7}
+
+<div style="font-size:20pt">
+
+```
+#back-substitution algorithm
+for k in range(n - 1, -1, -1):
+  x[k] = (b[k] - np.dot(A[k, (k+1):n], x[(k+1):n]))/A[k,k]
+```
+
+</div>
+
+:::
+
+:::
+
+:::{.column width="32%"}
+
+:::{.fragment data-fragment-index=8}
+
+<div style="font-size:16pt">
+
+Note that we can save some space by using `b` as the container for our solution vector $\vec{x}$ instead of introducing a brand new array.
+
+</div>
+
+:::
+
+:::
+
+::::
+
+## Implementing Gaussian Elimination
+
+:::{.fragment}
+
+Now that we have both of the phases outlined, let's package them together into a single function which can be called to solve a linear system via Gassian Elimination. 
+
+:::
+
+:::{.fragment}
+
+We'll call our function `GaussElim()` and it should take two arguments -- the coefficient matrix `A` and the constant vector `b`.
+
+:::
+
+:::{.fragment}
+
+```{python}
+#| echo: true
+#| eval: true
+
+def GaussElim(A, b):
+  n = len(b)
+
+  for k in range(0, n-1):
+    for i in range(k+1, n):
+      if A[i, k] != 0.0:
+        lam = A[i, k]/A[k, k]
+        A[i, k:n] = A[i, k:n] - lam*A[k, k:n]
+        b[i] = b[i] - lam*b[k]
+
+  for k in range(n - 1, -1, -1):
+    b[k] = (b[k] - np.dot(A[k, (k+1):n], b[(k+1):n]))/A[k,k]
+
+  return b
+```
+
+:::
+
+## Using `GaussElim()`
+
+<div style="font-size:18pt">
+
+:::{.fragment}
+
+With `GaussElim()` defined, we can now use it. You'll be able to use it too -- just make sure you've imported `numpy` as `np`, pasted the definition of `GaussElim()` into a code cell, and run it!
+
+:::
+
+:::{.fragment}
+
+You'll need to (i) do this in each new notebook you create (ie. homework notebooks), and (ii) be sure to run these code cells before trying to use the functionality when you revisit a notebook you've worked on prior.
+
+:::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+**Example:** Use our new `GaussElim()` function to find the solution to the system $\left\{\begin{array}{lcl} 4x_1 - 2x_2 + x_3 & = & 11\\
+-2x_1 + 4x_2 - 2x_3 & = & -16\\
+x_1 - 2x_2 + 4x_3 & = & 17\end{array}\right.$ from earlier. (*Hint.* Make sure you are working with floating point numbers and not integers.)
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+```{python}
+#| echo: true
+#| eval: true
+
+A = np.array([[4.0, -2, 1], [-2, 4, -2], [1, -2, 4]])
+b = np.array([11.0, -16, 17])
+
+GaussElim(A, b)
+```
+
+:::
+
+:::
+
+::::
+
+:::{.fragment}
+
+**Note:** The matrix $A$ and the constant vector $\vec{b}$ are altered when we run our `GaussElim()` routine. Beware of this when checking your results or solving another system!
+
+:::
+
+</div>
+
+## Checking Your Results
+
+<div style="font-size:18pt">
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+**Example:** Use our new `GaussElim()` function to find the solution to the system $\left\{\begin{array}{lcl} 4x_1 - 2x_2 + x_3 & = & 11\\
+-2x_1 + 4x_2 - 2x_3 & = & -16\\
+x_1 - 2x_2 + 4x_3 & = & 17\end{array}\right.$ from earlier. (*Hint.* Make sure you are working with floating point numbers and not integers.)
+
+:::
+
+:::{.column width="50%"}
+
+```{python}
+#| echo: true
+#| eval: true
+
+A = np.array([[4.0, -2, 1], [-2, 4, -2], [1, -2, 4]])
+b = np.array([11.0, -16, 17])
+
+GaussElim(A, b)
+```
+
+:::
+
+::::
+
+**Note:** The matrix $A$ and the constant vector $\vec{b}$ are altered when we run our `GaussElim()` routine. Beware of this when checking your results or solving another system!
+
+
+You can check your results by multiplying the solution vector you've discovered by your original matrix $A$ and verifying that you obtain the vector $\vec{b}$ back.
+
+:::{.fragment}
+
+```{python}
+#| echo: true
+#| eval: true
+
+A = np.array([[4.0, -2, 1], [-2, 4, -2], [1, -2, 4]])
+
+x = np.array([1.0, -2, 3])
+
+np.matmul(A, x)
+```
+
+:::
+
+</div>
+
+## Additional Practice
+
+<div style="font-size:18pt">
+
+:::{.fragment}
+
+**Example 1:** Try solving the systems corresponding to the augmented coefficient matrix $\left[\begin{array}{ccc|c} 6 & - 4 & 1 & -14\\
+-4 & 6 & -4 & 36\\
+1 & -4 & 6 & 6\end{array}\right]$. 
+
+:::
+
+:::{.fragment}
+
+**Example 2:** Solve the matrix equation $A\vec{x} = \vec{b}$ where $A = \begin{bmatrix} 6 & - 4 & 1 \\
+-4 & 6 & -4\\
+1 & -4 & 6\end{bmatrix}$ and $\vec{b} = \begin{bmatrix} 22\\ 18\\ 7\end{bmatrix}$. 
+:::
+
+:::{.fragment}
+
+**Definition:** An $n\times n$ Vandermode matrix $A$ is defined by $A_{ij} = v_{i}^{n - j}$ for $i$ and $j$ both between $1$ and $n$ and $\vec{v}$ is a vector.
+
+**Example 3:** Use `GaussElim()` to compute the solution to $A\vec{x} = \vec{b}$, where $A$ is the $6\times 6$ Vandermode matrix generated from $\vec{v} = \left[\begin{array}{c} 1\\ 1.2\\ 1.4\\ 1.6\\ 1.8\\ 2\end{array}\right]$, and where $\vec{b} = \left[\begin{array}{c} 0\\ 1\\ 0\\ 1\\ 0\\ 1\end{array}\right]$.
+
+:::
+
+</div>
+
+## Next Time
+
+<br/>
+<br/>
+
+Solving linear systems and matrix equations in a reusable way, via $LU$-decomposition.
+
