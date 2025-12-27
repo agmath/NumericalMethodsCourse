@@ -1,0 +1,1269 @@
+---
+title: "MAT 370: LU Decomposition"
+subtitle: "An Efficiency Boost"
+author: Dr. Gilbert
+format: 
+  revealjs:
+    smaller: true
+date: today
+date-format: long
+theme: serif
+incremental: true
+execute: 
+  error: true
+---
+
+```{r global-options, include=FALSE}
+library(tidyverse)
+library(reticulate)
+
+theme_set(theme_bw(base_size = 20))
+```
+
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+
+def GaussElim(A, b):
+  n = len(b)
+
+  for k in range(0, n-1):
+    for i in range(k+1, n):
+      if A[i, k] != 0.0:
+        lam = A[i, k]/A[k, k]
+        A[i, k:n] = A[i, k:n] - lam*A[k, k:n]
+        b[i] = b[i] - lam*b[k]
+
+  for k in range(n - 1, -1, -1):
+    b[k] = (b[k] - np.dot(A[k, (k+1):n], b[(k+1):n]))/A[k,k]
+
+  return b
+```
+
+```{css}
+code.sourceCode {
+  font-size: 1.3em;
+  /* or try font-size: xx-large; */
+}
+
+a {
+  color: purple;
+}
+
+a:link {
+  color: purple;
+}
+
+a:visited {
+  color: purple;
+}
+```
+
+## Lack of Reusability
+
+<div style="font-size:14pt">
+
+:::{.fragment}
+
+**Context (Survey Drone):** We’re consulting for a company that uses a small survey drone to inspect bridges and buildings. The drone is controlled by an autopilot system that restricts its motion to three fixed directions: (i) forward while slightly increasing altitude, (ii) right while slightly increasing altitude, and (iii) backward, slightly left, while slightly decreasing altitude. These three directions are enough to navigate space and have been optimized for the types of structures the company typically investigates.
+
+When the autopilot system runs, it takes a target location, solves the corresponding vector equation, and runs the drone’s motors appropriately in order to arrive at that location. For each structure, the company generally inspects hundreds of locations with the drone.
+
+:::
+
+:::{.fragment}
+
+:::{.figure}
+
+<div style="display: flex; justify-content: center; align-items: center; height: 100%;">
+
+<div id="player"></div>
+
+</div>
+
+<script>
+  var player;
+
+  function onYouTubeIframeAPIReady() {
+    player = new YT.Player('player', {
+      videoId: 'ix_ZVsBJnXs',
+      playerVars: {
+        start: 0
+      },
+      events: {
+        onStateChange: onPlayerStateChange
+      }
+    });
+  }
+
+  function onPlayerStateChange(event) {
+    if (event.data === YT.PlayerState.PLAYING) {
+      setTimeout(() => {
+        player.pauseVideo();
+      }, (60 - 0) * 1000);
+    }
+  }
+</script>
+
+<script src="https://www.youtube.com/iframe_api"></script>
+
+▶ Video from [Skydio](https://youtu.be/ix_ZVsBJnXs?si=FTE2CAXSCBRQgH9j).
+
+:::
+
+:::
+
+</div>
+
+
+## Comments on the Scenario
+
+<div style="font-size:18pt">
+
+:::{.fragment}
+
+**Comment:** In this setting, Gaussian Elimination becomes a serious bottleneck because the same row-reduction must be repeated for every new target location.
+
+:::
+
+:::{.fragment}
+
+There is a triple-nested `for` loop in the elimination procedure -- `for` each diagonal (pivot) entry...`for` each entry below the diagonal...`for` all entries to the right of the diagonal...
+
+:::
+
++ This means that the elimination procedure is $O\left(n^3\right)$.  
++ If we double the size of the constraint matrix, then the elimination procedure takes eight times longer!
++ If we could avoid reproducing the row reduction every time we need to navigate to a new location, we significantly speed up our process.
+
+:::{.fragment}
+
+The slow part of this computation depends only on the drone’s movement restrictions — not on the target location itself.
+
+:::
+
+</div>
+
+## LU Decomposition
+
+<div style="font-size:16pt">
+
+:::{.fragment}
+
+The *LU decomposition* approach rewrites the system $A\vec{x} = \vec{b}$ as $LU\vec{x} = \vec{b}$.
+
+:::
+
+:::{.fragment}
+
+$\bigstar$ Notice that the constant vector is left unchanged since we are just decomposing $A$ as the product of a *lower triangular matrix* $L$ and an *upper triangular matrix* $U$.
+
+:::
+
+:::{.fragment}
+
+In everything we do in *numerical methods*, keep the adage "*Work Smart, Not Hard*" in the back of your mind.
+
+:::
+
+:::{.fragment}
+
+Solving a system $LU\vec{x} = \vec{b}$ can be done easily if we work strategically.
+
+:::
+
+1. Replace $U\vec{x} = \vec{y}$ and use *forward-substitution* to solve $L\vec{y} = \vec{b}$.
+2. Obtain the solution to the system by using *back-substitution* $U\vec{x} = \vec{y}$.
+
+:::{.fragment}
+
+**Example:** Consider the system of the form $LU\vec{x} = \vec{b}$ where $L = \left[\begin{array}{cc} 2 & 0\\ 1 & -3\end{array}\right]$, $U = \left[\begin{array}{cc} 1 & -1\\ 0 & 2\end{array}\right]$, and $\vec{b} = \left[\begin{array}{c} 16\\ 38\end{array}\right]$.
+
+:::
+
+::::{.columns}
+
+:::{.column width="32%"}
+
+:::{.fragment}
+
+Start by solving $L\vec{y} = \vec{b}$. 
+
+:::
+
+:::{.fragment}
+
+$$\left[\begin{array}{cc} 2 & 0\\ 1 & -3\end{array}\right]\left[\begin{array}{c} y_1\\ y_2\end{array}\right] = \left[\begin{array}{c} 16\\ 38\end{array}\right]$$
+
+:::
+
+:::{.fragment}
+
+Forward substitution will work.
+
+:::
+
+:::
+
+:::{.column width="32%"}
+
+:::{.fragment}
+
+\begin{align*} 2y_1 &= 16\\
+\implies y_1 &= 8~\checkmark\\
+y_1 - 3y_2 &= 38\\
+\implies 8 -3y_2 &= 38\\
+\implies -3y_2 &= 30\\
+\implies y_2 &= -10~\checkmark
+\end{align*}
+
+:::
+
+:::
+
+:::{.column width="32%"}
+
+:::{.fragment}
+
+Now we'll solve $U\vec{x} = \vec{y}$.
+
+:::
+
+:::{.fragment}
+
+$$\left[\begin{array}{cc} 1 & -1\\ 0 & 2\end{array}\right]\left[\begin{array}{c} x_1\\ x_2\end{array}\right] = \left[\begin{array}{c} 8\\ -10\end{array}\right]$$
+
+:::
+
+:::{.fragment}
+
+We can use back substitution.
+
+:::
+
+:::
+
+::::
+
+</div>
+
+## LU Decomposition
+
+<div style="font-size:16pt">
+
+The *LU decomposition* approach rewrites the system $A\vec{x} = \vec{b}$ as $LU\vec{x} = \vec{b}$.
+
+$\bigstar$ Notice that the constant vector is left unchanged since we are just decomposing $A$ as the product of a *lower triangular matrix* $L$ and an *upper triangular matrix* $U$.
+
+In everything we do in *numerical methods*, keep the adage "*Work Smart, Not Hard*" in the back of your mind.
+
+Solving a system $LU\vec{x} = \vec{b}$ can be done easily if we work strategically.
+
+:::{.nonincremental}
+
+1. Replace $U\vec{x} = \vec{y}$ and use *forward-substitution* to solve $L\vec{y} = \vec{b}$.
+2. Obtain the solution to the system by using *back-substitution* $U\vec{x} = \vec{y}$.
+
+:::
+
+**Example:** Consider the system of the form $LU\vec{x} = \vec{b}$ where $L = \left[\begin{array}{cc} 2 & 0\\ 1 & -3\end{array}\right]$, $U = \left[\begin{array}{cc} 1 & -1\\ 0 & 2\end{array}\right]$, and $\vec{b} = \left[\begin{array}{c} 16\\ 38\end{array}\right]$.
+
+::::{.columns}
+
+:::{.column width="32%"}
+
+Start by solving $L\vec{y} = \vec{b}$. 
+
+$$\left[\begin{array}{cc} 2 & 0\\ 1 & -3\end{array}\right]\left[\begin{array}{c} y_1\\ y_2\end{array}\right] = \left[\begin{array}{c} 16\\ 38\end{array}\right]$$
+
+Forward substitution will work.
+
+:::
+
+:::{.column width="32%"}
+
+:::{.fragment}
+
+ \begin{align*} 2x_2 &= -10\\
+\implies x_2 &= -5~\checkmark\\
+x_1 - x_2 &= 8\\
+\implies x_1 - \left(-5\right) &= 8\\
+\implies x_1 &= 3~\checkmark
+\end{align*}
+
+:::
+
+:::
+
+:::{.column width="32%"}
+
+Now we'll solve $U\vec{x} = \vec{y}$.
+
+$$\left[\begin{array}{cc} 1 & -1\\ 0 & 2\end{array}\right]\left[\begin{array}{c} x_1\\ x_2\end{array}\right] = \left[\begin{array}{c} 8\\ -10\end{array}\right]$$
+
+We can use back substitution.
+
+:::
+
+::::
+
+:::{.fragment}
+
+This means that the solution to $LU\vec{x} = \vec{b}$ is $\vec{x} = \begin{bmatrix} 3\\ -5\end{bmatrix}~~\checkmark$
+
+:::
+
+</div>
+
+## Common Decomposition Methods
+
+<div style="font-size:18pt">
+
+:::{.fragment}
+
+Not every square matrix $A$ has an $LU$ decomposition, but... 
+
+:::
+
+:::{.fragment}
+
+it is the case that for any given square matrix $A$, it is always possible to find a *lower triangular matrix* $L$ and an *upper triangular matrix* $U$ such that $LU$ is row-equivalent to $A$. 
+
+:::
+
+:::{.fragment}
+
+In fact, there are infinitely many pairs $L$ and $U$ which can be used to rewrite that matrix. For this reason, some common methods with constraints have been developed.
+
+:::
+
+<center>
+
+:::{.fragment}
+
+Name | Constraints
+---|---
+Doolittle's Decomposition | $L_{ii} = 1$ for $i\in[n]$
+Crout's Decomposition | $U_{ii} = 1$ for $i\in [n]$
+Choleski's Decomposition | $L = U^T$
+
+:::
+
+</center>
+
+:::{.fragment}
+
+We'll consider only Doolittle because (i) Crout's is nearly the same, and (ii) Choleski's is specialized, offering efficiencies, but only applying in specific scenarios.
+
+:::
+
+:::{.fragment}
+
+**Doolittle's Decomposition Method:** As with the *Gaussian Elimination* routine, this method of solution will also come in two phases
+
+:::
+
+::::{.columns}
+
+:::{.column width="40%"}
+
+1. The *decomposition phase*
+2. The *solution phase*. 
+
+:::
+
+:::{.column width="60%"}
+
+:::{.fragment}
+
+On the next slide, we'll introduce the general *decomposition phase*, but then follow it up with an example to make things more tangible! 
+
+:::
+
+:::
+
+::::
+
+</div>
+
+## Decomposition Phase
+
+<div style="font-size:14pt">
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+**General:** Consider a square matrix $A = \left[\begin{array}{ccc} A_{11} & A_{12} & A_{13}\\
+A_{21} & A_{22} & A_{23}\\
+A_{31} & A_{32} & A_{33}\end{array}\right]$ 
+
+:::
+
+:::{.fragment}
+
+Assume that there exist $L = \left[\begin{array}{ccc} 1 & 0 & 0\\
+L_{21} & 1 & 0\\
+L_{31} & L_{32} & 1\end{array}\right]$ and $U = \left[\begin{array}{ccc} U_{11} & U_{12} & U_{13}\\
+0 & U_{22} & U_{23}\\
+0 & 0 & U_{33}\end{array}\right]$ such that $A = LU$. 
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+Since $A = LU$, we have
+
+$$A = \left[\begin{array}{ccc} U_{11} & U_{12} & U_{13}\\
+U_{11}L_{21} & U_{12}L_{21} + U_{22} & U_{13}L_{21} + U_{23}\\
+U_{11}L_{31} & U_{12}L_{31} + U_{22}L_{32} & U_{13}L_{31} + U_{23}L_{32} + U_{33}\end{array}\right]$$
+
+:::
+
+:::{.fragment}
+
+From here, we could apply *Gaussian Elimination* to help us solve for the entries $U_{ij}$ and $L_{ij}$. 
+
+:::
+
+:::{.fragment}
+
+The reduced form of the matrix above is:
+
+:::
+
+:::
+
+::::
+
+
+:::{.fragment}
+
+\begin{align*} \left[\begin{array}{ccc} U_{11} & U_{12} & U_{13}\\
+U_{11}L_{21} & U_{12}L_{21} + U_{22} & U_{13}L_{21} + U_{23}\\
+U_{11}L_{31} & U_{12}L_{31} + U_{22}L_{32} & U_{13}L_{31} + U_{23}L_{32} + U_{33}\end{array}\right]
+\end{align*}
+
+:::
+
+</div>
+
+## Decomposition Phase
+
+<div style="font-size:14pt">
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+**General:** Consider a square matrix $A = \left[\begin{array}{ccc} A_{11} & A_{12} & A_{13}\\
+A_{21} & A_{22} & A_{23}\\
+A_{31} & A_{32} & A_{33}\end{array}\right]$ 
+
+Assume that there exist $L = \left[\begin{array}{ccc} 1 & 0 & 0\\
+L_{21} & 1 & 0\\
+L_{31} & L_{32} & 1\end{array}\right]$ and $U = \left[\begin{array}{ccc} U_{11} & U_{12} & U_{13}\\
+0 & U_{22} & U_{23}\\
+0 & 0 & U_{33}\end{array}\right]$ such that $A = LU$. 
+
+:::
+
+:::{.column width="50%"}
+
+Since $A = LU$, we have
+
+$$A = \left[\begin{array}{ccc} U_{11} & U_{12} & U_{13}\\
+U_{11}L_{21} & U_{12}L_{21} + U_{22} & U_{13}L_{21} + U_{23}\\
+U_{11}L_{31} & U_{12}L_{31} + U_{22}L_{32} & U_{13}L_{31} + U_{23}L_{32} + U_{33}\end{array}\right]$$
+
+From here, we could apply *Gaussian Elimination* to help us solve for the entries $U_{ij}$ and $L_{ij}$. 
+
+The reduced form of the matrix above is:
+
+:::
+
+::::
+
+
+\begin{align*} \left[\begin{array}{ccc} U_{11} & U_{12} & U_{13}\\
+U_{11}L_{21} & U_{12}L_{21} + U_{22} & U_{13}L_{21} + U_{23}\\
+U_{11}L_{31} & U_{12}L_{31} + U_{22}L_{32} & U_{13}L_{31} + U_{23}L_{32} + U_{33}\end{array}\right] &\stackrel{R_2 \leftarrow R_2 - L_{21}R_1}{\to} \left[\begin{array}{ccc} U_{11} & U_{12} & U_{13}\\
+0 & U_{22} & U_{23}\\
+U_{11}L_{31} & U_{12}L_{31} + U_{22}L_{32} & U_{13}L_{31} + U_{23}L_{32} + U_{33}\end{array}\right]
+\end{align*}
+
+</div>
+
+## Decomposition Phase
+
+<div style="font-size:14pt">
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+**General:** Consider a square matrix $A = \left[\begin{array}{ccc} A_{11} & A_{12} & A_{13}\\
+A_{21} & A_{22} & A_{23}\\
+A_{31} & A_{32} & A_{33}\end{array}\right]$ 
+
+Assume that there exist $L = \left[\begin{array}{ccc} 1 & 0 & 0\\
+L_{21} & 1 & 0\\
+L_{31} & L_{32} & 1\end{array}\right]$ and $U = \left[\begin{array}{ccc} U_{11} & U_{12} & U_{13}\\
+0 & U_{22} & U_{23}\\
+0 & 0 & U_{33}\end{array}\right]$ such that $A = LU$. 
+
+:::
+
+:::{.column width="50%"}
+
+Since $A = LU$, we have
+
+$$A = \left[\begin{array}{ccc} U_{11} & U_{12} & U_{13}\\
+U_{11}L_{21} & U_{12}L_{21} + U_{22} & U_{13}L_{21} + U_{23}\\
+U_{11}L_{31} & U_{12}L_{31} + U_{22}L_{32} & U_{13}L_{31} + U_{23}L_{32} + U_{33}\end{array}\right]$$
+
+From here, we could apply *Gaussian Elimination* to help us solve for the entries $U_{ij}$ and $L_{ij}$. 
+
+The reduced form of the matrix above is:
+
+:::
+
+::::
+
+
+\begin{align*} \left[\begin{array}{ccc} U_{11} & U_{12} & U_{13}\\
+U_{11}L_{21} & U_{12}L_{21} + U_{22} & U_{13}L_{21} + U_{23}\\
+U_{11}L_{31} & U_{12}L_{31} + U_{22}L_{32} & U_{13}L_{31} + U_{23}L_{32} + U_{33}\end{array}\right] &\stackrel{R_2 \leftarrow R_2 - L_{21}R_1}{\to} \left[\begin{array}{ccc} U_{11} & U_{12} & U_{13}\\
+0 & U_{22} & U_{23}\\
+U_{11}L_{31} & U_{12}L_{31} + U_{22}L_{32} & U_{13}L_{31} + U_{23}L_{32} + U_{33}\end{array}\right]\\
+&\stackrel{R_3 \leftarrow R_3 - L_{31}R_1}{\to} \left[\begin{array}{ccc} U_{11} & U_{12} & U_{13}\\
+0 & U_{22} & U_{23}\\
+0 & U_{22}L_{32} &U_{23}L_{32} + U_{33}\end{array}\right]
+\end{align*}
+
+</div>
+
+## Decomposition Phase
+
+<div style="font-size:14pt">
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+**General:** Consider a square matrix $A = \left[\begin{array}{ccc} A_{11} & A_{12} & A_{13}\\
+A_{21} & A_{22} & A_{23}\\
+A_{31} & A_{32} & A_{33}\end{array}\right]$ 
+
+Assume that there exist $L = \left[\begin{array}{ccc} 1 & 0 & 0\\
+L_{21} & 1 & 0\\
+L_{31} & L_{32} & 1\end{array}\right]$ and $U = \left[\begin{array}{ccc} U_{11} & U_{12} & U_{13}\\
+0 & U_{22} & U_{23}\\
+0 & 0 & U_{33}\end{array}\right]$ such that $A = LU$. 
+
+:::
+
+:::{.column width="50%"}
+
+Since $A = LU$, we have
+
+$$A = \left[\begin{array}{ccc} U_{11} & U_{12} & U_{13}\\
+U_{11}L_{21} & U_{12}L_{21} + U_{22} & U_{13}L_{21} + U_{23}\\
+U_{11}L_{31} & U_{12}L_{31} + U_{22}L_{32} & U_{13}L_{31} + U_{23}L_{32} + U_{33}\end{array}\right]$$
+
+From here, we could apply *Gaussian Elimination* to help us solve for the entries $U_{ij}$ and $L_{ij}$. 
+
+The reduced form of the matrix above is:
+
+:::
+
+::::
+
+
+\begin{align*} \left[\begin{array}{ccc} U_{11} & U_{12} & U_{13}\\
+U_{11}L_{21} & U_{12}L_{21} + U_{22} & U_{13}L_{21} + U_{23}\\
+U_{11}L_{31} & U_{12}L_{31} + U_{22}L_{32} & U_{13}L_{31} + U_{23}L_{32} + U_{33}\end{array}\right] &\stackrel{R_2 \leftarrow R_2 - L_{21}R_1}{\to} \left[\begin{array}{ccc} U_{11} & U_{12} & U_{13}\\
+0 & U_{22} & U_{23}\\
+U_{11}L_{31} & U_{12}L_{31} + U_{22}L_{32} & U_{13}L_{31} + U_{23}L_{32} + U_{33}\end{array}\right]\\
+&\stackrel{R_3 \leftarrow R_3 - L_{31}R_1}{\to} \left[\begin{array}{ccc} U_{11} & U_{12} & U_{13}\\
+0 & U_{22} & U_{23}\\
+0 & U_{22}L_{32} &U_{23}L_{32} + U_{33}\end{array}\right]\\
+&\stackrel{R_3 \leftarrow R_3 - L_{32}R_2}{\to} \left[\begin{array}{ccc} U_{11} & U_{12} & U_{13}\\
+0 & U_{22} & U_{23}\\
+0 & 0 & U_{33}\end{array}\right]
+\end{align*}
+
+::::{.columns}
+
+:::{.column width="25%"}
+
+:::
+
+:::{.column width="32%"}
+
+:::{.fragment}
+
+Those scale factors look familiar!
+
+:::
+
+:::
+
+:::{.column width="40%"}
+
+:::{.fragment}
+
+And so does that upper triangular matrix.
+
+:::
+
+:::
+
+::::
+
+</div>
+
+## Decomposition Phase: Example
+
+<div style="font-size:14pt">
+
+:::{.fragment} 
+
+The general decomposition may not look extremely transparent -- let's confirm what we saw previously with a small example.
+
+:::
+
+:::{.fragment}
+
+**Example:** Consider $A = \left[\begin{array}{ccc} 1 & 0 & 1\\
+2 & -1 & 5\\
+3 & 3 & 3\end{array}\right]$. Use Gaussian Elimination to row reduce the matrix and then use the result (and the pivot multipliers) to construct the Doolittle $LU$-decomposition of $A$.
+
+:::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+\begin{align*} \left[\begin{array}{ccc} 1 & 0 & 1\\
+2 & -1 & 5\\
+3 & 3 & 3\end{array}\right]
+\end{align*}
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::
+
+::::
+
+</div>
+
+## Decomposition Phase: Example
+
+<div style="font-size:14pt">
+
+The general decomposition may not look extremely transparent -- let's confirm what we saw previously with a small example.
+
+**Example:** Consider $A = \left[\begin{array}{ccc} 1 & 0 & 1\\
+2 & -1 & 5\\
+3 & 3 & 3\end{array}\right]$. Use Gaussian Elimination to row reduce the matrix and then use the result (and the pivot multipliers) to construct the Doolittle $LU$-decomposition of $A$.
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+\begin{align*} \left[\begin{array}{ccc} 1 & 0 & 1\\
+2 & -1 & 5\\
+3 & 3 & 3\end{array}\right] &\stackrel{R_1 \leftarrow R_2 - 2R_1}{\to} \left[\begin{array}{ccc} 1 & 0 & 1\\
+0 & -1 & 3\\
+3 & 3 & 3\end{array}\right]
+\end{align*}
+
+:::
+
+:::{.column width="50%"}
+
+:::
+
+::::
+
+</div>
+
+## Decomposition Phase: Example
+
+<div style="font-size:14pt">
+
+The general decomposition may not look extremely transparent -- let's confirm what we saw previously with a small example.
+
+**Example:** Consider $A = \left[\begin{array}{ccc} 1 & 0 & 1\\
+2 & -1 & 5\\
+3 & 3 & 3\end{array}\right]$. Use Gaussian Elimination to row reduce the matrix and then use the result (and the pivot multipliers) to construct the Doolittle $LU$-decomposition of $A$.
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+\begin{align*} \left[\begin{array}{ccc} 1 & 0 & 1\\
+2 & -1 & 5\\
+3 & 3 & 3\end{array}\right] &\stackrel{R_1 \leftarrow R_2 - 2R_1}{\to} \left[\begin{array}{ccc} 1 & 0 & 1\\
+0 & -1 & 3\\
+3 & 3 & 3\end{array}\right]\\
+&\stackrel{R_3 \leftarrow R_3 - 3R_1}{\to} \left[\begin{array}{ccc} 1 & 0 & 1\\
+0 & -1 & 3\\
+0 & 3 & 0\end{array}\right]
+\end{align*}
+
+:::
+
+:::{.column width="50%"}
+
+:::
+
+::::
+
+</div>
+
+## Decomposition Phase: Example
+
+<div style="font-size:14pt">
+
+The general decomposition may not look extremely transparent -- let's confirm what we saw previously with a small example.
+
+**Example:** Consider $A = \left[\begin{array}{ccc} 1 & 0 & 1\\
+2 & -1 & 5\\
+3 & 3 & 3\end{array}\right]$. Use Gaussian Elimination to row reduce the matrix and then use the result (and the pivot multipliers) to construct the Doolittle $LU$-decomposition of $A$.
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+\begin{align*} \left[\begin{array}{ccc} 1 & 0 & 1\\
+2 & -1 & 5\\
+3 & 3 & 3\end{array}\right] &\stackrel{R_1 \leftarrow R_2 - 2R_1}{\to} \left[\begin{array}{ccc} 1 & 0 & 1\\
+0 & -1 & 3\\
+3 & 3 & 3\end{array}\right]\\
+&\stackrel{R_3 \leftarrow R_3 - 3R_1}{\to} \left[\begin{array}{ccc} 1 & 0 & 1\\
+0 & -1 & 3\\
+0 & 3 & 0\end{array}\right]\\
+&\stackrel{R_3 \leftarrow R_3 - (-3)R_2}{\to} \left[\begin{array}{ccc} 1 & 0 & 1\\
+0 & -1 & 3\\
+0 & 0 & 9\end{array}\right]\\
+\end{align*}
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+On the left, we've discovered that $U = \left[\begin{array}{ccc} 1 & 0 & 1\\
+0 & -1 & 3\\
+0 & 0 & 9\end{array}\right]$, and keeping track of the scalar multipliers for our pivots, we have $L_{21} = 2$, $L_{31} = 3$, and $L_{32} = -3$. That is, $L = \left[\begin{array}{ccc} 1 & 0 & 0\\
+2 & 1 & 0\\
+3 & -3 & 1\end{array}\right]$.
+
+:::
+
+:::{.fragment}
+
+We'll now explicitly show that $LU = A$.
+
+:::
+
+:::{.fragment}
+
+\begin{align*}LU &= \left[\begin{array}{ccc} 1 & 0 & 0\\
+2 & 1 & 0\\
+3 & -3 & 1\end{array}\right]\left[\begin{array}{ccc} 1 & 0 & 1\\
+0 & -1 & 3\\
+0 & 0 & 9\end{array}\right]
+\end{align*} 
+
+:::
+
+:::
+
+::::
+
+</div>
+
+## Decomposition Phase: Example
+
+<div style="font-size:14pt">
+
+The general decomposition may not look extremely transparent -- let's confirm what we saw previously with a small example.
+
+**Example:** Consider $A = \left[\begin{array}{ccc} 1 & 0 & 1\\
+2 & -1 & 5\\
+3 & 3 & 3\end{array}\right]$. Use Gaussian Elimination to row reduce the matrix and then use the result (and the pivot multipliers) to construct the Doolittle $LU$-decomposition of $A$.
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+\begin{align*} \left[\begin{array}{ccc} 1 & 0 & 1\\
+2 & -1 & 5\\
+3 & 3 & 3\end{array}\right] &\stackrel{R_1 \leftarrow R_2 - 2R_1}{\to} \left[\begin{array}{ccc} 1 & 0 & 1\\
+0 & -1 & 3\\
+3 & 3 & 3\end{array}\right]\\
+&\stackrel{R_3 \leftarrow R_3 - 3R_1}{\to} \left[\begin{array}{ccc} 1 & 0 & 1\\
+0 & -1 & 3\\
+0 & 3 & 0\end{array}\right]\\
+&\stackrel{R_3 \leftarrow R_3 - (-3)R_2}{\to} \left[\begin{array}{ccc} 1 & 0 & 1\\
+0 & -1 & 3\\
+0 & 0 & 9\end{array}\right]\\
+\end{align*}
+
+:::
+
+:::{.column width="50%"}
+
+On the left, we've discovered that $U = \left[\begin{array}{ccc} 1 & 0 & 1\\
+0 & -1 & 3\\
+0 & 0 & 9\end{array}\right]$, and keeping track of the scalar multipliers for our pivots, we have $L_{21} = 2$, $L_{31} = 3$, and $L_{32} = -3$. That is, $L = \left[\begin{array}{ccc} 1 & 0 & 0\\
+2 & 1 & 0\\
+3 & -3 & 1\end{array}\right]$.
+
+We'll now explicitly show that $LU = A$.
+
+\begin{align*}LU &= \left[\begin{array}{ccc} 1 & 0 & 0\\
+2 & 1 & 0\\
+3 & -3 & 1\end{array}\right]\left[\begin{array}{ccc} 1 & 0 & 1\\
+0 & -1 & 3\\
+0 & 0 & 9\end{array}\right]\\
+&= \left[\begin{array}{ccc} 1 & 0 & 1\\
+2 & -1 & 5\\
+3 & 3 & 3\end{array}\right]~~~\checkmark
+\end{align*} 
+
+:::
+
+::::
+
+</div>
+
+## A Space-Saving Trick
+
+<div style="font-size:18pt">
+
+:::{.fragment}
+
+$\bigstar$ Two of our primary goals in numerical methods are *speed* and *efficiency*. $\bigstar$
+
+:::
+
+:::{.fragment}
+
+The matrices $L$ and $U$ have no overlapping non-zero (or non-one) elements.
+
+:::
+
+:::{.fragment}
+
+We can store $L$ and $U$ compactly within one data structure. 
+
+:::
+
+:::{.fragment}
+
+This can be important as we solve very large problems and actual computer memory becomes a concern.
+
+:::
+
+:::{.fragment}
+
+The structure $\left[L/U\right] = \left[\begin{array}{ccc} U_{11} & U_{12} & U_{13}\\
+L_{21} & U_{22} & U_{23}\\
+L_{31} & L_{32} & U_{33}\end{array}\right]$ contains all of the information required to reconstruct the matrices $L$ and $U$. 
+
+:::
+
++ We know all of the elements of $U$ below the main diagonal are $0$, and
++ All of the elements of $L$ along the main diagonal are $1$ while all of the elements above it are $0$.
+
+:::{.fragment}
+
+**Example:** If $\left[L/U\right] = \left[\begin{array}{ccc} 2 & 5 & -6\\
+1 & -4 & 3\\
+9 & 7 & 8\end{array}\right]$, then we know $L = \left[\begin{array}{ccc} 1 & 0 & 0\\
+1 & 1 & 0\\
+9 & 7 & 1\end{array}\right]$ and $U = \left[\begin{array}{ccc} 2 & 5 & -6\\
+0 & -4 & 3\\
+0 & 0 & 8\end{array}\right]$.
+
+:::
+
+</div>
+
+## Doolittle's LU Decomposition Algorithm
+
+:::{.fragment}
+
+Gaussian Elimination required backward substitution, so we've already got code for that.
+
+:::
+
+:::{.fragment} 
+
+We'll be able to adapt that easily to run forward substitution by reversing the order of the loop (top row to bottom row instead of bottom row to top row).
+
+:::
+
+:::{.fragment}
+
+Careful work will be required to implement the decomposition and storage portion of the algorithm though.
+
+:::
+
+## Implementing Doolittle Decomposition
+
+:::{.fragment}
+
+The algorithm to decompose $A$ into its $LU$-decomposition is simply the Gaussian Elimination algorithm. 
+
+:::
+
+::::{.columns}
+
+:::{.column width="40%"}
+
+:::{.fragment}
+
+The only additional step is that we'll need to save those $\lambda$ values (the scalar multipliers for our pivots) along the way. 
+
+:::
+
+:::{.fragment}
+
+We'll also use the space-saving strategy from above to pack $L$ and $U$ into a single data structure.
+
+:::
+
+:::
+
+:::{.column width="60%"}
+
+:::{.fragment}
+
+<div style="font-size:24pt">
+
+```
+#decomposition routine
+for k in range(0, n-1):
+  for i in range(k+1, n):
+    if A[i, k] != 0.0:
+      lam = A[i, k]/A[k, k]
+      A[i, (k+1):n] = A[i, (k+1):n] - lam*A[k, (k+1):n]
+      A[i, k] = lam
+```
+
+</div>
+
+:::
+
+:::
+
+::::
+
+:::{.fragment}
+
+The array $A$ resulting from the decomposition routine above will contain the entries of $L$ below the main diagonal, and the entries of $U$ on and above the main diagonal.
+
+:::
+
+## Back and Forward Substitution
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+<center> **Back Substitution**</center>
+
+:::
+
+:::{.fragment}
+
+The back-substitution routine for solving a system whose coefficient matrix is upper-triangular is extracted from our Gaussian Elimination routine below:
+
+:::
+
+:::{.fragment}
+
+<div style="font-size:19pt">
+
+```
+#back-substitution routine
+for k in range(n - 2, -1, -1):
+  b[k] = (b[k] - np.dot(A[k, (k+1):n], b[(k+1):n]))/A[k, k]
+```
+
+</div>
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+<center>**Forward Substitution**</center>
+
+:::
+
+:::{.fragment}
+
+Similarly, the forward substitution routine is:
+
+:::
+
+:::{.fragment}
+
+<div style="font-size:20pt">
+
+```
+#forward-substitution routine
+for k in range(1, n):
+  b[k] = (b[k] - np.dot(A[k, 0:k], b[0:k]))/A[k, k]
+```
+
+</div>
+
+:::
+
+:::
+
+::::
+
+:::{.fragment}
+
+We can put these things together into the `DoolittleLUdecomp()` routine on the next slide.
+
+:::
+
+## Doolittle LU Decomposition Routine
+
+```{python}
+#| echo: true
+#| eval: true
+#| font-size: 12pt
+
+def LUdecomp(A):
+  n = A.shape[0]
+  for k in range(n):
+    for i in range(k+1, n):
+      if A[i, k] != 0.0:
+        lam = A[i, k]/A[k, k]
+        A[i, (k+1):n] = A[i, (k+1):n] - lam*A[k, (k+1):n]
+        A[i, k] = lam
+
+  return A
+
+def LUsolve(LU, b):
+  n = len(b)
+  for k in range(1, n):
+    b[k] = (b[k] - np.dot(LU[k, 0:k], b[0:k]))
+
+  b[n-1] = b[n-1]/LU[n-1, n-1]
+
+  for k in range(n-2, -1, -1):
+    b[k] = (b[k] - np.dot(LU[k, (k+1):n], b[(k+1):n]))/LU[k, k]
+
+  return b
+
+def DoolittleLUsolver(A, b):
+  LU = LUdecomp(A) #Row Reduction
+  sol = LUsolve(LU, b) #Forward/backward substitution
+
+  return sol
+  
+```
+
+## Comments on Implementation
+
+:::{.fragment}
+
+Our implementation consists of three total functions -- two helper functions and one encapsulating function.
+
+:::
+
+1. The `LUdecomp()` function will decompose a square matrix $A$ into the `[L/U]` data structure that contains the information required to reconstruct both $L$ and $U$.
+2. The `LUsolve()` function takes in the `[L/U]` data structure and the constraint vector $\vec{b}$ and solves $LU\vec{x} = \vec{b}$.
+3. The `DoolittleLUsolver()` function takes in the matrix $A$ and the constraing vector $\vec{b}$, runs the LU decomposition, and then solves $LU\vec{x} = \vec{b}$.
+
+:::{.fragment}
+
+**Note.** The entire point of pursuing the LU decomposition method was to avoid the row reduction bottleneck. 
+
+:::
+
+:::{.fragment}
+
+Keep this in mind when applying this functionality -- it is rarely the case that you want to apply `DoolittleLUsolver()` over and over again.
+
+:::
+
+## A First Example
+
+:::{.fragment}
+
+**Example:** Use the `DoolittleLUsolver()` to solve the system $\left[\begin{array}{ccc} 1 & 0 & 1\\
+2 & -1 & 5\\
+3 & 3 & 3\end{array}\right]\left[\begin{array}{c} x_1\\ x_2\\ x_3\end{array}\right] = \left[\begin{array}{c} 1\\ 3\\ 1\end{array}\right]$.
+
+:::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+```{python}
+#| echo: true
+#| eval: false
+
+A = np.array([
+  [1.0, 0, 1],
+  [2, -1, 5],
+  [3, 3, 3]
+])
+
+b = np.array([1.0, 3, 1])
+
+DoolittleLUsolve(A, b)
+```
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+```{python}
+#| echo: false
+#| eval: true
+
+A = np.array([
+  [1.0, 0, 1],
+  [2, -1, 5],
+  [3, 3, 3]
+])
+
+b = np.array([1.0, 3, 1])
+
+DoolittleLUsolver(A, b)
+```
+
+:::
+
+:::
+
+::::
+
+:::{.fragment}
+
+The solution is $\vec{x} \approx \begin{bmatrix} 8/9\\ -2/3\\ 1/9\end{bmatrix}$.
+
+:::
+
+## A Second Example
+
+<div style="font-size:18pt">
+
+:::{.fragment}
+
+**Example:** Use Doolittle's decomposition method to solve $A\vec{x} = \vec{b_i}$ where
+
+$$A = \left[\begin{array}{rrr} -3 & 6 & -4\\ 9 & -8 & 24\\ -12 & 24 & -26\end{array}\right]~~~~\text{ and }~~~~ \vec{b_1} =\left[\begin{array}{r} -3\\ 65\\ -42\end{array}\right],~\vec{b_2} =\left[\begin{array}{r} -15\\ -12\\ 18\end{array}\right],~\vec{b_3} =\left[\begin{array}{r} 6\\ 39\\ 27\end{array}\right],~\vec{b_4} =\left[\begin{array}{r} 12\\ 17\\ 64\end{array}\right]$$
+
+:::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+```{python}
+#| echo: true
+#| eval: false
+
+A= np.array([
+  [-3.0, 6, -4],
+  [9, -8, 24],
+  [-12, 24, -26]
+])
+
+b1 = np.array([-3.0, 65, -42])
+b2 = np.array([-15.0, -12, 18])
+b3 = np.array([6.0, 39, 27])
+b4 = np.array([12.0, 17, 64])
+
+LU = LUdecomp(A)
+LUsolve(LU, b1)
+LUsolve(LU, b2)
+LUsolve(LU, b3)
+LUsolve(LU, b4)
+```
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+```{python}
+#| echo: false
+#| eval: true
+
+A = np.array([
+  [-3.0, 6, -4],
+  [9, -8, 24],
+  [-12, 24, -26]
+])
+
+b1 = np.array([-3.0, 65, -42])
+b2 = np.array([-15.0, -12, 18])
+b3 = np.array([6.0, 39, 27])
+b4 = np.array([12.0, 17, 64])
+
+LU = LUdecomp(A)
+LUsolve(LU, b1)
+LUsolve(LU, b2)
+LUsolve(LU, b3)
+LUsolve(LU, b4)
+```
+
+:::
+
+:::
+
+::::
+
+</div>
+
+## Next Time
+
+<br/>
+<br/>
+
+We'll look at methods that can be used to exploit the structure of a matrix in order to gain efficiencies in either run-time, space, or both.
