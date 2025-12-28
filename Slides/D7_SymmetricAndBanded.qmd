@@ -1,0 +1,570 @@
+---
+title: "MAT 370: Symmetric and Banded Matrices"
+subtitle: "Exploiting Matrix Structure"
+author: Dr. Gilbert
+format: 
+  revealjs:
+    smaller: true
+date: today
+date-format: long
+theme: serif
+incremental: true
+execute: 
+  error: true
+---
+
+```{r global-options, include=FALSE}
+library(tidyverse)
+library(reticulate)
+
+theme_set(theme_bw(base_size = 20))
+```
+
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+
+def GaussElim(A, b):
+  n = len(b)
+
+  for k in range(0, n-1):
+    for i in range(k+1, n):
+      if A[i, k] != 0.0:
+        lam = A[i, k]/A[k, k]
+        A[i, k:n] = A[i, k:n] - lam*A[k, k:n]
+        b[i] = b[i] - lam*b[k]
+
+  for k in range(n - 1, -1, -1):
+    b[k] = (b[k] - np.dot(A[k, (k+1):n], b[(k+1):n]))/A[k,k]
+
+  return b
+
+
+```
+
+```{css}
+code.sourceCode {
+  font-size: 1.3em;
+  /* or try font-size: xx-large; */
+}
+
+a {
+  color: purple;
+}
+
+a:link {
+  color: purple;
+}
+
+a:visited {
+  color: purple;
+}
+```
+
+## Exploiting Matrix Structure
+
+:::{.fragment}
+
+So far, we’ve focused on *general* linear systems.
+
+:::
+
+:::{.fragment}
+
+But many systems arising in practice have specific **structure**.
+
+:::
+
+:::{.fragment}
+
+If we can exploit that structure, we can often solve problems
+
++ faster,
++ with less memory,
++ and with simpler algorithms.
+
+:::
+
+## Types of Special Matrices
+
+:::{.fragment}
+
+There are many types of special matrix.
+
+:::
+
++ Diagonal
++ Symmetric
++ Block
++ Banded
++ etc.
+
+:::{.fragment}
+
+We can optimize algorithms to utilize these structures.
+
+:::
+
+:::{.fragment}
+
+In this discussion we'll develop an algorithm that is suitable for tri-diagonal matrices because they'll arise in later components of our course.
+
+:::
+
+## Banded Matrices
+
+<div style="font-size:18pt">
+
+:::{.fragment}
+
+Applications often involve coefficient matrices that are *sparse*ly populated.
+
+:::
+
+:::{.fragment}
+
+That means most of their entries are $0$'s. 
+
+:::
+
+:::{.fragment}
+
+If all of the non-zero entries are clustered near the main diagonal, then the matrix is said to be *banded*. 
+
+:::
+
+:::{.fragment}
+
+For example, see the matrix below, which is a tri-diagonal, banded matrix.
+
+:::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+$$\left[\begin{array}{ccccccc}X & X & 0 & 0 & \cdots & 0 & 0 & 0\\
+X & X & X & 0 & \cdots & 0 & 0 & 0\\
+0 & X & X & X & \cdots & 0 & 0 & 0\\[10pt]
+\vdots & \vdots & \vdots & \ddots & \ddots & \ddots & \vdots & \vdots\\[10pt]
+0 & 0 & 0 & 0 &\cdots & X & X & X\\
+0 & 0 & 0 & 0 & \cdots & 0 & X & X
+\end{array}\right]$$
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+Those $X$ entries could be zero or non-zero, but all entries off of those three diagonals are $0$'s in a tri-diagonal matrix. 
+
+:::
+
+:::{.fragment}
+
+We say that such a matrix has a *bandwidth* of $3$ since there are at most three non-zero elements in each row.
+
+:::
+
+:::
+
+::::
+
+:::{.fragment}
+
+If a banded matrix is *LU-decomposed*, then both $L$ and $U$ retain the banded structure. This structure can be exploited to save on both *memory requirements* and *run time*.
+
+:::
+
+</div>
+
+## An Example
+
+<div style="font-size:16pt">
+
+:::{.fragment}
+
+To motivate our discovery and implementation, we'll solve a system with a tridiagonal coefficient matrix.
+
+:::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+**Example:** Solve the system
+$$A = \left[\begin{array}{ccccc} 1 & 2 & 0 & 0 & 0\\
+2 & -1 & 8 & 0 & 0\\
+0 & 3 & -1 & -1 & 0\\
+0 & 0 & 3 & 2 & -1\\
+0 & 0 & 0 & 5 & -4\end{array}\right]\left[\begin{array}{c} x_1\\ x_2\\ x_3\\ x_4\\ x_5\end{array}\right] = \left[\begin{array}{c}13\\ 30\\ 7\\ 12\\ 6\end{array}\right]$$
+
+:::
+
+:::
+
+::::
+
+</div>
+
+## Doolittle's Method for Tridiagonal Coefficient Matrices
+
+<div style="font-size:18pt">
+
+:::{.fragment data-fragment-index=1}
+
+Consider the system $A\vec{x} = \vec{b}$, where $A$ is a tridiagonal matrix of the following form:
+
+:::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment data-fragment-index=1}
+
+$$A = \left[\begin{array}{cccccc} d_1 & e_1 & 0 & 0 & \cdots & 0\\
+c_1 & d_2 & e_2 & 0 & \cdots & 0\\
+0 & c_2 & d_3 & e_3 & \cdots & 0\\
+0 & 0 & c_3 & d_4 & \cdots & 0\\
+\vdots & \vdots & \vdots & \vdots & \ddots & \vdots\\
+0 & 0 & \cdots & 0 & c_{n-1} & d_n
+\end{array}\right]$$
+
+:::
+
+:::{.fragment data-fragment-index=4}
+
+This is a significant savings, since a $100\times 100$ tridiagonal matrix has $10,000$ entries, but we can get away with storing only $99 + 100 + 99 = 298$ entries using this vector storage trick. This is a *compression* of around $33:1$.
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment data-fragment-index=2}
+
+In this case, the majority of the entries will be $0$ (as long as the matrix is large enough). It becomes more efficient to store the three diagonal vectors only, since we know that all other entries are $0$'s. That is, instead of storing $A$ explicitly, we'll store:
+
+:::
+
+:::{.fragment data-fragment-index=3}
+
+$$\vec{c} = \left[\begin{array}{c} c_1\\ c_2\\ \vdots\\ c_{n-1}\end{array}\right]~~~\vec{d} = \left[\begin{array}{c} d_1\\ d_2\\ \vdots\\ d_n\end{array}\right]~~~\vec{e} = \left[\begin{array}{c} e_1\\ e_2\\ \vdots\\ e_{n-1}\end{array}\right]$$
+:::
+
+:::
+
+::::
+
+</div>
+
+## LU Decomposition on Vectors
+
+<div style="font-size:18pt">
+
+:::{.fragment} 
+We can still apply *LU decomposition* to the coefficient "matrix" (really, the coefficient vectors) as long as we carefully track which vectors we are working with. 
+:::
+
+:::{.fragment}
+
+As a reminder, the *LU-decomposition* begins with the usual *Gaussian Elimination* procedure. 
+
+:::
+
+:::{.fragment}
+
+That is, to reduce $R_k$ (row $k$) we eliminate $c_{k-1}$ using:
+
+$$R_k \leftarrow R_k - \left(c_{k-1}/d_{k-1}\right)R_{k-1}$$
+:::
+
+:::{.fragment}
+
+Notice that in doing this, only $\vec{c}$ and $\vec{d}$ are changed. The changes are:
+
+$$\begin{array}{lcl} d_k &\leftarrow &d_k - \left(c_{k-1}/d_{k-1}\right)e_{k-1}\\
+c_{k-1} &\leftarrow & 0
+\end{array}$$
+
+:::
+
+:::{.fragment}
+
+At the end of the process, the vector $\vec{c}$ would be zeroed out. It is a waste of space to store that zero-vector, but $\vec{c}$ is a perfect place to store our $\lambda$ scalar multipliers for our pivot rows. 
+
+:::
+
+:::{.fragment}
+
+For this reason, we'll update:
+
+$$\begin{array}{lcl} d_k &\leftarrow &d_k - \left(c_{k-1}/d_{k-1}\right)e_{k-1}\\
+c_{k-1} &\leftarrow & c_{k-1}/d_{k-1}
+\end{array}$$
+
+:::
+
+</div>
+
+## Doolittle Tridiagonal LU Algorithm
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment data-fragment-index=1}
+
+<div style="font-size:18pt">
+
+Thus, we have the following decomposition algorithm:
+
+</div>
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment data-fragment-index=1}
+
+<div style="font-size:26pt">
+
+```
+#tridiagonal LU decomp
+for k in range(1, n):
+  lam = c[k-1]/d[k-1]
+  d[k] = d[k] - lam*e[k-1]
+  c[k-1] = lam
+```
+
+</div>
+
+:::
+
+:::
+
+::::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+<div style="font-size:18pt">
+
+:::{.fragment}
+
+Now we'll look to the *solution phase*. As a reminder, we're solving $A\vec{x} = \vec{b}$ by solving $LU\vec{x} = \vec{b}$. 
+:::
+
+:::{.fragment}
+
+The strategy is to use forward-substitution to solve $L\vec{y} = \vec{b}$ and then backward-substitution to solve $U\vec{x} = \vec{y}$ as before, but we need to deal with the fact that our factorized matrix elements are split across the three vectors $\vec{c}$, $\vec{d}$, and $\vec{e}$.
+
+:::
+
+</div>
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+<div style="font-size:18pt">
+
+We can solve $L\vec{y} = \vec{b}$ as follows (remember that $\vec{c}$ contains our $\lambda$ multipliers):
+
+</div>
+
+:::
+
+:::{.fragment}
+
+<div style="font-size:26pt">
+
+```
+#forward substitution
+y[0] = b[0]
+for k in range(1, n):
+  y[k] = b[k] - c[k-1]*y[k-1]
+```
+
+</div>
+
+:::
+
+:::{.fragment}
+
+<div style="font-size:18pt">
+
+Now we solve $U\vec{x} = \vec{y}$ using backward-substitution.
+
+</div>
+
+:::
+
+:::{.fragment}
+
+<div style="font-size:26pt">
+
+```
+#backward substitution
+x[n-1] = y[n-1]/d[n-1]
+for k in range(n-2, -1, -1):
+  x[k] = (y[k] - e[k]*x[k+1])/d[k]
+```
+
+</div>
+
+:::
+
+:::
+
+::::
+
+:::{.fragment}
+
+<div style="font-size:18pt">
+
+We'll put this all together into the `DoolittleLUdecomp3solver()` routine on the next slide.
+
+</div>
+
+:::
+
+## Doolittle Tridiagonal LU Implementation
+
+```{python}
+#| echo: true
+#| eval: true
+
+def DoolittleLUdecomp3(c, d, e):
+  n = len(d)
+  for k in range(1, n):
+    lam = c[k-1]/d[k-1]
+    d[k] = d[k] - lam*e[k-1]
+    c[k-1] = lam
+
+  return c, d, e
+
+def Doolittle3solver(lam, d, e, b):
+  n = len(d)
+  for k in range(1, n):
+    b[k] = b[k] - lam[k-1]*b[k-1]
+
+  b[n-1] = b[n-1]/d[n-1]
+  for k in range(n-2, -1, -1):
+    b[k] = (b[k] - e[k]*b[k+1])/d[k]
+
+  return b
+
+def DoolittleLUdecomp3solver(c, d, e, b):
+  lam, d, e = DoolittleLUdecomp3(c, d, e)
+  b = Doolittle3solver(lam, d, e, b)
+
+  return b
+```
+
+## Comments on the Algorithm
+
+:::{.fragment}
+
+As with our original LU solver, this implementation consists of two helper-functions and a wrapper that implements the two in sequence.
+
+:::
+
+:::{.fragment}
+
+The `DoolittleLUdecomp3()` function takes in the original sub-diagonal `c`, main-diagonal `d`, and super-diagonal `e` and executes the LU decomposition.
+
+:::
+
+
+:::{.fragment}
+
+The `Doolittle3solver()` function takes in the sub-diagonal of $L$ (`lam`bda), the main-diagonal and super-diagonal of $U$ (`d` and `e`, respectively), and the constraint vector `b`, and performs the forward- and backward-substitution to solve the system $LU\vec{x} = \vec{b}$.
+
+:::
+
+:::{.fragment}
+
+The `DoolittleLUdecomp3solver()` function takes in the three diagonals `c`, `d`, and `e` along with the constraint vector `b` and solves the tridiagonal system by first doing the LU-decomposition and then solving via forward- and backward-substitution.
+
+:::
+
+## Example
+
+:::{.fragment}
+
+**Example:** Verify that this solver works on our example from earlier! As a reminder, our system corresponded to the augmented coefficient matrix
+
+:::
+
+::::{.columns}
+
+:::{.column width="40%"}
+
+:::{.fragment}
+
+<div style="font-size:16pt">
+
+$$A = \left[\begin{array}{ccccc} 1 & 2 & 0 & 0 & 0\\
+2 & -1 & 8 & 0 & 0\\
+0 & 3 & -1 & -1 & 0\\
+0 & 0 & 3 & 2 & -1\\
+0 & 0 & 0 & 5 & -4\end{array}\right]\left[\begin{array}{c} x_1\\ x_2\\ x_3\\ x_4\\ x_5\end{array}\right] = \left[\begin{array}{c}13\\ 30\\ 7\\ 12\\ 6\end{array}\right]$$
+
+</div>
+
+:::
+
+:::
+
+:::{.column width="60%"}
+
+:::{.fragment}
+
+```{python}
+#| echo: true
+#| eval: true
+
+d = np.array([1.0, -1, -1, 2, -4])
+e = np.array([2.0, 8, -1, -1])
+c = np.array([2.0, 3, 3, 5])
+
+b = np.array([13.0, 30, 7, 12, 6])
+
+x = DoolittleLUdecomp3solver(c, d, e, b)
+print("The Solution is x = ", x)
+```
+
+:::
+
+:::
+
+::::
+
+:::{.fragment}
+
+This matches what we found earlier, in our calculations by hand.
+
+:::
+
+## Next Time
+
+<br/>
+<br/>
+
+We'll address a significant shortcoming shared by all of our algorithms so far.
+
