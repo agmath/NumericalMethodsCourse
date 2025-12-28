@@ -1,0 +1,997 @@
+---
+title: "MAT 370: Row Pivoting"
+author: Dr. Gilbert
+format: 
+  revealjs:
+    smaller: true
+date: today
+date-format: long
+theme: serif
+incremental: true
+execute: 
+  error: true
+---
+
+```{r global-options, include=FALSE}
+library(tidyverse)
+library(reticulate)
+
+theme_set(theme_bw(base_size = 20))
+```
+
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+import time
+
+def GaussElim(A, b):
+  n = len(b)
+
+  for k in range(0, n-1):
+    for i in range(k+1, n):
+      if A[i, k] != 0.0:
+        lam = A[i, k]/A[k, k]
+        A[i, k:n] = A[i, k:n] - lam*A[k, k:n]
+        b[i] = b[i] - lam*b[k]
+
+  for k in range(n - 1, -1, -1):
+    b[k] = (b[k] - np.dot(A[k, (k+1):n], b[(k+1):n]))/A[k,k]
+
+  return b
+
+def LUdecomp(A):
+  n = A.shape[0]
+  for k in range(n):
+    for i in range(k+1, n):
+      if A[i, k] != 0.0:
+        lam = A[i, k]/A[k, k]
+        A[i, (k+1):n] = A[i, (k+1):n] - lam*A[k, (k+1):n]
+        A[i, k] = lam
+
+  return A
+
+def LUsolve(LU, b):
+  n = len(b)
+  for k in range(1, n):
+    b[k] = (b[k] - np.dot(LU[k, 0:k], b[0:k]))
+
+  b[n-1] = b[n-1]/LU[n-1, n-1]
+
+  for k in range(n-2, -1, -1):
+    b[k] = (b[k] - np.dot(LU[k, (k+1):n], b[(k+1):n]))/LU[k, k]
+
+  return b
+
+def DoolittleLUsolver(A, b):
+  LU = LUdecomp(A) #Row Reduction
+  sol = LUsolve(LU, b) #Forward/backward substitution
+
+  return sol
+
+def DoolittleLUdecomp3(c, d, e):
+  n = len(d)
+  for k in range(1, n):
+    lam = c[k-1]/d[k-1]
+    d[k] = d[k] - lam*e[k-1]
+    c[k-1] = lam
+
+  return c, d, e
+
+def Doolittle3solver(lam, d, e, b):
+  n = len(d)
+  for k in range(1, n):
+    b[k] = b[k] - lam[k-1]*b[k-1]
+
+  b[n-1] = b[n-1]/d[n-1]
+  for k in range(n-2, -1, -1):
+    b[k] = (b[k] - e[k]*b[k+1])/d[k]
+
+  return b
+
+def DoolittleLUdecomp3solver(c, d, e, b):
+  lam, d, e = DoolittleLUdecomp3(c, d, e)
+  b = Doolittle3solver(lam, d, e, b)
+
+  return b
+
+def make_A():
+  A = np.array([
+    [2.0, -1, 0, 0, 0],
+    [-1, 2, -1, 0, 0],
+    [0, -1, 1, 3, 0],
+    [0, 0, -4, 3, 1],
+    [0, 0, 0, -2, 4]
+  ])
+  return A
+
+b1 = np.array([1.0, -8, 5, 13, 4])
+b2 = np.array([-3.0, 7, 17, 11, -4])
+b3 = np.array([-11.0, 13, 25, -35, 12])
+b4 = np.array([-23.0, -17, 11, 42, 13])
+```
+
+```{css}
+code.sourceCode {
+  font-size: 1.3em;
+  /* or try font-size: xx-large; */
+}
+
+a {
+  color: purple;
+}
+
+a:link {
+  color: purple;
+}
+
+a:visited {
+  color: purple;
+}
+```
+
+## A Recap
+
+:::{.fragment}
+
+At this point we've implemented three solvers for solving linear systems.
+
+:::
+
++ The `GaussElim()` function is general purpose, but is slow because the row-reduction algorithm is $O\left(n^3\right)$.
++ The LU solvers we built are an improvement over Gaussian elimination, if used correctly. The `LUdecomp()` function will decompose a coefficient matrix into the product between a lower- and upper-triangular matrix, and then `LUsolve()` will solve the corresponding $LU\vec{x} = \vec{b}$ system.
+
+    + LU decomposition is an improvement because it only does row reduction once and all subsequent systems can be solved with the use of `LUsolve()`.
+    + The initial run of our LU decomposition method is still $O\left(n^3\right)$, but all subsequent runs are $O\left(n^2\right)$.
+    
++ Our tridiagonal solver implements LU decomposition in a special case where the coefficient matrix is tridiagonal, resulting in a significant space savings.
+
+## A Performance Comparison
+
+:::{.fragment}
+
+<div style="font-size:18pt">
+
+**Example:** We'll solve the matrix equations $A\vec{x} = \vec{b_i}$ for a tridiagonal matrix $A$ and several constraint vectors $\vec{b_i}$. 
+
+</div>
+
+<div style="font-size:16pt">
+
+$$A = \begin{bmatrix} 2 & -1 & 0 & 0 & 0\\
+-1 & 2 & -1 & 0 & 0\\ 0 & -1 & 1 & 3 & 0\\ 0 & 0 & -4 & 3 & 1\\ 0 & 0 & 0 & -2 & 4\end{bmatrix}~~~~\vec{b_1} = \begin{bmatrix} 1\\ -8\\ 5\\ 13\\ 4\end{bmatrix},~~\vec{b_2} = \begin{bmatrix} -3\\ 7\\ 17\\ 11\\ -4\end{bmatrix},~~\vec{b_3} = \begin{bmatrix} -11\\ 13\\ 25\\ -35\\ 12\end{bmatrix},~~\vec{b_4} = \begin{bmatrix} -23\\ -17\\ 11\\ 42\\ 13\end{bmatrix}$$
+
+</div>
+
+:::
+
+<div style="font-size:18pt">
+
+::::{.columns}
+
+:::{.column width="32%"}
+
+:::{.fragment}
+
+<center> **Gaussian Elimination**</center>
+
+```{python}
+#| echo: true
+#| eval: true
+
+tic = time.time()
+A = make_A()
+x1 = GaussElim(A, b1)
+A = make_A()
+x2 = GaussElim(A, b2)
+A = make_A()
+x3 = GaussElim(A, b3)
+A = make_A()
+x4 = GaussElim(A, b4)
+toc = time.time()
+
+print("That took ", toc - tic, " seconds.")
+```
+
+:::
+
+:::
+
+:::{.column width="32%"}
+
+:::{.fragment}
+
+<center> **LU Decomposition**</center>
+
+```{python}
+#| echo: true
+#| eval: true
+
+tic = time.time()
+A = make_A()
+LU = LUdecomp(A)
+x1 = LUsolve(A, b1)
+x2 = LUsolve(A, b2)
+x3 = LUsolve(A, b3)
+x4 = LUsolve(A, b4)
+toc = time.time()
+
+print("That took ", toc - tic, " seconds.")
+```
+
+:::
+
+:::
+
+:::{.column width="32%"}
+
+:::{.fragment}
+
+<center> **Tridiagonal Solver**</center>
+
+```{python}
+#| echo: true
+#| eval: true
+
+
+
+tic = time.time()
+c = np.array([-1.0, -1, -4, -2])
+d = np.array([2.0, 2, 1, 3, 4])
+e = np.array([-1.0, -1, 3, 1])
+lam, d, e = DoolittleLUdecomp3(c, d, e)
+x1 = Doolittle3solver(lam, d, e, b1)
+x2 = Doolittle3solver(lam, d, e, b2)
+x3 = Doolittle3solver(lam, d, e, b3)
+x4 = Doolittle3solver(lam, d, e, b4)
+toc = time.time()
+
+print("That took ", toc - tic, " seconds.")
+```
+
+:::
+
+:::
+
+::::
+
+</div>
+
+## A Significant Shortcoming
+
+:::{.fragment}
+
+**Example:** Solve the linear system $\left\{\begin{array}{lcl} -x_2 + x_3 & = & 0\\ -x_1 + 2x_2 - x_3 & = & 0\\ 2x_1 - x_2 & = & 1\end{array}\right.$ 
+
+:::
+
+## A Significant Shortcoming
+
+:::{.fragment}
+
+<div style="font-size:18pt">
+
+Because of rounding errors, the order of the rows in a coefficient matrix can greatly impact performance and accuracy of results produced by a numerical solver.
+
+</div>
+
+:::
+
+:::{.fragment}
+
+<div style="font-size:18pt">
+
+The system 
+
+</div>
+
+<div style="font-size:16pt">
+
+$$\left\{\begin{array}{lcl} -x_2 + x_3 & = & 0\\ -x_1 + 2x_2 - x_3 & = & 0\\ 2x_1 - x_2 & = & 1\end{array}\right.$$
+
+</div>
+
+<div style="font-size:18pt">
+
+has the augmented coefficient matrix 
+
+</div>
+
+<div style="font-size:16pt">
+
+$$\left[\begin{array}{ccc|c} 
+0 & -1 & 1 & 0\\
+-1 & 2 & -1 & 0\\
+2 & -1 & 0 & 1\\\end{array}\right]$$
+
+</div>
+
+:::
+
+<div style="font-size:18pt">
+
+:::{.fragment}
+
+This augmented coefficient matrix has the rows in the "*wrong order*". 
+
+:::
+
+:::{.fragment}
+
+Our methods all fail because there is a $0$ in the pivot position.
+
+:::
+
+:::{.fragment}
+
+In physically looking at the system, we notice that a row swap is advantageous, but how do we trigger a row-swap algorithmically? Why is a row-swap beneficial here?
+
+:::
+
+</div>
+
+## When to Pivot
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+<div style="font-size:18pt">
+
+:::{.fragment}
+
+Sometimes it is imperative that we reorder the rows in a system during the *elimination phase* -- this is called *row pivoting*. 
+
+:::
+
+:::{.fragment}
+
+In general, we'll want to do this when the *pivot element* is $0$ or when it is very small compared to the other elements in the pivot row. 
+
+:::
+
+:::{.fragment}
+
+Consider the example augmented coefficient matrix to the right with $\varepsilon$ representing a very small number.
+
+:::
+
+</div>
+
+:::
+
+:::{.column width="50%"}
+
+<div style="font-size:14pt">
+
+:::{.fragment}
+
+\begin{align*}\left[\begin{array}{ccc|c} \varepsilon & -1 & 1 & 0\\
+-1 & 2 & -1 & 0\\
+2 & -1 & 0 & 1\end{array}\right] \end{align*}
+
+:::
+
+</div>
+
+:::
+
+::::
+
+## When to Pivot
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+<div style="font-size:18pt">
+
+Sometimes it is imperative that we reorder the rows in a system during the *elimination phase* -- this is called *row pivoting*. 
+
+In general, we'll want to do this when the *pivot element* is $0$ or when it is very small compared to the other elements in the pivot row. 
+
+Consider the example augmented coefficient matrix to the right with $\varepsilon$ representing a very small number.
+
+</div>
+
+:::
+
+:::{.column width="50%"}
+
+<div style="font-size:14pt">
+
+\begin{align*}\left[\begin{array}{ccc|c} \varepsilon & -1 & 1 & 0\\
+-1 & 2 & -1 & 0\\
+2 & -1 & 0 & 1\end{array}\right] &\stackrel{R_2 \leftarrow R_2 - (-1/\varepsilon)R_1}{\to}\left[\begin{array}{ccc|c} \varepsilon & -1 & 1  & 0\\
+0 & 2 - (1/\varepsilon) & -1 + (1/\varepsilon) & 0\\
+2 & -1 & 0 & 1\end{array}\right]
+\end{align*}
+
+</div>
+
+:::
+
+::::
+
+## When to Pivot
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+<div style="font-size:18pt">
+
+Sometimes it is imperative that we reorder the rows in a system during the *elimination phase* -- this is called *row pivoting*. 
+
+In general, we'll want to do this when the *pivot element* is $0$ or when it is very small compared to the other elements in the pivot row. 
+
+Consider the example augmented coefficient matrix to the right with $\varepsilon$ representing a very small number.
+
+</div>
+
+:::
+
+:::{.column width="50%"}
+
+<div style="font-size:14pt">
+
+\begin{align*}\left[\begin{array}{ccc|c} \varepsilon & -1 & 1 & 0\\
+-1 & 2 & -1 & 0\\
+2 & -1 & 0 & 1\end{array}\right] &\stackrel{R_2 \leftarrow R_2 - (-1/\varepsilon)R_1}{\to}\left[\begin{array}{ccc|c} \varepsilon & -1 & 1  & 0\\
+0 & 2 - (1/\varepsilon) & -1 + (1/\varepsilon) & 0\\
+2 & -1 & 0 & 1\end{array}\right]\\
+&\stackrel{R_3 \leftarrow R_3 - (2/\varepsilon)R_1}{\to}\left[\begin{array}{ccc|c} \varepsilon & -1 & 1  & 0\\
+0 & 2 - (1/\varepsilon) & -1 + (1/\varepsilon) & 0\\
+0 & -1 + (2/\varepsilon) & -2/\varepsilon & 1\end{array}\right]
+\end{align*}
+
+</div>
+
+:::
+
+::::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+<div style="font-size:18pt">
+
+:::{.fragment}
+
+Notice though that since $\varepsilon$ is very small, $1/\varepsilon$ is very large.
+
+:::
+
+:::{.fragment}
+
+We may be in danger of entering roundoff error territory. The resulting augmented coefficient may be stored as
+
+:::
+
+</div>
+
+:::
+
+:::{.column width="50%"}
+
+<div style="font-size:16pt">
+
+:::{.fragment}
+
+$$\left[\begin{array}{ccc|c} \varepsilon & -1 & 1  & 0\\
+0 & - 1/\varepsilon & 1/\varepsilon & 0\\
+0 & 2/\varepsilon & -2/\varepsilon & 1\end{array}\right]$$
+
+:::
+
+</div>
+
+<div style="font-size:18pt">
+
+:::{.fragment}
+
+In this case, $R_2$ and $R_3$ contradict eachother and we would identify *no solutions*, but the solution should exist.
+
+:::
+
+</div>
+
+:::
+
+::::
+
+## Formalizing When to Pivot
+
+<div style="font-size:17pt">
+
+:::{.fragment}
+
+We've identified some scenarios where row-pivoting is beneficial -- when our pivot is $0$ or when it is "very small".
+
+:::
+
+:::{.fragment}
+
+What constitutes "very small" is subjective, so we'll need a way to formalize what we mean so that we can write it into our algorithm.
+
+:::
+
+</div>
+
+:::::{.fragment}
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+<div style="font-size:17pt">
+
+An $n\times n$ matrix $A$ is said to be *diagonally dominant* if each diagonal element is greater than the sum of the absolute values of the other elements in its row. 
+
+</div>
+
+:::
+
+:::{.column width="50%"}
+
+<div style="font-size:20pt">
+
+$$\left|A_{ii}\right| > \sum_{\substack{j = 1\\ j\neq i}}^{n}{\left|A_{ij}\right|}$$
+
+</div>
+
+:::
+
+::::
+
+:::::
+
+<div style="font-size:17pt">
+
+:::{.fragment}
+
+For example, the matrix $\left[\begin{array}{ccc} -2 & 4 & -1\\
+1 & -1 & 3\\
+4 & -2 & 1\end{array}\right]$ is not diagonally dominant, but with two *row pivots* we obtain $\left[\begin{array}{ccc} 4 & -2 & 1\\
+-2 & 4 & -1\\
+1 & -1 & 3
+\end{array}\right]$, which is diagonally dominant.
+
+:::
+
+:::{.fragment}
+
+If $A$ is diagonally dominant, then a numerical solution for $A\vec{x} = \vec{b}$ *does not* benefit by row pivoting. Because of this, we'll implement a strategy that reorders rows of $A$ to achieve *near*-diagonal-dominance.
+
+:::
+
+</div>
+
+## An Example for Illustration
+
+<div style="font-size:18pt">
+
+:::{.fragment}
+
+As usual when we are about to introduce a new algorithm, we'll use an example to help illuminate the steps involved. We'll use the example below.
+
+:::
+
+:::{.fragment}
+
+**Example:** Use Gaussian Elimination with Scaled Row pivoting to solve the system $A\vec{x} = \vec{b}$ where $A = \left[\begin{array}{ccc} 2 & -2 & 6\\
+-2 & 4 & 3\\
+-1 & 8 & 4\end{array}\right]$ and $\vec{b} = \left[\begin{array}{c} 16\\ 0\\ -1\end{array}\right]$.
+
+:::
+
+</div>
+
+## Scale Factors
+
+<div style="font-size:18pt">
+
+:::{.fragment}
+
+Consider an approach to solving the system $A\vec{x} = \vec{b}$ using *Gaussian Elimination* with row-pivoting. 
+
+:::
+
+:::{.fragment}
+
+That is, we row-pivot $A$ during elimination so that the *pivot element* is as large as possible with respect to the other elements in the pivot row. 
+
+:::
+
+:::{.fragment}
+
+In order to do this, let's define an array $s$ as follows:
+
+$$s_i = \max_{j}{\left|A_{ij}\right|}~~\text{for}~~i,j\in [n]$$
+
+:::
+
+:::{.fragment}
+
+We call $s_i$ the *scale factor* for $R_i$, and it contains the absolute value of the largest element in the $i^{th}$ row of $A$. 
+
+:::
+
+</div>
+
+::::{.columns}
+
+:::{.column width="60%}
+
+:::{.fragment}
+
+<div style="font-size:18pt">
+
+We can write a simple routine to populate $s$.
+
+</div>
+
+:::
+
+:::
+
+:::{.column width="40%"}
+
+:::{.fragment}
+
+<div style="font-size:22pt">
+
+```
+#populate scale-factor array
+n = A.shape[0]
+s = np.zeros(n)
+for i in range(n):
+  s[i] = max(abs(A[i,:]))
+```
+
+</div>
+
+:::
+
+:::
+
+::::
+
+## Triggering Row Pivoting
+
+<div style="font-size:16pt">
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment data-fragment-index=1}
+
+Using `s`, our array of scale factors, we can compute the relative size of any matrix element to the largest element in its row. 
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment data-fragment-index=2}
+
+That is, $\displaystyle{r_{ij} = \frac{\left|A_{ij}\right|}{s_i}}$.
+
+:::
+
+:::
+
+::::
+
+</div>
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+<div style="font-size:16pt">
+
+:::{.fragment data-fragment-index=3}
+
+Suppose we are at the stage of the *elimination phase* where the $k^{th}$ row has become the pivot row. The augmented coefficient matrix is as seen below.
+
+:::
+
+:::{.fragment data-fragment-index=5}
+
+We don't immediately use $A_{kk}$ as the next pivot element. 
+
+:::
+
+:::{.fragment data-fragment-index=6}
+
+Instead, we search the rows below $R_k$ for a "better" pivot in column $k$. 
+
+:::
+
+</div>
+
+:::
+
+:::{.column width="50%"}
+
+<div style="font-size:12pt">
+
+:::{.fragment data-fragment-index=4}
+
+$$\left[\begin{array}{ccccccc|c} A_{11} & A_{12} & A_{13} & \cdots & \cdots & \cdots & A_{1n} & b_1\\
+0 & A_{22} & A_{23} & \cdots & \cdots & \cdots & A_{2n} & b_2\\
+0 & 0 & A_{33} & \cdots & \cdots & \cdots & A_{3n} & b_3\\
+\vdots & \vdots & \vdots & \ddots & \cdots & \vdots & \vdots\\ \hline
+0 & 0 & \cdots & 0 & A_{kk} & \cdots & A_{kn} & b_k\\
+\vdots & \vdots & \vdots & \vdots & \vdots & \ddots & \vdots & \vdots\\
+0 & 0 & \cdots & 0 & A_{nk} & \cdots & A_{nn} & b_n\\
+\end{array}\right]$$
+
+:::
+
+</div>
+
+:::
+
+::::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+<div style="font-size:16pt">
+
+:::{.fragment data-fragment-index=7}
+
+The best choice is the entry with the largest relative size -- that is, $A_{pk}$ such that $\displaystyle{r_{pk} = \max_{j}{(r_{jk})}}$ for $j\geq k$. 
+
+:::
+
+:::{.fragment data-fragment-index=8}
+
+If $p \neq k$, then we execute a row exchange both in $A$ and also exchange the corresponding elements in $s$. 
+
+:::
+
+:::{.fragment data-fragment-index=11}
+
+The code to the right uses a `swapRows()` function, which we'll also write when we build our `GaussPivot()` function next.
+
+:::
+
+</div>
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment data-fragment-index=9}
+
+<div style="font-size:16pt">
+
+This can be done as follows:
+
+</div>
+
+:::
+
+:::{.fragment data-fragment-index=10}
+
+<div style="font-size:20pt">
+
+```
+#row-pivot
+for k in range(0, n-1):
+  p = argmax(abs(A[k:n, k])/s[k:n]) + k
+  if abs(A[p, k]) < tol:
+    print("Matrix is Singular")
+    return None
+
+  if p != k:
+    swapRows(b, k, p)
+    swapRows(s, k, p)
+    swapRows(A, k, p)
+```
+
+</div>
+
+:::
+
+:::
+
+::::
+
+## Implementing Gaussian Elimination with Row Pivoting
+
+```{python}
+#| echo: true
+#| eval: true
+
+def swapRows(v, i, j):
+  if len(v.shape) == 1:
+    v[i], v[j] = v[j], v[i]
+  else:
+    v[[i, j], :] = v[[j, i], :]
+
+def scaleFactors(A):
+  n = A.shape[0]
+  s = np.zeros(n)
+  for i in range(n):
+    s[i] = max(np.abs(A[i, :]))
+
+  return s
+
+def GaussPivot(A, b, tol = 1.0e-12):
+  n = len(b)
+  s = scaleFactors(A)
+
+  for k in range(0, n-1):
+    p = np.argmax(np.abs(A[k:n, k])/s[k:n]) + k
+    if(abs(A[p, k]) < tol):
+      print("Matrix is Singular")
+      return None
+
+    #Row Pivot if necessary
+    if p != k:
+      swapRows(b, k, p)
+      swapRows(s, k, p)
+      swapRows(A, k, p)
+
+    #Elimination
+    for i in range(k+1, n):
+      if A[i, k] != 0.0:
+        lam = A[i, k]/A[k, k]
+        A[i, (k+1):n] = A[i, (k+1):n] - lam*A[k, (k+1):n]
+        b[i] = b[i] - lam*b[k]
+
+  if abs(A[n-1, n-1]) < tol:
+    print("Matrix is Singular")
+    return None
+
+  #back substitution
+  b[n-1] = b[n-1]/A[n-1, n-1]
+  for k in range(n-2, -1, -1):
+    b[k] = (b[k] - np.dot(A[k, (k+1):n], b[(k+1):n]))/A[k, k]
+
+  return b
+```
+
+## Comments on Implementation
+
+<div style="font-size:18pt">
+
+:::{.fragment}
+
+Again, our implementation involves two helper functions.
+
+:::
+
++ The `swapRows()` function allows for swapping the rows of a matrix or elements of a vector.
++ The `scaleFactors()` function computes the array of scale factors for the matrix.
+
+:::{.fragment}
+
+The `GaussPivot()` function takes in the coefficient matrix $A$, the constraint vector $\vec{b}$, and includes a preset but overridable `tol`erance.
+
+:::
+
+:::{.fragment}
+
+The `tol`erance determines scenarios when the function should terminate due to rounding error concerns rather than reporting an untrustworthy numerical solution.
+
+:::
+
+:::{.fragment}
+
+This new `GaussPivot()` function is the one which is most widely applicable, but it is not the fastest or most space-efficient.
+
+:::
+
+:::{.fragment}
+
+It makes `GaussElim()` obsolete, but you should still consider whether your scenario is appropriate for a faster solver like LU decomposition or the tridiagonal solver that we have.
+
+:::
+
+</div>
+
+## Example
+
+<div style="font-size:18pt">
+
+:::{.fragment}
+
+**Example:** Our original `GaussElim()` procedure couldn't correctly solve the system below because of the order of the rows. Show that our new `GaussPivot()` method does solve the system correctly.
+
+$$\left[\begin{array}{ccc|c} 0 & -1 & 1 & 0\\
+-1 & 2 & -1 & 0\\
+2 & -1 & 0 & 1\end{array}\right]$$
+
+:::
+
+:::{.fragment}
+
+```{python}
+#| echo: true
+#| eval: true
+
+A = np.array([
+  [0.0, -1, 1],
+  [-1, 2, -1],
+  [2, -1, 0]
+])
+b = np.array([0.0, 0, 1])
+
+GaussPivot(A, b)
+```
+
+:::
+
+:::{.fragment}
+
+Our improved method easily handled this case by performing the necessary row swap.
+
+:::
+
+</div>
+
+## An Additional Example
+
+<div style="font-size:18pt">
+
+**Example:** Use Gaussian Elimination with Scaled Row pivoting to solve the system $A\vec{x} = \vec{b}$ where $A = \left[\begin{array}{ccc} 2 & -2 & 6\\
+-2 & 4 & 3\\
+-1 & 8 & 4\end{array}\right]$ and $\vec{b} = \left[\begin{array}{c} 16\\ 0\\ -1\end{array}\right]$.
+
+</div>
+
+## Pivoting Isn't Always Best
+
+<div style="font-size:18pt">
+
+:::{.fragment}
+
+There are some drawbacks to pivoting. In particular,
+
+:::
+
++ those `rowSwap()` operations can be *expensive* (run time), and
++ swapping rows destroys matrix symmetry and any banded structure
+
+:::{.fragment}
+
+Fortunately, in many applications where banded or symmetric matrices appear, those matrices are nearly diagonally dominant and so there is not often a benefit to pivoting anyway. 
+
+:::
+
+:::{.fragment} 
+While not hard *rules*, banded matrices, symmetric matrices, and positive definite matrices seldom benefit from row pivoting. 
+
+:::
+
+:::{.fragment}
+
+Note that it is, however, possible to construct banded, symmetric, or positive definite matrices that *do* benefit from pivoting -- they just don't stem from real engineering problems.
+
+:::
+
+</div>
+
+## Summary
+
++ We saw how to use scaled row pivoting to ensure that we don't end up in a situation where a *pivot element* is $0$ or nearly $0$. 
++ If a *pivot element* is $0$, our *Gaussian Elimination* procedure will fail. 
++ Cases where a *pivot element* is nearly $0$ invite roundoff errors that can lead to incorrect solutions or a routine suggesting that no solution exists. 
++ We saw that we can use scaling to guide *row pivots* to make a coefficient matrix as close to diagonally dominant as possible, which will avoid the problems outlined here.
++ We implemented an algorithm to identify when a row pivot is worthwhile, to execute that row swap, and then to carry on with Gaussian Elimination.
+
+## Next Time
+
+<br/>
+<br/>
+
+We'll leave linear algebra and visit techniques for curve fitting and function approximation from data.
+
