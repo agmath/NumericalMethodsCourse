@@ -512,7 +512,7 @@ We've identified some scenarios where row-pivoting is beneficial -- when our piv
 
 :::{.fragment}
 
-What constitutes "very small" is subjective, so we'll need a way to formalize what we mean so that we can write it into our algorithm.
+What constitutes "very small" is subjective, so we'll need a way to formalize what we mean so that we can write it into our algorithm. We need a proxy for "safe pivots" that a computer can detect.
 
 :::
 
