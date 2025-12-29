@@ -1,0 +1,1371 @@
+---
+title: "MAT 370: Cubic Spline Interpolants"
+author: Dr. Gilbert
+format: 
+  revealjs:
+    smaller: true
+date: today
+date-format: long
+theme: serif
+incremental: true
+execute: 
+  error: true
+---
+
+```{r global-options, include=FALSE}
+library(tidyverse)
+library(reticulate)
+
+theme_set(theme_bw(base_size = 20))
+```
+
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+import time
+
+def GaussElim(A, b):
+  n = len(b)
+
+  for k in range(0, n-1):
+    for i in range(k+1, n):
+      if A[i, k] != 0.0:
+        lam = A[i, k]/A[k, k]
+        A[i, k:n] = A[i, k:n] - lam*A[k, k:n]
+        b[i] = b[i] - lam*b[k]
+
+  for k in range(n - 1, -1, -1):
+    b[k] = (b[k] - np.dot(A[k, (k+1):n], b[(k+1):n]))/A[k,k]
+
+  return b
+
+def LUdecomp(A):
+  n = A.shape[0]
+  for k in range(n):
+    for i in range(k+1, n):
+      if A[i, k] != 0.0:
+        lam = A[i, k]/A[k, k]
+        A[i, (k+1):n] = A[i, (k+1):n] - lam*A[k, (k+1):n]
+        A[i, k] = lam
+
+  return A
+
+def LUsolve(LU, b):
+  n = len(b)
+  for k in range(1, n):
+    b[k] = (b[k] - np.dot(LU[k, 0:k], b[0:k]))
+
+  b[n-1] = b[n-1]/LU[n-1, n-1]
+
+  for k in range(n-2, -1, -1):
+    b[k] = (b[k] - np.dot(LU[k, (k+1):n], b[(k+1):n]))/LU[k, k]
+
+  return b
+
+def DoolittleLUsolver(A, b):
+  LU = LUdecomp(A) #Row Reduction
+  sol = LUsolve(LU, b) #Forward/backward substitution
+
+  return sol
+
+def DoolittleLUdecomp3(c, d, e):
+  n = len(d)
+  for k in range(1, n):
+    lam = c[k-1]/d[k-1]
+    d[k] = d[k] - lam*e[k-1]
+    c[k-1] = lam
+
+  return c, d, e
+
+def Doolittle3solver(lam, d, e, b):
+  n = len(d)
+  for k in range(1, n):
+    b[k] = b[k] - lam[k-1]*b[k-1]
+
+  b[n-1] = b[n-1]/d[n-1]
+  for k in range(n-2, -1, -1):
+    b[k] = (b[k] - e[k]*b[k+1])/d[k]
+
+  return b
+
+def DoolittleLUdecomp3solver(c, d, e, b):
+  lam, d, e = DoolittleLUdecomp3(c, d, e)
+  b = Doolittle3solver(lam, d, e, b)
+
+  return b
+
+def getCoefficients(xData, yData):
+  m = len(xData)
+  a = yData.copy()
+
+  for k in range(1, m):
+    a[k:m] = (a[k:m] - a[k-1])/(xData[k:m] - xData[k-1])
+
+  return a
+
+def evaluatePolynomial(a, xData, x):
+  deg = len(xData) - 1
+  p = a[deg]
+
+  for k in range(1, deg + 1):
+    p = a[deg-k] + (x - xData[deg-k])*p
+
+  return p
+
+def curvatures(xData, yData):
+  n = len(xData) - 1
+  c = np.zeros(n)
+  d = np.ones(n+1)
+  e = np.zeros(n)
+  k = np.zeros(n+1)
+
+  c[0:(n-1)] = xData[0:(n-1)] - xData[1:n]
+  d[1:n] = 2.0*(xData[0:(n-1)] - xData[2:(n+1)])
+  e[1:n] = xData[1:n] - xData[2:(n+1)]
+  k[1:n] = 6.0*((yData[0:(n-1)] - yData[1:n])/(xData[0:(n-1)] - xData[1:n])) - 6.0*((yData[1:n] - yData[2:(n+1)])/(xData[1:n] - xData[2:(n+1)]))
+
+  #DoolittleLUdecomp3(c, d, e)
+  DoolittleLUdecomp3solver(c, d, e, k)
+
+  return k
+
+def findSegment(xData, x):
+    iLeft = 0
+    iRight = len(xData) - 1
+
+    while 1:
+      if (iRight - iLeft) <= 1:
+        return iLeft
+      i = int((iLeft + iRight)/2)
+      if x < xData[i]:
+        iRight = i
+      else:
+        iLeft = i
+
+def evalSpline(xData, yData, k, x):
+  i = findSegment(xData, x)
+  h = xData[i] - xData[i+1]
+  y = ((x - xData[i+1])**3/h - (x - xData[i+1])*h)*k[i]/6.0 - ((x - xData[i])**3/h - (x - xData[i])*h)*k[i+1]/6.0 + (yData[i]*(x - xData[i+1]) - yData[i+1]*(x - xData[i]))/h
+  y = ((x - xData[i+1])**3/h - (x - xData[i+1])*h)*k[i]/6.0 - ((x - xData[i])**3/h - (x - xData[i])*h)*k[i+1]/6.0 + (yData[i]*(x - xData[i+1]) - yData[i+1]*(x - xData[i]))/h
+
+
+  return y
+```
+
+```{css}
+code.sourceCode {
+  font-size: 1.3em;
+  /* or try font-size: xx-large; */
+}
+
+a {
+  color: purple;
+}
+
+a:link {
+  color: purple;
+}
+
+a:visited {
+  color: purple;
+}
+```
+
+## Motivation and Context
+
+:::{.fragment}
+
+At the end of our last discussion, we saw that increasing the number of observed data points also increases the degree of the polynomial.
+
+:::
+
+:::{.fragment}
+
+High degree polynomials invite greater levels of variability between control points, especially near the boundaries of the observed region.
+
+:::
+
+:::{.fragment}
+
+```{python}
+np.random.seed(42)
+xData = np.random.uniform(0, 10, 10)
+yData = np.random.uniform(0, 10, 10)
+
+coefs = getCoefficients(xData, yData)
+
+x_new = np.linspace(0, 10, 500)
+y_new = evaluatePolynomial(coefs, xData, x_new)
+
+plt.figure(figsize = (12, 5.5))
+plt.scatter(xData, yData, s = 150)
+plt.plot(x_new, y_new, color = "purple", linewidth = 3)
+plt.ylim((-100, 100));
+plt.grid()
+plt.axhline(color = "black")
+plt.axvline(color = "black")
+plt.xlabel("$x$", fontsize = 18)
+plt.ylabel("$y$", fontsize = 18)
+plt.title("High Degree Polynomial Interpolants are Highly Variable \n(Newton's Method)", fontsize = 22)
+plt.show()
+```
+
+:::
+
+
+## Alternative Interpolation Strategies
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+There are other classes of interpolant which reduce this unjustified oscillation.
+
+:::
+
++ Piecewise-linear interpolants
++ Nearest neighbor interpolants
++ Inverse distance weighting interpolants
++ Splines
++ etc.
+
+:::{.fragment}
+
+In this discussion, we'll focus on natural cubic splines.
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+:::{.figure}
+
+<div style="display: flex; justify-content: center; align-items: center; height: 100%;">
+
+<div id="player"></div>
+
+</div>
+
+<script>
+  var player;
+  var stopTime = 155; // seconds
+
+  function onYouTubeIframeAPIReady() {
+    player = new YT.Player('player', {
+      videoId: 'YMl25iCCRew',
+      playerVars: {
+        start: 0
+      },
+      events: {
+        onReady: onPlayerReady,
+        onStateChange: onPlayerStateChange
+      }
+    });
+  }
+
+  function onPlayerReady(event) {
+    event.target.setPlaybackRate(1.25);
+  }
+
+  function onPlayerStateChange(event) {
+    if (event.data === YT.PlayerState.PLAYING) {
+      checkTime();
+    }
+  }
+
+  function checkTime() {
+    if (player && player.getCurrentTime() >= stopTime) {
+      player.pauseVideo();
+    } else {
+      setTimeout(checkTime, 200); // check every 200 ms
+    }
+  }
+</script>
+
+<script src="https://www.youtube.com/iframe_api"></script>
+
+
+▶ Video from Steve Seitz at [Graphics in Five Minutes](https://www.youtube.com/@g5min).
+
+:::
+
+:::
+
+:::
+
+::::
+
+## Natural Cubic Splines and Unloaded Beams
+
+<div style="font-size:18pt">
+
+:::{.fragment}
+
+We've seen that polynomial interpolation should be done with as few data points as is feasible.
+
+:::
+
+:::{.fragment}
+
+This is counterintuitive because we usually think of *more* information as *better*.
+
+:::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+If we have more than just a few data points, then a cubic spline is a great option to use as an interpolant.
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+Cubic splines consist of 
+
+:::
+
++ *pins* (or *knots*)
++ *elastic stips*
+
+:::
+
+::::
+
+:::{.fragment}
+
+The *pins* are the observed data points, and the *elastic strips* correspond to "unloaded beams" connecting the pins.
+
+:::
+
+:::{.fragment}
+
+There is some nice connection to engineering here because the deflection ($\omega$) of an unloaded beam with two connection points with constant flexural rigidity satisfies $\frac{d^4\omega}{dx^4} = \frac{q\left(x\right)}{EI}$, where $q\left(x\right)$ is the *load* at position $x$ along the beam.
+
+:::
+
+:::{.fragment}
+
+Since our elastic strips correspond to *unweighted* beams, these strips satisfy $\frac{d^4\omega}{dx^4} = 0$.
+
+:::
+
+</div>
+
+## Constraints: Natural Cubic Splines
+
+<div style="font-size:18pt">
+
+:::{.fragment}
+
+Since our elastic strips satisfy $\frac{d^4\omega}{dx^4} = 0$, we know that the strips are cubic polynomials.
+
+:::
+
+:::{.fragment}
+
+We impose a few additional constraints on our cubic splines as well.
+
+:::
+
+1. The slope (first derivative) is continuous through each pin.
+2. The curvature (second derivative) is continuous through each pin.
+3. The curvature at the left-most and right-most pins is $0$.
+
+:::{.fragment}
+
+Because of these constraints, our cubic splines will have more moe controlled behavior.
+
+:::
+
+:::{.fragment}
+
+```{python}
+x = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+y = np.array([0, 1, 0, 2, 0.5, 3, 0.75, 4, 2.5, 3])
+
+x_new = np.linspace(0, 9, 500)
+y_new_poly = len(x_new)*[0.0]
+y_new_spline = len(x_new)*[0.0]
+
+coefs = getCoefficients(x, y)
+y_new_poly = evaluatePolynomial(coefs, x, x_new)
+
+k = curvatures(x, y)
+
+for i in range(len(x_new)):
+  y_new_spline[i] = evalSpline(x, y, k, x_new[i])
+
+plt.figure(figsize = (12, 4))
+
+plt.subplot(1, 3, 1)
+plt.scatter(x, y)
+plt.grid()
+plt.axhline(color = "black")
+plt.axvline(color = "black")
+plt.xlabel("x")
+plt.ylabel("y")
+plt.title("Observed Data")
+
+plt.subplot(1, 3, 2)
+plt.plot(x_new, y_new_poly, color = "purple")
+plt.scatter(x, y)
+plt.grid()
+plt.axhline(color = "black")
+plt.axvline(color = "black")
+plt.xlabel("x")
+plt.ylabel("y")
+plt.title("Observed Data with Polynomial \nInterpolant")
+
+plt.subplot(1, 3, 3)
+plt.plot(x_new, y_new_spline, color = "purple")
+plt.scatter(x, y)
+plt.grid()
+plt.axhline(color = "black")
+plt.axvline(color = "black")
+plt.xlabel("x")
+plt.ylabel("y")
+plt.title("Observed Data with Cubic \nSpline Interpolant")
+
+plt.show()
+```
+
+:::
+
+</div>
+
+## Constructing Cubic Splines
+
+<div style="font-size:18pt">
+
+:::{.fragment}
+
+We'll actually go through the math here because its a really nice application of your first two semesters of calculus.
+
+:::
+
+</div>
+
+## Constructing Cubic Splines
+
+<div style="font-size:18pt">
+
+:::{.fragment}
+
+Consider a set of $n+1$ observed data points $\left(x_0, y_0\right),~\left(x_1, y_1\right),~\cdots,~\left(x_n, y_n\right)$ with $x_0 < x_1 < \cdots < x_n$. 
+
+:::
+
+:::{.fragment}
+
+A cubic spline interpolant will consist of $n$ cubic segments, $f_{i, i+1}\left(x\right)$ for $i = 0,~1,~\cdots,~n-1$. 
+
+:::
+
+:::{.fragment}
+
+The full cubic spline interpolant is a piecewise cubic consisting of each of these cubic sections, having continuous first- and second-derivatives at each of the *pins* (observed data points).
+
+:::
+
+::::{.columns}
+
+:::{.column width="70%"}
+
+:::{.fragment}
+
+Because we know that each segment is a cubic, and that the second derivative of the spline interpolant is continuous, we must have that the second derivative to the left and right of each pin point match.
+
+:::
+
+:::
+
+:::{.column width="30%"}
+
+:::{.fragment}
+
+That is, for any $i$
+
+$$f_{i-1,i}''\left(x_i\right) = f_{i, i+1}''\left(x_i\right) = k_i$$
+
+:::
+
+:::
+
+::::
+
+:::{.fragment}
+
+We know that $k_0 = k_n = 0$, but all of the other $k_i$ are unknown and need to be solved for. 
+
+:::
+
+::::{.columns}
+
+:::{.column width="60%"}
+
+:::{.fragment}
+
+We can use Lagrange's two-point interpolation as a starting point for computing the unknown coefficients of each $f_{i,i+1}\left(x\right)$. 
+
+:::
+
+:::
+
+:::{.column width="40%"}
+
+:::{.fragment}
+
+We can write
+
+$$f_{i,i+1}''\left(x\right) = k_i\ell_i\left(x\right) + k_{i+1}\ell_{i+1}\left(x\right)$$
+
+:::
+
+:::{.fragment}
+
+where $\ell_{i}\left(x\right) = \frac{x - x_{i+1}}{x_i - x_{i+1}}$ and $\ell_{i+1}\left(x\right) = \frac{x - x_i}{x_{i+1} - x_i}$
+
+:::
+
+:::
+
+::::
+
+</div>
+
+## Constructing Cubic Splines (Cont'd)
+
+:::{.fragment}
+
+<div style="font-size:18pt">
+
+We start from where we just left off.
+
+</div>
+
+:::
+
+::::{.columns}
+
+:::{.column width="50%}
+
+:::{.fragment}
+
+<div style="font-size:14pt">
+
+\begin{align*} f_{i,i+1}''\left(x\right) &= k_i\left(\frac{x - x_{i+1}}{x_i - x_{i+1}}\right) + k_{i+1}\left(\frac{x - x_i}{x_{i+1} - x_i}\right)
+\end{align*}
+
+</div>
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::
+
+::::
+
+## Constructing Cubic Splines (Cont'd)
+
+<div style="font-size:18pt">
+
+We start from where we just left off.
+
+</div>
+
+::::{.columns}
+
+:::{.column width="50%}
+
+<div style="font-size:14pt">
+
+\begin{align*} f_{i,i+1}''\left(x\right) &= k_i\left(\frac{x - x_{i+1}}{x_i - x_{i+1}}\right) + k_{i+1}\left(\frac{x - x_i}{x_{i+1} - x_i}\right)\\
+\implies f_{i,i+1}''\left(x\right) &= \frac{k_i\left(x - x_{i+1}\right) - k_{i+1}\left(x - x_i\right)}{x_i - x_{i+1}}
+\end{align*}
+
+</div>
+
+:::
+
+:::{.column width="50%"}
+
+:::
+
+::::
+
+## Constructing Cubic Splines (Cont'd)
+
+<div style="font-size:18pt">
+
+We start from where we just left off.
+
+</div>
+
+::::{.columns}
+
+:::{.column width="50%}
+
+<div style="font-size:14pt">
+
+\begin{align*} f_{i,i+1}''\left(x\right) &= k_i\left(\frac{x - x_{i+1}}{x_i - x_{i+1}}\right) + k_{i+1}\left(\frac{x - x_i}{x_{i+1} - x_i}\right)\\
+\implies f_{i,i+1}''\left(x\right) &= \frac{k_i\left(x - x_{i+1}\right) - k_{i+1}\left(x - x_i\right)}{x_i - x_{i+1}}\\
+\implies \int{f_{i,i+1}''\left(x\right)dx} &= \int{\frac{k_i\left(x - x_{i+1}\right) - k_{i+1}\left(x - x_i\right)}{x_i - x_{i+1}}dx}
+\end{align*}
+
+</div>
+
+:::
+
+:::{.column width="50%"}
+
+:::
+
+::::
+
+## Constructing Cubic Splines (Cont'd)
+
+<div style="font-size:18pt">
+
+We start from where we just left off.
+
+</div>
+
+::::{.columns}
+
+:::{.column width="50%}
+
+<div style="font-size:14pt">
+
+\begin{align*} f_{i,i+1}''\left(x\right) &= k_i\left(\frac{x - x_{i+1}}{x_i - x_{i+1}}\right) + k_{i+1}\left(\frac{x - x_i}{x_{i+1} - x_i}\right)\\
+\implies f_{i,i+1}''\left(x\right) &= \frac{k_i\left(x - x_{i+1}\right) - k_{i+1}\left(x - x_i\right)}{x_i - x_{i+1}}\\
+\implies \int{f_{i,i+1}''\left(x\right)dx} &= \int{\frac{k_i\left(x - x_{i+1}\right) - k_{i+1}\left(x - x_i\right)}{x_i - x_{i+1}}dx}\\
+\implies f_{i,i+1}'\left(x\right) &= \frac{k_i\left(x - x_{i+1}\right)^2 - k_{i+1}\left(x - x_i\right)^2}{2\left(x_i - x_{i+1}\right)} + C_1
+\end{align*}
+
+</div>
+
+:::
+
+:::{.column width="50%"}
+
+:::
+
+::::
+
+## Constructing Cubic Splines (Cont'd)
+
+<div style="font-size:18pt">
+
+We start from where we just left off.
+
+</div>
+
+::::{.columns}
+
+:::{.column width="50%}
+
+<div style="font-size:14pt">
+
+\begin{align*} f_{i,i+1}''\left(x\right) &= k_i\left(\frac{x - x_{i+1}}{x_i - x_{i+1}}\right) + k_{i+1}\left(\frac{x - x_i}{x_{i+1} - x_i}\right)\\
+\implies f_{i,i+1}''\left(x\right) &= \frac{k_i\left(x - x_{i+1}\right) - k_{i+1}\left(x - x_i\right)}{x_i - x_{i+1}}\\
+\implies \int{f_{i,i+1}''\left(x\right)dx} &= \int{\frac{k_i\left(x - x_{i+1}\right) - k_{i+1}\left(x - x_i\right)}{x_i - x_{i+1}}dx}\\
+\implies f_{i,i+1}'\left(x\right) &= \frac{k_i\left(x - x_{i+1}\right)^2 - k_{i+1}\left(x - x_i\right)^2}{2\left(x_i - x_{i+1}\right)} + C_1\\
+\implies \int{f_{i,i+1}'\left(x\right)dx} &= \int{\frac{k_i\left(x - x_{i+1}\right)^2 - k_{i+1}\left(x - x_i\right)^2}{2\left(x_i - x_{i+1}\right)} + C_1dx}
+\end{align*}
+
+</div>
+
+:::
+
+:::{.column width="50%"}
+
+:::
+
+::::
+
+## Constructing Cubic Splines (Cont'd)
+
+<div style="font-size:18pt">
+
+We start from where we just left off.
+
+</div>
+
+::::{.columns}
+
+:::{.column width="50%}
+
+<div style="font-size:14pt">
+
+\begin{align*} f_{i,i+1}''\left(x\right) &= k_i\left(\frac{x - x_{i+1}}{x_i - x_{i+1}}\right) + k_{i+1}\left(\frac{x - x_i}{x_{i+1} - x_i}\right)\\
+\implies f_{i,i+1}''\left(x\right) &= \frac{k_i\left(x - x_{i+1}\right) - k_{i+1}\left(x - x_i\right)}{x_i - x_{i+1}}\\
+\implies \int{f_{i,i+1}''\left(x\right)dx} &= \int{\frac{k_i\left(x - x_{i+1}\right) - k_{i+1}\left(x - x_i\right)}{x_i - x_{i+1}}dx}\\
+\implies f_{i,i+1}'\left(x\right) &= \frac{k_i\left(x - x_{i+1}\right)^2 - k_{i+1}\left(x - x_i\right)^2}{2\left(x_i - x_{i+1}\right)} + C_1\\
+\implies \int{f_{i,i+1}'\left(x\right)dx} &= \int{\frac{k_i\left(x - x_{i+1}\right)^2 - k_{i+1}\left(x - x_i\right)^2}{2\left(x_i - x_{i+1}\right)} + C_1dx}\\
+\implies f_{i,i+1}\left(x\right) &= \frac{k_i\left(x - x_{i+1}\right)^3 - k_{i+1}\left(x - x_i\right)^3}{3\cdot 2\left(x_i - x_{i+1}\right)} + C_1x + C_2\\
+\end{align*}
+
+</div>
+
+:::
+
+:::{.column width="50%"}
+
+:::
+
+::::
+
+## Constructing Cubic Splines (Cont'd)
+
+<div style="font-size:18pt">
+
+We start from where we just left off.
+
+</div>
+
+::::{.columns}
+
+:::{.column width="50%}
+
+<div style="font-size:14pt">
+
+\begin{align*} f_{i,i+1}''\left(x\right) &= k_i\left(\frac{x - x_{i+1}}{x_i - x_{i+1}}\right) + k_{i+1}\left(\frac{x - x_i}{x_{i+1} - x_i}\right)\\
+\implies f_{i,i+1}''\left(x\right) &= \frac{k_i\left(x - x_{i+1}\right) - k_{i+1}\left(x - x_i\right)}{x_i - x_{i+1}}\\
+\implies \int{f_{i,i+1}''\left(x\right)dx} &= \int{\frac{k_i\left(x - x_{i+1}\right) - k_{i+1}\left(x - x_i\right)}{x_i - x_{i+1}}dx}\\
+\implies f_{i,i+1}'\left(x\right) &= \frac{k_i\left(x - x_{i+1}\right)^2 - k_{i+1}\left(x - x_i\right)^2}{2\left(x_i - x_{i+1}\right)} + C_1\\
+\implies \int{f_{i,i+1}'\left(x\right)dx} &= \int{\frac{k_i\left(x - x_{i+1}\right)^2 - k_{i+1}\left(x - x_i\right)^2}{2\left(x_i - x_{i+1}\right)} + C_1dx}\\
+\implies f_{i,i+1}\left(x\right) &= \frac{k_i\left(x - x_{i+1}\right)^3 - k_{i+1}\left(x - x_i\right)^3}{3\cdot 2\left(x_i - x_{i+1}\right)} + C_1x + C_2\\
+\end{align*}
+
+</div>
+
+:::
+
+:::{.column width="50%"}
+
+<div style="font-size:18pt">
+
+If we let $C_1 = A - B$ and $C_2 = -Ax_{i+1} + Bx_i$, then we can write the final line to the left as
+
+</div>
+
+:::{.fragment}
+
+<div style="font-size:14pt">
+
+$$f_{i,i+1}\left(x\right) = \frac{k_i\left(x - x_{i+1}\right)^3 - k_{i+1}\left(x - x_i\right)^3}{3\cdot 2\left(x_i - x_{i+1}\right)} + A\left(x - x_{i+1}\right) - B\left(x - x_i\right)$$
+
+</div>
+
+:::
+
+:::{.fragment}
+
+<div style="font-size:18pt">
+
+This will be more convenient algorithmically.
+
+</div>
+
+:::
+
+:::{.fragment}
+
+<div style="font-size:18pt">
+
+Remembering that $f_{i, i+1}\left(x_i\right) = y_i$, then we obtain
+
+</div>
+
+<div style="font-size:16pt">
+
+$$\frac{k_i\left(x_i - x_{i+1}\right)^3}{6\left(x_i - x_{i+1}\right)} + A\left(x_i - x_{i+1}\right) = y_i$$
+
+</div>
+
+:::
+
+:::
+
+::::
+
+::::{.columns}
+
+:::{.column width="32%"}
+
+:::{.fragment}
+
+<div style="font-size:18pt">
+
+So we have
+
+</div>
+
+<div style="font-size:16pt">
+
+$$\boxed{A = \frac{y_i}{x_i - x_{i+1}} - \frac{k_i\left(x_i - x_{i+1}\right)}{6}}$$
+
+</div>
+
+:::
+
+:::
+
+:::{.column width="32%"}
+
+:::{.fragment}
+
+<div style="font-size:18pt">
+
+Evaluating $f_{i,i+1}\left(x_{i+1}\right)$ similarly gives us
+
+</div>
+
+:::
+
+:::
+
+:::{.column width="32%"}
+
+:::{.fragment}
+
+<div style="font-size:16pt">
+
+$$\boxed{B = \frac{y_{i+1}}{x_i - x_{i+1}} - \frac{k_{i+1}\left(x_i - x_{i+1}\right)}{6}}$$
+
+</div>
+
+:::
+
+:::
+
+::::
+
+## Constructing Cubic Splines (Cont'd)
+
+:::{.fragment}
+
+<div style="font-size:18pt">
+
+At this stage, we know that 
+
+</div>
+
+<div style="font-size:16pt">
+
+$$\boxed{A = \frac{y_i}{x_i - x_{i+1}} - \frac{k_i\left(x_i - x_{i+1}\right)}{6}}~~~~\text{and}~~~~\boxed{B = \frac{y_{i+1}}{x_i - x_{i+1}} - \frac{k_{i+1}\left(x_i - x_{i+1}\right)}{6}}$$
+
+</div>
+
+:::
+
+:::{.fragment}
+
+<div style="font-size:18pt">
+
+Substituting these values back, we have discovered $f_{i,i+1}\left(x\right)$. That is,
+
+</div>
+
+:::
+
+:::{.fragment}
+
+<div style="font-size:16pt">
+
+\begin{align*} f_{i,i+1}\left(x\right) &= \frac{k_i\left(x - x_{i+1}\right)^3 - k_{i+1}\left(x - x_i\right)^3}{6\left(x_i - x_{i+1}\right)} + \left(\frac{y_i}{x_i - x_{i+1}} - \frac{k_i\left(x_i - x_{i+1}\right)}{6}\right)\left(x - x_{i+1}\right) - \left(\frac{y_{i+1}}{x_i - x_{i+1}} - \frac{k_{i+1}\left(x_i - x_{i+1}\right)}{6}\right)\left(x - x_{i+1}\right)
+\end{align*}
+
+</div>
+
+:::
+
+## Constructing Cubic Splines (Cont'd)
+
+<div style="font-size:18pt">
+
+At this stage, we know that 
+
+</div>
+
+<div style="font-size:16pt">
+
+$$\boxed{A = \frac{y_i}{x_i - x_{i+1}} - \frac{k_i\left(x_i - x_{i+1}\right)}{6}}~~~~\text{and}~~~~\boxed{B = \frac{y_{i+1}}{x_i - x_{i+1}} - \frac{k_{i+1}\left(x_i - x_{i+1}\right)}{6}}$$
+
+</div>
+
+<div style="font-size:18pt">
+
+Substituting these values back, we have discovered $f_{i,i+1}\left(x\right)$. That is,
+
+</div>
+
+<div style="font-size:16pt">
+
+\begin{align*} f_{i,i+1}\left(x\right) &= \frac{k_i\left(x - x_{i+1}\right)^3 - k_{i+1}\left(x - x_i\right)^3}{6\left(x_i - x_{i+1}\right)} + \left(\frac{y_i}{x_i - x_{i+1}} - \frac{k_i\left(x_i - x_{i+1}\right)}{6}\right)\left(x - x_{i+1}\right) - \left(\frac{y_{i+1}}{x_i - x_{i+1}} - \frac{k_{i+1}\left(x_i - x_{i+1}\right)}{6}\right)\left(x - x_{i+1}\right)\\[12pt]
+&= \frac{k_i}{6}\left(\frac{\left(x - x_{i+1}\right)^3}{x_{i} - x_{i+1}} - \left(x_i - x_{i+1}\right)\left(x - x_{i+1}\right)\right) - \frac{k_{i+1}}{6}\left(\frac{\left(x - x_i\right)^3}{x_i - x_{i+1}} - \left(x-x_i\right)\left(x_i - x_{i+1}\right)\right) + \frac{y_i\left(x - x_{i+1}\right) - y_{i+1}\left(x - x_i\right)}{x_i -x_{i+1}}
+\end{align*}
+
+</div>
+
+## Constructing Cubic Splines (Cont'd)
+
+:::{.fragment}
+
+<div style="font-size:18pt">
+
+We can now use the continuity of the derivative at each of the *knot* values to determine the remaining $k_i$ values. 
+
+</div>
+
+:::
+
+:::{.fragment}
+
+<div style="font-size:18pt">
+
+We know that $f_{i-1, i}'\left(x_i\right) = f_{i, i+1}'\left(x_i\right)$ for $i \in [n-1]$. 
+
+</div>
+
+:::
+
+:::{.fragment}
+
+<div style="font-size:18pt">
+
+Some algebra brings us to the following linear system:
+
+</div>
+
+<div style="font-size:16pt">
+
+$$\left\{\begin{array}{lcl} k_{i-1}\left(x_{i-1} - x_i\right) + 2k_i\left(x_{i-1} - x_{i+1}\right) + k_{i+1}\left(x_i - x_{i+1}\right) & = & 6\left(\frac{y_{i-1} - y_i}{x_{i-1} - x_i} - \frac{y_i - y_{i+1}}{x_i - x_{i+1}}\right)\end{array}\right.~~~~\text{for } i\in [n - 1]$$
+
+</div>
+
+:::
+
+:::{.fragment}
+
+<div style="font-size:18pt">
+
+Notice that the corresponding coefficient matrix will be a *tridiagonal* -- indeed, each equation in the system uses index $i-1$, $i$, and $i+1$ only. 
+
+</div>
+
+:::
+
+:::{.fragment}
+
+<div style="font-size:18pt">
+
+This means that we can solve the system using our `DoolittleLUdecomp3()` routine from our Day 6 discussion.
+
+</div>
+
+:::
+
+## Implementing the Cubic Spline Interpolant
+
+<div style="font-size:18pt">
+
+::::{.columns}
+
+:::{.column width="30%"}
+
+:::{.fragment}
+
+We are finally ready to define the components for our cubic spline interpolator routine. 
+
+:::
+
+:::{.fragment}
+
+As a reminder, since we need a routine from an earlier notebook, we'll need to copy/paste that routine into any notebook where we want to use this one. In the interest of space, I'm not showing that pasting here.
+
+:::
+
+:::
+
+:::{.column width="70%"}
+
+:::{.fragment}
+
+```{python}
+#| echo: true
+#| eval: true
+
+def curvatures(xData, yData):
+  n = len(xData) - 1
+  c = np.zeros(n)
+  d = np.ones(n+1)
+  e = np.zeros(n)
+  k = np.zeros(n+1)
+
+  c[0:(n-1)] = xData[0:(n-1)] - xData[1:n]
+  d[1:n] = 2.0*(xData[0:(n-1)] - xData[2:(n+1)])
+  e[1:n] = xData[1:n] - xData[2:(n+1)]
+  k[1:n] = 6.0*((yData[0:(n-1)] - yData[1:n])/(xData[0:(n-1)] - xData[1:n])) - 6.0*((yData[1:n] - yData[2:(n+1)])/(xData[1:n] - xData[2:(n+1)]))
+
+  DoolittleLUdecomp3solver(c, d, e, k)
+
+  return k
+
+def findSegment(xData, x):
+    iLeft = 0
+    iRight = len(xData) - 1
+
+    while 1:
+      if (iRight - iLeft) <= 1:
+        return iLeft
+      i = int((iLeft + iRight)/2)
+      if x < xData[i]:
+        iRight = i
+      else:
+        iLeft = i
+
+def evalSpline(xData, yData, k, x):
+  i = findSegment(xData, x)
+  h = xData[i] - xData[i+1]
+  #y = ((x - xData[i+1])**3/h - (x - xData[i+1])*h)*k[i]/6.0 - ((x - xData[i])**3/h - (x - xData[i])*h)*k[i+1]/6.0 + (yData[i]*(x - xData[i+1]) - yData[i+1]*(x - xData[i]))/h
+  y = ((x - xData[i+1])**3/h - (x - xData[i+1])*h)*k[i]/6.0 - ((x - xData[i])**3/h - (x - xData[i])*h)*k[i+1]/6.0 + (yData[i]*(x - xData[i+1]) - yData[i+1]*(x - xData[i]))/h
+
+
+  return y
+```
+
+:::
+
+:::
+
+::::
+
+</div>
+
+## Comments on the Interpolant
+
+:::{.fragment}
+
+This is the first time we have a routine which is split across multiple functions without a complete wrapper for the entire process (though you could build one).
+
+:::
+
++ The `curvatures()` function solves the tridiagonal system which we discovered through the math on the previous slides.
++ The `findSegment()` function is a helper function for evaluating the cubic spline interpolant.
+
+  + You won't use this function directly.
+  
++ The `evalSpline()` function is the one you'll use to take new input values and to evaluate the cubic spline interpolants and obtain outputs.
+
+## Using the Interpolant
+
+::::{.columns}
+
+:::{.column width="70%"}
+
+<div style="font-size:17pt">
+
+:::{.fragment data-fragment-index=1}
+
+**Example:** Use the cubic spline interpolator we just constructed to build a cubic spline interpolant for the observed data to the right.
+
+:::
+
+:::{.fragment data-fragment-index=3}
+
+If you like, compare your cubic spline interpolant to the one produced by `CubicSpline()` from `scipy.interpolate`. Before executing the code to compare, what do you expect to see?
+
+:::
+
+</div>
+
+:::
+
+:::{.column width="30%"}
+
+:::{.fragment data-fragment-index=2}
+
+<div style="font-size:14pt">
+
+<center>
+
+x | y
+--|--
+1 | 0
+2 | 1
+3 | 0
+4 | 1
+5 | 0
+
+</center>
+
+</div>
+
+:::
+
+:::
+
+::::
+
+::::{.fragment data-fragment-index=4}
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+<div style="font-size:16pt">
+
+```{python}
+#| echo: true
+#| eval: false
+
+x = np.array([1.0, 2, 3, 4, 5])
+y = np.array([0.0, 1, 0, 1, 0])
+
+x_new = np.linspace(0, 6, 10000)
+
+k = curvatures(x, y)
+
+y_new = x_new.copy()
+for j in range(len(x_new)):
+  y_new[j] = evalSpline(x, y, k, x_new[j])
+
+plt.figure(figsize = (6,2))
+plt.scatter(x, y, s = 150)
+plt.plot(x_new, y_new, color = "purple", linewidth = 3)
+plt.grid()
+plt.axvline(color = "black")
+plt.axhline(color = "black")
+plt.title("Our Cubic Spline Interpolant", fontsize = 18)
+plt.ylim((-1, 2));
+plt.show()
+```
+
+</div>
+
+:::
+
+:::{.column width="50%"}
+
+```{python}
+#| echo: false
+#| eval: true
+
+x = np.array([1.0, 2, 3, 4, 5])
+y = np.array([0.0, 1, 0, 1, 0])
+
+x_new = np.linspace(0, 6, 10000)
+
+k = curvatures(x, y)
+
+y_new = x_new.copy()
+for j in range(len(x_new)):
+  y_new[j] = evalSpline(x, y, k, x_new[j])
+
+plt.figure(figsize = (6,2.5))
+plt.scatter(x, y, s = 150)
+plt.plot(x_new, y_new, color = "purple", linewidth = 3)
+plt.grid()
+plt.axvline(color = "black")
+plt.axhline(color = "black")
+plt.title("Our Cubic Spline Interpolant", fontsize = 18)
+plt.ylim((-1, 2));
+plt.show()
+```
+
+```{python}
+#| echo: false
+#| eval: true
+
+from scipy.interpolate import CubicSpline
+x = np.array([1.0, 2, 3, 4, 5])
+y = np.array([0.0, 1, 0, 1, 0])
+
+x_new = np.linspace(0, 6, 10000)
+
+cs = CubicSpline(x, y, bc_type = "natural")
+y_scipy = cs(x_new)
+
+plt.figure(figsize = (6,2.5))
+plt.scatter(x, y, s = 150)
+plt.plot(x_new, y_scipy, color = "red", linewidth = 3)
+plt.grid()
+plt.axvline(color = "black")
+plt.axhline(color = "black")
+plt.title("SciPy's Cubic Spline Interpolant", fontsize = 18)
+plt.ylim((-1, 2));
+plt.show()
+```
+
+:::
+
+::::
+
+:::::
+
+## Using the Interpolant
+
+::::{.columns}
+
+:::{.column width="70%"}
+
+<div style="font-size:17pt">
+
+**Example:** Use the cubic spline interpolator we just constructed to build a cubic spline interpolant for the observed data to the right.
+
+If you like, compare your cubic spline interpolant to the one produced by `CubicSpline()` from `scipy.interpolate`. Before executing the code to compare, what do you expect to see? **They're the same!**
+
+</div>
+
+:::
+
+:::{.column width="30%"}
+
+<div style="font-size:14pt">
+
+<center>
+
+x | y
+--|--
+1 | 0
+2 | 1
+3 | 0
+4 | 1
+5 | 0
+
+</center>
+
+</div>
+
+:::
+
+::::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+<div style="font-size:16pt">
+
+```{python}
+#| echo: true
+#| eval: false
+
+x = np.array([1.0, 2, 3, 4, 5])
+y = np.array([0.0, 1, 0, 1, 0])
+
+x_new = np.linspace(0, 6, 10000)
+
+k = curvatures(x, y)
+
+y_new = x_new.copy()
+for j in range(len(x_new)):
+  y_new[j] = evalSpline(x, y, k, x_new[j])
+
+plt.figure(figsize = (6,2))
+plt.scatter(x, y, s = 150)
+plt.plot(x_new, y_new, color = "purple", linewidth = 3)
+plt.grid()
+plt.axvline(color = "black")
+plt.axhline(color = "black")
+plt.title("Our Cubic Spline Interpolant", fontsize = 18)
+plt.ylim((-1, 2));
+plt.show()
+```
+
+</div>
+
+:::
+
+:::{.column width="50%"}
+
+```{python}
+#| echo: false
+#| eval: true
+
+x = np.array([1.0, 2, 3, 4, 5])
+y = np.array([0.0, 1, 0, 1, 0])
+
+x_new = np.linspace(0, 6, 10000)
+
+k = curvatures(x, y)
+
+y_new = x_new.copy()
+for j in range(len(x_new)):
+  y_new[j] = evalSpline(x, y, k, x_new[j])
+
+plt.figure(figsize = (6,2.5))
+plt.scatter(x, y, s = 150)
+plt.plot(x_new, y_new, color = "purple", linewidth = 3)
+plt.grid()
+plt.axvline(color = "black")
+plt.axhline(color = "black")
+plt.title("Our Cubic Spline Interpolant", fontsize = 18)
+plt.ylim((-1, 2));
+plt.show()
+```
+
+```{python}
+#| echo: false
+#| eval: true
+
+from scipy.interpolate import CubicSpline
+x = np.array([1.0, 2, 3, 4, 5])
+y = np.array([0.0, 1, 0, 1, 0])
+
+x_new = np.linspace(0, 6, 10000)
+
+cs = CubicSpline(x, y, bc_type = "natural")
+y_scipy = cs(x_new)
+
+plt.figure(figsize = (6,2.5))
+plt.scatter(x, y, s = 150)
+plt.plot(x_new, y_scipy, color = "red", linewidth = 3)
+plt.grid()
+plt.axvline(color = "black")
+plt.axhline(color = "black")
+plt.title("SciPy's Cubic Spline Interpolant", fontsize = 18)
+plt.ylim((-1, 2));
+plt.show()
+```
+
+:::
+
+::::
+
+## Summary
+
++ In this discussion we introduced cubic spline interpolants as possibly better *global interpolants* than polynomial interpolants. 
++ What is meant by "better global interpolant" can be seen from our original set of toy observations with the polynomial and cubic spline interpolant near the beginning of this slide deck. 
+
+  + The polynomial interpolant seems to fit the interior observations and the intervals between them in a reasonable manner. 
+  + The performance of the polynomial interpolant along the left-most and right-most intervals should seem suspect, though.
+  + The interpolant's range along those intervals is very wide and potentially unsupportedly so. 
+
+  + The cubic spline interpolant, however, doesn't exhibit this behavior. 
+  
++ For this reason, cubic spline interpolants are often preferred over polynomial interpolants.
+
+## Next Time
+
+<br/>
+<br/>
+
+We switch gears and look at linear regression via ordinary least squares for curve fitting rather than full interpolation.
+
