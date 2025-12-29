@@ -1,0 +1,1377 @@
+---
+title: "MAT 370: Row Pivoting"
+author: Dr. Gilbert
+format: 
+  revealjs:
+    smaller: true
+date: today
+date-format: long
+theme: serif
+incremental: true
+execute: 
+  error: true
+---
+
+```{r global-options, include=FALSE}
+library(tidyverse)
+library(reticulate)
+
+theme_set(theme_bw(base_size = 20))
+```
+
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+import time
+
+def GaussElim(A, b):
+  n = len(b)
+
+  for k in range(0, n-1):
+    for i in range(k+1, n):
+      if A[i, k] != 0.0:
+        lam = A[i, k]/A[k, k]
+        A[i, k:n] = A[i, k:n] - lam*A[k, k:n]
+        b[i] = b[i] - lam*b[k]
+
+  for k in range(n - 1, -1, -1):
+    b[k] = (b[k] - np.dot(A[k, (k+1):n], b[(k+1):n]))/A[k,k]
+
+  return b
+
+def LUdecomp(A):
+  n = A.shape[0]
+  for k in range(n):
+    for i in range(k+1, n):
+      if A[i, k] != 0.0:
+        lam = A[i, k]/A[k, k]
+        A[i, (k+1):n] = A[i, (k+1):n] - lam*A[k, (k+1):n]
+        A[i, k] = lam
+
+  return A
+
+def LUsolve(LU, b):
+  n = len(b)
+  for k in range(1, n):
+    b[k] = (b[k] - np.dot(LU[k, 0:k], b[0:k]))
+
+  b[n-1] = b[n-1]/LU[n-1, n-1]
+
+  for k in range(n-2, -1, -1):
+    b[k] = (b[k] - np.dot(LU[k, (k+1):n], b[(k+1):n]))/LU[k, k]
+
+  return b
+
+def DoolittleLUsolver(A, b):
+  LU = LUdecomp(A) #Row Reduction
+  sol = LUsolve(LU, b) #Forward/backward substitution
+
+  return sol
+
+def DoolittleLUdecomp3(c, d, e):
+  n = len(d)
+  for k in range(1, n):
+    lam = c[k-1]/d[k-1]
+    d[k] = d[k] - lam*e[k-1]
+    c[k-1] = lam
+
+  return c, d, e
+
+def Doolittle3solver(lam, d, e, b):
+  n = len(d)
+  for k in range(1, n):
+    b[k] = b[k] - lam[k-1]*b[k-1]
+
+  b[n-1] = b[n-1]/d[n-1]
+  for k in range(n-2, -1, -1):
+    b[k] = (b[k] - e[k]*b[k+1])/d[k]
+
+  return b
+
+def DoolittleLUdecomp3solver(c, d, e, b):
+  lam, d, e = DoolittleLUdecomp3(c, d, e)
+  b = Doolittle3solver(lam, d, e, b)
+
+  return b
+
+def make_A():
+  A = np.array([
+    [2.0, -1, 0, 0, 0],
+    [-1, 2, -1, 0, 0],
+    [0, -1, 1, 3, 0],
+    [0, 0, -4, 3, 1],
+    [0, 0, 0, -2, 4]
+  ])
+  return A
+
+b1 = np.array([1.0, -8, 5, 13, 4])
+b2 = np.array([-3.0, 7, 17, 11, -4])
+b3 = np.array([-11.0, 13, 25, -35, 12])
+b4 = np.array([-23.0, -17, 11, 42, 13])
+```
+
+```{css}
+code.sourceCode {
+  font-size: 1.3em;
+  /* or try font-size: xx-large; */
+}
+
+a {
+  color: purple;
+}
+
+a:link {
+  color: purple;
+}
+
+a:visited {
+  color: purple;
+}
+```
+
+## Motivation and Context
+
+:::{.fragment}
+
+We're nearly always working with incomplete data, trying to fill in the gaps or to make predictions to aid in decision-making.
+
+:::
+
+:::{.fragment}
+
+Such a process is called interpolation. The video below will provide a bit more real-world context before we jump in.
+
+:::
+
+:::{.fragment}
+
+:::{.figure}
+
+<div style="display: flex; justify-content: center; align-items: center; height: 100%;">
+
+<div id="player"></div>
+
+</div>
+
+<script>
+  var player;
+  var stopTime = 216; // seconds
+
+  function onYouTubeIframeAPIReady() {
+    player = new YT.Player('player', {
+      videoId: 'WcQsHEY7FTs',
+      playerVars: {
+        start: 0
+      },
+      events: {
+        onReady: onPlayerReady,
+        onStateChange: onPlayerStateChange
+      }
+    });
+  }
+
+  function onPlayerReady(event) {
+    event.target.setPlaybackRate(1.25);
+  }
+
+  function onPlayerStateChange(event) {
+    if (event.data === YT.PlayerState.PLAYING) {
+      checkTime();
+    }
+  }
+
+  function checkTime() {
+    if (player && player.getCurrentTime() >= stopTime) {
+      player.pauseVideo();
+    } else {
+      setTimeout(checkTime, 200); // check every 200 ms
+    }
+  }
+</script>
+
+<script src="https://www.youtube.com/iframe_api"></script>
+
+
+▶ Video from [GIS Resources](https://www.youtube.com/@gisresources2013).
+
+:::
+
+:::
+
+## Interpolation and Curve-Fitting
+
+<div style="font-size:18pt">
+
+:::{.fragment}
+
+Through this next section of our course, we'll consider fitting models to observed data.
+
+:::
+
+:::{.fragment}
+
+There are two umbrella processes for achieving this objective -- interpolation or curve fitting.
+
+:::
+
+:::::{.fragment}
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+Interpolation assumes a deterministic relationship with observed data assumed to be measured exactly.
+
+:::
+
+:::{.column width="50%"}
+
+```{python}
+np.random.seed(123)
+x_vals = np.random.uniform(low = 0, high = 10, size = 3)
+y_vals = (x_vals - 7)**2
+x_new = np.linspace(0, 10, num = 250)
+y_plot = (x_new - 7)**2
+
+plt.plot(x_new, y_plot, color = "purple", linewidth = 3)
+plt.scatter(x_vals, y_vals, s = 150)
+plt.xlabel("x")
+plt.ylabel("y")
+plt.title("Observed Data and Interpolated Curve", fontsize=22)
+plt.ylim((-5, 50));
+plt.xlim((-1, 12));
+plt.grid()
+
+plt.show()
+```
+
+:::
+
+::::
+
+:::::
+
+:::::{.fragment}
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+Curve-fitting is a process that acknowledges noise and uncertainty and seeks to capture a general trend between available independent features and a dependent response.
+
+:::
+
+:::{.column width="50%"}
+
+```{python}
+x_vals = np.random.uniform(low = 0, high = 10, size = 20)
+y_vals = 2*x_vals + 8 + np.random.normal(loc = 0, scale = 4, size = len(x_vals))
+
+x_new = np.linspace(0, 10, num = 100)
+y_new = 2*x_new + 8
+
+plt.plot(x_new, y_new, color = "purple", linewidth = 3)
+plt.scatter(x_vals, y_vals, s = 150)
+plt.grid()
+plt.xlabel("x")
+plt.ylabel("y")
+plt.title("Observed Data and Regression Line", fontsize = 22)
+
+plt.show()
+```
+
+:::
+
+::::
+
+:::::
+
+</div>
+
+## Polynomial Interpolation
+
+:::{.fragment} 
+
+We've seen that interpolation means fitting curves *through* existing data points. 
+
+:::
+
+:::{.fragment}
+
+That is, our observed data points will fall exactly on the curve(s) we are constructing. 
+
+:::
+
+:::{.fragment}
+
+It is always possible to construct a *unique* polynomial of degree at most $n-1$ that passes through $n$ distinct data points having distinct "$x$" coordinates.
+
+:::
+
+:::{.fragment}
+
+```{python}
+#@title
+x_vals = np.random.uniform(0, 10, 4)
+y_vals = (x_vals-4)*(x_vals-7)**2
+
+x_new = np.linspace(0, 10, 100)
+y_interp = (x_new - 4)*(x_new - 7)**2
+
+plt.figure(figsize = (12, 4))
+plt.scatter(x_vals, y_vals)
+plt.plot(x_new, y_interp, color = "red")
+plt.xlabel("x")
+plt.ylabel("y")
+plt.title("Interpolating Data", fontsize = 22)
+plt.show()
+```
+
+:::
+
+## A Strategy and an Example
+
+<div style="font-size:16pt">
+
+:::{.fragment data-fragment-index=1}
+
+As usual, we'll find it helpful to have an example to work with while we introduce and discuss the methods for polynomial interpolation below.
+
+:::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment data-fragment-index=4}
+
+<center>**Lagrange's Method**</center>
+
+:::
+
+:::{.fragment data-fragment-index=5}
+
+$$P_{n}\left(x\right) = \sum_{i = 0}^{n}{y_i\ell_{i}\left(x\right)}$$
+
+:::
+
+:::{.fragment data-fragment-index=6}
+
+where $n$ is the degree of the polynomial and
+
+\begin{align*} \ell_{i}\left(x\right) &= \left(\frac{x - x_0}{x_i - x_0}\right)\left(\frac{x - x_1}{x_i - x_1}\right)\cdots \left(\frac{x - x_{i-1}}{x_i - x_{i-1}}\right)\left(\frac{x - x_{i+1}}{x_i - x_{i+1}}\right)\cdots \left(\frac{x - x_n}{x_i - x_n}\right)\\
+&= \prod_{\substack{j=0\\ j\neq i}}^{n}{\frac{x - x_{j}}{x_i - x_j}}~~\text{for}~~i = 0, 1, \cdots, n
+\end{align*}
+
+:::
+
+:::{.fragment data-fragment-index=7}
+
+The $\ell_{i}\left(x\right)$ functions are called the *cardinal functions*.
+
+:::
+
+:::{.fragment data-fragment-index=8}
+
+Note that if $n = 1$ (two points), we have a linear function:
+
+$$P_1\left(x\right) = y_0\left(\frac{x - x_1}{x_0 - x_1}\right) + y_1\left(\frac{x - x_0}{x_1 - x_0}\right)$$
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment data-fragment-index=2}
+
+**Example:** Construct a degree-three polynomial interpolant for the observed data
+
+<center>
+
+x | y
+--|--
+1 | 4
+5 | 12
+7 | 8
+15 | 20
+
+</center>
+
+:::
+
+:::{.fragment data-fragment-index=3}
+
+```{python}
+xData = np.array([1.0, 5, 7, 15])
+yData = np.array([4.0, 12, 8, 20])
+
+plt.scatter(xData, yData, s = 150)
+plt.grid()
+plt.axhline(color = "black")
+plt.axvline(color = "black")
+plt.show()
+```
+
+:::
+
+:::
+
+::::
+
+</div>
+
+## Completing the Example
+
+<div style="font-size:18pt">
+
+:::{.fragment}
+
+**Example:** Use Lagrange's Method to find a third degree polynomial interpolant through the observed data points $\left(1, 4\right)$, $\left(5, 12\right)$, $\left(7, 8\right)$, and $\left(15, 20\right)$.
+
+:::
+
+::::{.columns}
+
+:::{.column width="60%"}
+
+:::{.fragment}
+
+As a reminder, the Lagrange polynomial consists of sums of terms of the form
+
+:::
+
+:::
+
+:::{.column width="40%"}
+
+:::{.fragment}
+
+$$y_i\prod_{\substack{j = 0\\ j\neq i}}^{n}\left(\frac{x - x_i}{x_i - x_j}\right)$$
+
+:::
+
+:::
+
+::::
+
+:::{.fragment}
+
+```{python}
+#| echo: true
+#| eval: false
+
+def f(x):
+  term1 = 4*((x - 5)*(x - 7)*(x - 15))/((1 - 5)*(1 - 7)*(1 - 15))
+  term2 = ___*((x - ___)*(x - ___)*(x - ___))/((___ - ___)*(___ - ___)*(___ - ___))
+  term3 = ___*((x - ___)*(x - ___)*(x - ___))/((___ - ___)*(___ - ___)*(___ - ___))
+  term4 = ___*((x - ___)*(x - ___)*(x - ___))/((___ - ___)*(___ - ___)*(___ - ___))
+
+  return term1 + term2 + term3 + term4
+```
+
+:::
+
+</div>
+
+## Completing the Example
+
+<div style="font-size:18pt">
+
+**Example:** Use Lagrange's Method to find a third degree polynomial interpolant through the observed data points $\left(1, 4\right)$, $\left(5, 12\right)$, $\left(7, 8\right)$, and $\left(15, 20\right)$.
+
+::::{.columns}
+
+:::{.column width="60%"}
+
+As a reminder, the Lagrange polynomial consists of sums of terms of the form
+
+:::
+
+:::{.column width="40%"}
+
+$$y_i\prod_{\substack{j = 0\\ j\neq i}}^{n}\left(\frac{x - x_i}{x_i - x_j}\right)$$
+
+:::
+
+::::
+
+```{python}
+#| echo: true
+#| eval: true
+
+def f(x):
+  term1 = 4*((x - 5)*(x - 7)*(x-15))/((1 - 5)*(1 - 7)*(1 - 15))
+  term2 = 12*((x - 1)*(x - 7)*(x-15))/((5 - 1)*(5 - 7)*(5 - 15))
+  term3 = 8*((x - 1)*(x - 5)*(x-15))/((7 - 1)*(7 - 5)*(7 - 15))
+  term4 = 20*((x - 1)*(x - 5)*(x - 7))/((15 - 1)*(15 - 5)*(15 - 7))
+
+  return term1 + term2 + term3 + term4
+```
+
+:::::{.fragment}
+
+::::{.columns}
+
+:::{.column width="60%"}
+
+```{python}
+#| echo: true
+#| eval: false
+
+x_vals = np.linspace(0, 20, 500)
+y_vals = f(x_vals)
+
+plt.scatter(xData, yData, s = 150)
+plt.plot(x_vals, y_vals, color = "purple", linewidth = 3)
+plt.grid()
+plt.axhline(color = "black")
+plt.axvline(color = "black")
+plt.show()
+```
+
+:::
+
+:::{.column width="40%"}
+
+```{python}
+#| echo: false
+#| eval: true
+
+x_vals = np.linspace(0, 20, 500)
+y_vals = f(x_vals)
+
+plt.scatter(xData, yData, s = 150)
+plt.plot(x_vals, y_vals, color = "purple", linewidth = 3)
+plt.grid()
+plt.axhline(color = "black")
+plt.axvline(color = "black")
+plt.show()
+```
+
+:::
+
+::::
+
+:::::
+
+</div>
+
+## Approximation Error
+
+<div style="font-size:18pt">
+
+:::{.fragment}
+
+The function we are attempting to approximate may not actually be a polynomial. 
+
+:::
+
+:::{.fragment}
+
+In these cases, we'll have approximation error because the functional form is incorrect. 
+
+:::
+
+</div>
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+<div style="font-size:18pt">
+
+It can be shown that the error in using a polynomial interpolant $P_n\left(x\right)$ as an approximation for the true function $f\left(x\right)$ is bounded by
+
+</div>
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+<div style="font-size:16pt">
+
+$$f\left(x\right) - P_{n}\left(x\right) = \frac{\left(x - x_0\right)\left(x - x_1\right)\cdots \left(x - x_n\right)}{\left(n+1\right)!}f^{\left(n+1\right)}\left(\xi\right)$$
+
+</div>
+
+:::
+
+:::{.fragment}
+
+<div style="font-size:18pt">
+
+where $f^{\left(n+1\right)}$ is the $n^{th}$ derivative of the true function $f\left(x\right)$ and $\xi$ is somewhere in the interval $I = \left(x_0, x_n\right)$.
+
+</div>
+
+:::
+
+:::
+
+::::
+
+<div style="font-size:18pt">
+
+:::{.fragment}
+
+While Lagrange's method is relatively easy to understand, it is algorithmically inefficient. 
+
+:::
+
+:::{.fragment}
+
+We'll explore Newton's Method as an alternative next.
+
+:::
+
+</div>
+
+## Newton's Method
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+<div style="font-size:18pt">
+
+Newton's method for polynomial interpolation is to construct a polynomial of the form
+
+</div>
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+<div style="font-size:15pt">
+
+$$P_{n}\left(x\right) = a_0 + \left(x - x_0\right)a_1 + \left(x - x_0\right)\left(x - x_1\right)a_2 + \cdots + \left(x - x_0\right)\left(x - x_1\right)\cdots\left(x - x_{n-1}\right)a_n$$
+
+</div>
+
+:::
+
+:::
+
+::::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+<div style="font-size:18pt">
+
+For example, a degree three polynomial (an interpolant on four data points) is given by
+
+</div>
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+<div style="font-size:16pt">
+
+\begin{align*} P_{3}\left(x\right) &= a_0 + \left(x - x_0\right)a_1 + \left(x - x_0\right)\left(x - x_1\right)a_2 + \left(x - x_0\right)\left(x - x_1\right)\left(x - x_2\right)a_3\\
+&= a_0 + \left(x - x_0\right)\left(a_1 + \left(x - x_1\right)a_2 + \left(x - x_1\right)\left(x - x_2\right)a_3\right)\\
+&= a_0 + \left(x - x_0\right)\left(a_1 + \left(x - x_1\right)\left(a_2 + \left(x - x_2\right)a_3\right)\right)
+\end{align*}
+
+</div>
+
+:::
+
+:::
+
+::::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+<div style="font-size:18pt">
+
+which can be evaluated backwards using the following recurrence:
+
+</div>
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+<div style="font-size:16pt">
+
+\begin{align*} P_0\left(x\right) &= a_3\\
+P_1\left(x\right) &= a_2 + \left(x - x_2\right)P_0\left(x\right)\\
+P_1\left(x\right) &= a_1 + \left(x - x_1\right)P_1\left(x\right)\\
+P_2\left(x\right) &= a_0 + \left(x - x_0\right)P_2\left(x\right)
+\end{align*}
+
+</div>
+
+:::
+
+:::
+
+::::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+<div style="font-size:18pt">
+
+This doesn't just work nicely for $n = 3$ -- we have the following recurrence for any $n$.
+
+</div>
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+<div style="font-size:16pt">
+
+\begin{align*} P_0\left(x\right) &= a_n\\
+p_k\left(x\right) & = a_{n - k} + \left(x - x_{n - k}\right)P_{k - 1}\left(x\right)~~\text{for}~~ k \in [n]
+\end{align*}
+
+</div>
+
+:::
+
+:::
+
+::::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+<div style="font-size:18pt">
+
+Now that we have this evaluation strategy, we can write a routine to evaluate such a polynomial!
+
+</div>
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+<div style="font-size:22pt">
+
+```
+p = a[n]
+
+for k in range(1, n + 1):
+  p = a[n - k] + (x - xData[n - k])*p
+```
+
+</div>
+
+:::
+
+:::
+
+::::
+
+## Finding Coefficients
+
+<div style="font-size:18pt">
+
+:::{.fragment data-fragment-index=1}
+
+If you're being observant, you've noticed that we don't yet know how to determine the coefficients $a_0,a_1,\cdots, a_n$. 
+
+:::
+
+:::{.fragment data-fragment-index=2}
+
+We can determine them, however, because we know that our polynomial must pass through each of our data points. 
+
+:::
+
+</div>
+
+::::{.columns}
+
+:::{.column width="40%"}
+
+:::{.fragment data-fragment-index=3}
+
+<div style="font-size:18pt">
+
+That is, for each observed data point $\left(x_i, y_i\right)$, we must have $y_i = P_n\left(x_i\right)$, which results in a simultaneous system:
+
+</div>
+
+:::
+
+:::
+
+:::{.column width="60%"}
+
+:::{.fragment data-fragment-index=4}
+
+<div style="font-size:16pt">
+
+\begin{align*} y_0 &= a_0\\
+y_1 &= a_0 + \left(x_1 - x_0\right)a_1\\
+y_2 &= a_0 + \left(x_2 - x_0\right)a_1 + \left(x_2 - x_0\right)\left(x_2 - x_1\right)a_2\\
+&\vdots\\
+y_n &= a_0 + \left(x_n - x_0\right)a_1 + \left(x_n - x_0\right)\left(x_n - x_1\right)a_2 + \cdots + \left(x_n - x_0\right)\left(x_n - x_1\right)\cdots \left(x_n - x_{n-1}\right)a_{n}
+\end{align*}
+
+</div>
+
+:::
+
+:::
+
+::::
+
+::::{.columns}
+
+:::{.column width="50%"}
+<div style="font-size:18pt">
+
+:::{.fragment data-fragment-index=5}
+
+Note that this is not a *linear* system due to the products. However, we can solve the system if we introduce divided differences.
+
+:::
+
+:::{.fragment data-fragment-index=7}
+
+The solution of the system is then
+
+:::
+
+</div>
+
+:::{.fragment data-fragment-index=8}
+
+<div style="font-size:16pt">
+
+$$a_0 = y_0~~a_1 = \nabla y_1~~a_2 = \nabla^2 y_2~~\cdots~~a_n = \nabla^{n} y_n$$
+
+</div>
+
+:::
+
+:::
+
+:::{.column width="30%"}
+
+:::{.fragment data-fragment-index=6}
+
+<div style="font-size:15pt">
+
+\begin{align*} \nabla y_i &= \frac{y_i - y_0}{x_i - x_0}\\
+\nabla^2y_i &= \frac{\nabla y_i - \nabla y_1}{x_i - x_1}\\
+\nabla^3y_i &= \frac{\nabla^2y_i - \nabla^2y_2}{x_i - x_2}\\
+&\vdots\\
+\nabla^ny_i &= \frac{\nabla^{n-1}y_i - \nabla^{n-1}y_{n-1}}{x_i - x_{n-1}}
+\end{align*}
+
+</div>
+
+:::
+
+:::
+
+:::{.column width="20%"}
+
+:::{.fragment data-fragment-index=9}
+
+<div style="font-size:18pt">
+
+We'll derive the first few of these on the board.
+
+</div>
+
+:::
+
+:::
+
+::::
+
+## Computing Coefficients
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+<div style="font-size:18pt">
+
+If we wanted to compute the coefficients by hand, we could use a tableau like the one to the right.
+
+</div>
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+<div style="font-size:16pt">
+
+$$\begin{array}{|c||c|c|c|c|c|}\hline
+x_0 & y_0 & & & &\\ \hline
+x_1 & y_1 & \nabla y_1 & & &\\ \hline
+x_2 & y_2 & \nabla y_2 & \nabla^2 y_2 & & \\ \hline
+x_3 & y_3 & \nabla y_3 & \nabla^2 y_3 & \nabla^3 y_3 & \\ \hline
+x_4 & y_4 & \nabla y_4 & \nabla^2 y_4 & \nabla^3 y_4 & \nabla^4 y_4 \\ \hline
+\end{array}$$
+
+</div>
+
+:::
+
+:::
+
+::::
+
+:::{.fragment}
+
+<div style="font-size:18pt">
+
+The diagonals are the coefficients of our polynomial. The table entries will change depending on the order that the data points appear in our set of observations, however, the resulting polynomial does not depend on the order of the data points.
+
+</div>
+
+:::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+<div style="font-size:18pt">
+
+We can compute the diagonal entries of the table numerically using a 1-D array as follows:
+
+</div>
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+<div style="font-size:22pt">
+
+```
+a = yData.copy()
+
+for k in range(1, m):
+  for i in range(k, m):
+    a[i] = (a[i] - a[k-1])/(xData[i] - xData[k-1])
+```
+
+</div>
+
+:::
+
+:::
+
+::::
+
+<div style="font-size:18pt">
+
+:::{.fragment}
+
+Initially, the array $a$ contains the column of $y$-values from the tableau.
+
+:::
+
+:::{.fragment}
+
+Each pass through the outer `for` loop creates the next column, leaving the diagonal entries of the tableau at the "front" of the array.
+
+:::
+
+</div>
+
+## Implementing Newton's Method
+
+<div style="font-size:18pt">
+
+:::{.fragment}
+
+Finally, we are able to write the full algorithm for Newton's Method for polynomial interpolation.
+
+:::
+
+:::{.fragment}
+
+```{python}
+#| echo: true
+#| eval: true
+
+def getCoefficients(xData, yData):
+  m = len(xData)
+  a = yData.copy()
+
+  for k in range(1, m):
+    a[k:m] = (a[k:m] - a[k-1])/(xData[k:m] - xData[k-1])
+
+  return a
+
+def evaluatePolynomial(a, xData, x):
+  deg = len(xData) - 1
+  p = a[deg]
+
+  for k in range(1, deg + 1):
+    p = a[deg-k] + (x - xData[deg-k])*p
+
+  return p
+```
+
+:::
+
+</div>
+
+## Using the Newton's Method Algorithm
+
+<div style="font-size:18pt">
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+```{python}
+#| echo: true
+#| eval: false
+
+xData = np.random.uniform(0, 10, 4)
+yData = np.random.uniform(0, 10, 4)
+
+coefs = getCoefficients(xData, yData)
+
+x_new = np.linspace(0, 10, 100)
+y_new = evaluatePolynomial(coefs, xData, x_new)
+
+plt.scatter(xData, yData, s = 150)
+plt.plot(x_new, y_new, color = "purple", linewidth = 3)
+plt.grid()
+plt.axhline(color = "black")
+plt.axvline(color = "black")
+plt.ylim((-50, 50));
+plt.xlabel("x")
+plt.ylabel("y")
+plt.title("Data and Interpolated Polynomial (Newton's Method)", fontsize = 22)
+plt.show()
+```
+
+:::
+
+:::{.column width="50%"}
+
+```{python}
+#| echo: false
+#| eval: true
+
+xData = np.random.uniform(0, 10, 4)
+yData = np.random.uniform(0, 10, 4)
+
+coefs = getCoefficients(xData, yData)
+
+x_new = np.linspace(0, 10, 100)
+y_new = evaluatePolynomial(coefs, xData, x_new)
+
+plt.scatter(xData, yData, s = 150)
+plt.plot(x_new, y_new, color = "purple", linewidth = 3)
+plt.grid()
+plt.axhline(color = "black")
+plt.axvline(color = "black")
+plt.ylim((-50, 50));
+plt.xlabel("x")
+plt.ylabel("y")
+plt.title("Data and Interpolated Polynomial (Newton's Method)", fontsize=22)
+plt.show()
+```
+
+:::
+
+::::
+
+</div>
+
+## Limitations to Polynomial Interpolation
+
+::::{.columns}
+
+:::{.column width="60%"}
+
+:::{.fragment}
+
+<div style="font-size:18pt">
+
+Including additional observed data points automatically increases the degree of the interpolated polynomial. 
+
+</div>
+
+:::
+
+:::{.fragment}
+
+<div style="font-size:18pt">
+
+This can be really detrimental, especially if there is slight noise in the measured observations. 
+
+</div>
+
+:::
+
+:::{.fragment}
+
+<div style="font-size:18pt">
+
+For example, consider the *nearly-linear* data points to the right.
+
+</div>
+
+:::
+
+:::
+
+:::{.column width="40%"}
+
+:::{.fragment}
+
+<div style="font-size:16pt">
+
+<center>
+
+x | y
+--|--
+1 | 1
+2 | 2.1
+3 | 2.9
+4 | 4
+9 | 8.9
+
+</center>
+
+</div>
+
+:::
+
+:::
+
+::::
+
+:::{.fragment}
+
+```{python}
+xData = np.array([1.0, 2, 3, 4, 9])
+yData = np.array([1.0, 2.1, 2.9, 4, 8.9])
+
+coefs = getCoefficients(xData, yData)
+
+x_new = np.linspace(0, 10, 100)
+y_new = evaluatePolynomial(coefs, xData, x_new)
+
+plt.figure(figsize = (12, 3.5))
+plt.scatter(xData, yData, s = 150)
+plt.plot(x_new, y_new, color = "purple", linewidth = 3)
+plt.plot([0, 10], [0,10], color = "red", linewidth = 3)
+plt.grid()
+plt.axhline(color = "black")
+plt.axvline(color = "black")
+plt.xlabel("x")
+plt.ylabel("y")
+plt.title("Interpolated Polynomial (purple) and Linear Function (red)", fontsize = 22)
+plt.show()
+```
+
+:::
+
+## Comments on Limitations
+
+<div style="font-size:18pt">
+
+```{python}
+xData = np.array([1.0, 2, 3, 4, 9])
+yData = np.array([1.0, 2.1, 2.9, 4, 8.9])
+
+coefs = getCoefficients(xData, yData)
+
+x_new = np.linspace(0, 10, 100)
+y_new = evaluatePolynomial(coefs, xData, x_new)
+
+plt.figure(figsize = (12, 3))
+plt.scatter(xData, yData, s = 150)
+plt.plot(x_new, y_new, color = "purple", linewidth = 3)
+plt.plot([0, 10], [0,10], color = "red", linewidth = 3)
+plt.grid()
+plt.axhline(color = "black")
+plt.axvline(color = "black")
+plt.xlabel("x")
+plt.ylabel("y")
+plt.title("Interpolated Polynomial (purple) and Linear Function (red)", fontsize = 22)
+plt.show()
+```
+
+:::{.fragment}
+
+We can see that the interpolated polynomial has emphasized bends to accommodate the "measurement error". Interpolated values for $4 < x < 9$ should almost surely not be trusted.
+
+:::
+
+:::{.fragment}
+
+**General Rule 1:** Polynomial *extrapolation* (interpolating outside the range of observed values) should be avoided.
+
+:::
+
+:::{.fragment}
+
+**General Rule 2:** Polynomial interpolation should be carried out with the fewest number of data points feasible. For example, if you suspect that your polynomial should be degree $2$, then use three data points. An interpolated polynomial passing through more than $6$ observed data points should be viewed with extreme suspicion -- In fact, the more data points used, the more suspicious we should be of our polynomial.
+
+:::
+
+</div>
+
+## A Note on Extrapolation
+
+<div style="font-size:17pt">
+
+```{python}
+xData = np.array([1.0, 2, 3, 4, 9])
+yData = np.array([1.0, 2.1, 2.9, 4, 8.9])
+
+coefs = getCoefficients(xData, yData)
+
+x_new = np.linspace(0, 10, 100)
+y_new = evaluatePolynomial(coefs, xData, x_new)
+
+plt.figure(figsize = (12, 3))
+plt.scatter(xData, yData, s = 150)
+plt.plot(x_new, y_new, color = "purple", linewidth = 3)
+plt.plot([0, 10], [0,10], color = "red", linewidth = 3)
+plt.grid()
+plt.axhline(color = "black")
+plt.axvline(color = "black")
+plt.xlabel("x")
+plt.ylabel("y")
+plt.title("Interpolated Polynomial (purple) and Linear Function (red)", fontsize = 22)
+plt.show()
+```
+
+:::{.fragment}
+
+Extrapolation means using a model to make predictions for values of the independent variable(s) beyond which we have support for.
+
+:::
+
+:::{.fragment}
+
+An easy way to think of this is that these are values below the minimum observed value or above the maximum observed value (though these are not the only scenarios).
+
+:::
+
+:::{.fragment}
+
+In cases where you must extrapolate, use a low-order (small degree) polynomial interpolated only on the nearest-neighbor observations. 
+
+:::
+
+:::{.fragment}
+
+Additionally, you should plot the interpolated polynomial for visual confirmation that the extrapolation makes sense. 
+
+:::
+
+:::{.fragment}
+
+For example, in the plot of the interpolated polynomial on the nearly-linear data earlier, we can clearly see that using that red polynomial to extrapolate $p\left(10\right)$ is not a good idea.
+
+:::
+
+</div>
+
+## Summary
+
+<div style="font-size:18pt">
+
++ In this notebook we covered and implemented Newton's Method for polynomial interpolation. 
++ We completed an example of constructing an interpolated polynomial by hand (using both Lagrange's method and Newton's method) and we also used our own routine, coded in Python, to construct and evaluate an interpolated polynomial. 
++ We also highlighted some concerns to be aware of when interpolating with polynomials. In particular,
+
+  + We should use the fewest number of observed data points required to interpolate our polynomial (a degree $n$ polynomial requires $n+1$ data points)
+  + We should try to avoid extrapolation (evaluating an interpolated polynomial outside of the range of observed data)
+
+:::{.fragment}
+
+**Note (Additional Omitted Topics):** The textbook covers two additional techniques.
+
+:::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
++ Neville's method is a faster method of polynomial interpolation useful in cases where we want to interpolate a single value.
+
+:::
+
+:::{.column width="50%"}
+
++ Interpolation by rational functions is sometimes more appropriate than using polynomial interpolants, especially when there is theoretical justification for the presence of asymptotes.
+
+:::
+
+::::
+
+</div>
+
+## Next Time
+
+<br/>
+<br/>
+
+We'll look at a more stable method for interpolating between observed data points -- cubic splines.
+
