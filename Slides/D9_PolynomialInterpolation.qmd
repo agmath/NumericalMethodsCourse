@@ -1,5 +1,5 @@
 ---
-title: "MAT 370: Row Pivoting"
+title: "MAT 370: Polynomial Interpolation"
 author: Dr. Gilbert
 format: 
   revealjs:
