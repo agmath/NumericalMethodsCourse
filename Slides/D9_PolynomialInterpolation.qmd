@@ -726,8 +726,8 @@ which can be evaluated backwards using the following recurrence:
 
 \begin{align*} P_0\left(x\right) &= a_3\\
 P_1\left(x\right) &= a_2 + \left(x - x_2\right)P_0\left(x\right)\\
-P_1\left(x\right) &= a_1 + \left(x - x_1\right)P_1\left(x\right)\\
-P_2\left(x\right) &= a_0 + \left(x - x_0\right)P_2\left(x\right)
+P_2\left(x\right) &= a_1 + \left(x - x_1\right)P_1\left(x\right)\\
+P_3\left(x\right) &= a_0 + \left(x - x_0\right)P_2\left(x\right)
 \end{align*}
 
 </div>
