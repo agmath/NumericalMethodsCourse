@@ -455,6 +455,30 @@ We'll actually go through the math here because its a really nice application of
 
 :::
 
+:::{.fragment}
+
+Before we dive in, a few comments to keep us grounded.
+
+:::
+
+:::{.fragment}
+
+**Strategy:** The strategy we're going to use pulls from Calculus I, Calculus II, and Linear Algebra.
+
+:::
+
+1. Since we know $f_{i, i + 1}^{\left(4\right)}\left(x\right) = 0$ (since $\frac{d^4\omega}{dx^4} = 0$), we know $f_{i, i+1}^{\left(3\right)}\left(x\right)$ is constant, and $f_{i, i+1}^{''}\left(x\right)$ is linear.
+2. Construct a linear interpolant for the second derivative.
+3. Integrate it once to obtain the slopes.
+4. Integrate again to obtain the cubic sections.
+5. Use the constraints to determine the constants.
+
+:::{.fragment}
+
+**Setting Expectations:** You will not be expected to memorize or reproduce this argument. You should be able to follow it, discuss the main strategy, and identify where ideas we've encountered in MAT370 are being leveraged.
+
+:::
+
 </div>
 
 ## Constructing Cubic Splines

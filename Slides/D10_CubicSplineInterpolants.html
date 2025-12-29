@@ -585,6 +585,22 @@ a:visited {
 <div class="fragment">
 <p>We’ll actually go through the math here because its a really nice application of your first two semesters of calculus.</p>
 </div>
+<div class="fragment">
+<p>Before we dive in, a few comments to keep us grounded.</p>
+</div>
+<div class="fragment">
+<p><strong>Strategy:</strong> The strategy we’re going to use pulls from Calculus I, Calculus II, and Linear Algebra.</p>
+</div>
+<ol type="1">
+<li class="fragment">Since we know <span class="math inline">\(f_{i, i + 1}^{\left(4\right)}\left(x\right) = 0\)</span> (since <span class="math inline">\(\frac{d^4\omega}{dx^4} = 0\)</span>), we know <span class="math inline">\(f_{i, i+1}^{\left(3\right)}\left(x\right)\)</span> is constant, and <span class="math inline">\(f_{i, i+1}^{''}\left(x\right)\)</span> is linear.</li>
+<li class="fragment">Construct a linear interpolant for the second derivative.</li>
+<li class="fragment">Integrate it once to obtain the slopes.</li>
+<li class="fragment">Integrate again to obtain the cubic sections.</li>
+<li class="fragment">Use the constraints to determine the constants.</li>
+</ol>
+<div class="fragment">
+<p><strong>Setting Expectations:</strong> You will not be expected to memorize or reproduce this argument. You should be able to follow it, discuss the main strategy, and identify where ideas we’ve encountered in MAT370 are being leveraged.</p>
+</div>
 </div>
 </section>
 <section id="constructing-cubic-splines-1" class="slide level2">
