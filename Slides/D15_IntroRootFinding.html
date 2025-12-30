@@ -12,7 +12,7 @@
 
   <meta name="author" content="Dr.&nbsp;Gilbert">
   <meta name="dcterms.date" content="2025-12-30">
-  <title>MAT 370: Least Squares Regression</title>
+  <title>MAT 370: Introduction to Root Finding</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -392,7 +392,8 @@
     <div class="slides">
 
 <section id="title-slide" class="quarto-title-block center">
-  <h1 class="title">MAT 370: Least Squares Regression</h1>
+  <h1 class="title">MAT 370: Introduction to Root Finding</h1>
+  <p class="subtitle">Incremental Search and Bisection</p>
 
 <div class="quarto-title-authors">
 <div class="quarto-title-author">
@@ -495,7 +496,7 @@ a:visited {
 <img data-src="D15_IntroRootFinding_files/figure-revealjs/unnamed-chunk-4-3.png" width="1920" class="r-stretch"></section>
 <section id="when-do-functions-have-roots-2" class="slide level2">
 <h2>When Do Functions Have Roots?</h2>
-<div class="fraction">
+<div class="fragment">
 <p>Given the images we’ve seen so far, if we assume that our function is continuous over an interval, then we can find a simple criteria that guarantees the presence of at least one root – a sign change.</p>
 </div>
 <div class="fragment">
@@ -508,8 +509,8 @@ a:visited {
 <p>This will be our foundational starting point.</p>
 </div>
 </section>
-<section id="intution-for-root-finding" class="slide level2">
-<h2>Intution for Root Finding</h2>
+<section id="intuition-for-root-finding" class="slide level2">
+<h2>Intuition for Root Finding</h2>
 <div class="fragment">
 <p>If we know that we have a continuous function and an interval that brackets it, then that function has a root on the interval.</p>
 </div>
@@ -754,7 +755,7 @@ a:visited {
 </div>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href=""></a><span class="bu">print</span>(<span class="st">"That took "</span>, toc <span class="op">-</span> tic, <span class="st">" seconds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>That took  0.008348226547241211  seconds</code></pre>
+<pre><code>That took  0.0017800331115722656  seconds</code></pre>
 </div>
 </div>
 </div>
@@ -780,7 +781,7 @@ a:visited {
 </div>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href=""></a><span class="bu">print</span>(<span class="st">"That took "</span>, toc <span class="op">-</span> tic, <span class="st">" seconds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>That took  2.601196765899658  seconds</code></pre>
+<pre><code>That took  2.608621835708618  seconds</code></pre>
 </div>
 </div>
 </div>
