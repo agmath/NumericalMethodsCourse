@@ -513,15 +513,48 @@ In this case we can analyze our Loss function as follows:
 
 <div style="font-size:16pt">
 
-\begin{align*} L\left(\beta_0, \beta_1\right) &= \sum_{i = 0}^{n}{\left[y_i - f\left(x_i\right)\right]^2}\\
-&= \sum_{i = 0}^{n}{\left[y_i - \beta_0 - \beta_1x_i\right]^2}
+\begin{align*} L\left(\beta_0, \beta_1\right) &= \sum_{i = 0}^{n}{\left[y_i - f\left(x_i\right)\right]^2}
 \end{align*}
 
 </div>
 
 :::
 
-:::{.fragment data-fragment-index=4}
+:::
+
+:::{.column width="50%"}
+
+:::
+
+::::
+
+## Fitting a Straight-Line Model
+
+<div style="font-size:17pt">
+
+A simple linear regression model is a model of the form $f\left(x\right) = \beta_0 + \beta_1x$ which is fit to observed data of the form $\left(x_i, y_i\right)$ by minimizing the sum of squared residuals. 
+
+</div>
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+<div style = "font-size:17pt">
+
+In this case we can analyze our Loss function as follows:
+
+</div>
+
+<div style="font-size:16pt">
+
+\begin{align*} L\left(\beta_0, \beta_1\right) &= \sum_{i = 0}^{n}{\left[y_i - f\left(x_i\right)\right]^2}\\
+&= \sum_{i = 0}^{n}{\left[y_i - \beta_0 - \beta_1x_i\right]^2}
+\end{align*}
+
+</div>
+
+:::{.fragment data-fragment-index=1}
 
 <div style="font-size:17pt">
 
@@ -538,22 +571,191 @@ $$\left\{\begin{array}{lcl} \frac{\partial L}{\partial \beta_0} & = & 0\\
 
 :::
 
-:::{.fragment data-fragment-index=6}
+:::
 
-<div style="font-size:17pt">
+:::{.column width="50%"}
 
-The top equation in the last line to the right indicates that $\beta_0 = \bar{y} - \beta_1\bar{x}$. 
+:::{.fragment data-fragment-index=2}
+
+<div style="font-size:18pt">
+
+$$\implies \left\{\begin{array}{lcl} \sum{-2\left(y_i - \beta_0 - \beta_1x_i\right)} & = & 0\\
+\sum{-2x_i\left(y_i - \beta_0 - \beta_1x_i\right)} & = & 0\end{array}\right.$$
 
 </div>
 
 :::
 
+:::
+
+::::
+
+## Fitting a Straight-Line Model
+
+<div style="font-size:17pt">
+
+A simple linear regression model is a model of the form $f\left(x\right) = \beta_0 + \beta_1x$ which is fit to observed data of the form $\left(x_i, y_i\right)$ by minimizing the sum of squared residuals. 
+
+</div>
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+<div style = "font-size:17pt">
+
+In this case we can analyze our Loss function as follows:
+
+</div>
+
+<div style="font-size:16pt">
+
+\begin{align*} L\left(\beta_0, \beta_1\right) &= \sum_{i = 0}^{n}{\left[y_i - f\left(x_i\right)\right]^2}\\
+&= \sum_{i = 0}^{n}{\left[y_i - \beta_0 - \beta_1x_i\right]^2}
+\end{align*}
+
+</div>
+
+<div style="font-size:17pt">
+
+We can minimize $L\left(\beta_0, \beta_1\right)$ by solving the system:
+
+</div>
+
+<div style="font-size:16pt">
+
+$$\left\{\begin{array}{lcl} \frac{\partial L}{\partial \beta_0} & = & 0\\
+\frac{\partial L}{\partial \beta_1} & = & 0\end{array}\right.$$
+
+</div>
 
 :::
 
 :::{.column width="50%"}
 
-:::{.fragment data-fragment-index=5}
+<div style="font-size:18pt">
+
+$$\implies \left\{\begin{array}{lcl} \sum{-2\left(y_i - \beta_0 - \beta_1x_i\right)} & = & 0\\
+\sum{-2x_i\left(y_i - \beta_0 - \beta_1x_i\right)} & = & 0\end{array}\right.$$
+$$\implies \left\{\begin{array}{lcl} \sum{\left(y_i - \beta_0 - \beta_1x_i\right)} & = & 0\\
+\sum{\left(x_iy_i - \beta_0x_i - \beta_1x_i^2\right)} & = & 0\end{array}\right.$$
+
+</div>
+
+:::
+
+::::
+
+## Fitting a Straight-Line Model
+
+<div style="font-size:17pt">
+
+A simple linear regression model is a model of the form $f\left(x\right) = \beta_0 + \beta_1x$ which is fit to observed data of the form $\left(x_i, y_i\right)$ by minimizing the sum of squared residuals. 
+
+</div>
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+<div style = "font-size:17pt">
+
+In this case we can analyze our Loss function as follows:
+
+</div>
+
+<div style="font-size:16pt">
+
+\begin{align*} L\left(\beta_0, \beta_1\right) &= \sum_{i = 0}^{n}{\left[y_i - f\left(x_i\right)\right]^2}\\
+&= \sum_{i = 0}^{n}{\left[y_i - \beta_0 - \beta_1x_i\right]^2}
+\end{align*}
+
+</div>
+
+<div style="font-size:17pt">
+
+We can minimize $L\left(\beta_0, \beta_1\right)$ by solving the system:
+
+</div>
+
+<div style="font-size:16pt">
+
+$$\left\{\begin{array}{lcl} \frac{\partial L}{\partial \beta_0} & = & 0\\
+\frac{\partial L}{\partial \beta_1} & = & 0\end{array}\right.$$
+
+</div>
+
+:::
+
+:::{.column width="50%"}
+
+<div style="font-size:18pt">
+
+$$\implies \left\{\begin{array}{lcl} \sum{-2\left(y_i - \beta_0 - \beta_1x_i\right)} & = & 0\\
+\sum{-2x_i\left(y_i - \beta_0 - \beta_1x_i\right)} & = & 0\end{array}\right.$$
+$$\implies \left\{\begin{array}{lcl} \sum{\left(y_i - \beta_0 - \beta_1x_i\right)} & = & 0\\
+\sum{\left(x_iy_i - \beta_0x_i - \beta_1x_i^2\right)} & = & 0\end{array}\right.$$
+$$\implies \left\{\begin{array}{lcl} \sum{\left(\frac{y_i}{n+1} - \frac{\beta_0}{n+1} - \frac{\beta_1x_i}{n+1}\right)} & = & 0\\
+\sum{\left(\frac{x_iy_i}{n+1} - \frac{\beta_0x_i}{n+1} - \frac{\beta_1x_i^2}{n+1}\right)} & = & 0\end{array}\right.$$
+
+</div>
+
+:::
+
+::::
+
+## Fitting a Straight-Line Model
+
+<div style="font-size:17pt">
+
+A simple linear regression model is a model of the form $f\left(x\right) = \beta_0 + \beta_1x$ which is fit to observed data of the form $\left(x_i, y_i\right)$ by minimizing the sum of squared residuals. 
+
+</div>
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+<div style = "font-size:17pt">
+
+In this case we can analyze our Loss function as follows:
+
+</div>
+
+<div style="font-size:16pt">
+
+\begin{align*} L\left(\beta_0, \beta_1\right) &= \sum_{i = 0}^{n}{\left[y_i - f\left(x_i\right)\right]^2}\\
+&= \sum_{i = 0}^{n}{\left[y_i - \beta_0 - \beta_1x_i\right]^2}
+\end{align*}
+
+</div>
+
+<div style="font-size:17pt">
+
+We can minimize $L\left(\beta_0, \beta_1\right)$ by solving the system:
+
+</div>
+
+<div style="font-size:16pt">
+
+$$\left\{\begin{array}{lcl} \frac{\partial L}{\partial \beta_0} & = & 0\\
+\frac{\partial L}{\partial \beta_1} & = & 0\end{array}\right.$$
+
+</div>
+
+<div style="font-size:17pt">
+
+:::{.fragment data-fragment-index=1}
+
+The top equation in the last line to the right indicates that $\beta_0 = \bar{y} - \beta_1\bar{x}$. 
+
+:::
+
+</div>
+
+:::
+
+:::{.column width="50%"}
 
 <div style="font-size:18pt">
 
@@ -570,13 +772,11 @@ $$\implies \left\{\begin{array}{lcl} \bar{y} - \beta_0 - \beta_1\bar{x} & = & 0\
 
 :::
 
-:::
-
 ::::
 
 <div style="font-size:17pt">
 
-:::{.fragment data-fragment-index=7}
+:::{.fragment data-fragment-index=2}
 
 We can substitute this into the bottom equation and use some algebra to arrive at $\displaystyle{\beta_1 = \frac{\sum{y_i\left(x_i - \bar{x}\right)}}{\sum{x_i\left(x_i - \bar{x}\right)}}}$. ($\bigstar$ -- the algebra required is included at the end of this slide deck for those interested)
 
@@ -658,7 +858,282 @@ $$\left\{\frac{\partial L}{\partial \beta_k} = -2\left(\sum_{i=0}^{n}{\left(\lef
 
 <div style="font-size:18pt">
 
-We can divide both sides of each equation in the system by $-2$ and rearrange the summations to arrive at:
+We can divide both sides of each equation in the system by $-2$ and rearrange the summations.
+
+</div>
+
+::::{.columns}
+
+:::{.column width="45%"}
+
+<div style="font-size:16pt">
+
+\begin{align*}\left\{\left(\sum_{i=0}^{n}{\left(\left(y_i - \sum_{j = 0}^{m}{\left(\beta_j f_j\left(x_i\right)\right)}\right)f_k\left(x_i\right)\right)}\right)\right. &= 0
+\end{align*}
+
+</div>
+
+:::
+
+:::{.column width="5%"}
+
+<div style="height:100%; border-right:3px solid #444;"></div>
+
+:::
+
+:::{.column width="5%"}
+
+<div style="height:100%; border-left:3px solid #444;"></div>
+
+:::
+
+:::{.column width="45%"}
+
+:::
+
+::::
+
+:::::
+
+## Minimizing the Loss
+
+<div style="font-size:18pt">
+
+As a reminder, we are minimizing
+
+</div>
+
+<div style="font-size:16pt">
+
+$$\left\{\frac{\partial L}{\partial \beta_k} = -2\left(\sum_{i=0}^{n}{\left(\left(y_i - \sum_{j = 0}^{m}{\left(\beta_j f_j\left(x_i\right)\right)}\right)f_k\left(x_i\right)\right)}\right) = 0\right.~~\text{for}~~k = 0, 1, \cdots, m$$
+
+</div>
+
+<div style="font-size:18pt">
+
+We can divide both sides of each equation in the system by $-2$ and rearrange the summations.
+
+</div>
+
+::::{.columns}
+
+:::{.column width="45%"}
+
+<div style="font-size:16pt">
+
+\begin{align*}\left\{\left(\sum_{i=0}^{n}{\left(\left(y_i - \sum_{j = 0}^{m}{\left(\beta_j f_j\left(x_i\right)\right)}\right)f_k\left(x_i\right)\right)}\right)\right. &= 0\\
+\implies \left\{\sum_{i=0}^{n}{\left(y_if_k\left(x_i\right) - \sum_{j = 0}^{m}{\left(\beta_j f_j\left(x_i\right)f_k\left(x_i\right)\right)}\right)}\right. &= 0
+\end{align*}
+
+</div>
+
+:::
+
+:::{.column width="5%"}
+
+<div style="height:100%; border-right:3px solid #444;"></div>
+
+:::
+
+:::{.column width="5%"}
+
+<div style="height:100%; border-left:3px solid #444;"></div>
+
+:::
+
+:::{.column width="45%"}
+
+:::
+
+::::
+
+## Minimizing the Loss
+
+<div style="font-size:18pt">
+
+As a reminder, we are minimizing
+
+</div>
+
+<div style="font-size:16pt">
+
+$$\left\{\frac{\partial L}{\partial \beta_k} = -2\left(\sum_{i=0}^{n}{\left(\left(y_i - \sum_{j = 0}^{m}{\left(\beta_j f_j\left(x_i\right)\right)}\right)f_k\left(x_i\right)\right)}\right) = 0\right.~~\text{for}~~k = 0, 1, \cdots, m$$
+
+</div>
+
+<div style="font-size:18pt">
+
+We can divide both sides of each equation in the system by $-2$ and rearrange the summations.
+
+</div>
+
+::::{.columns}
+
+:::{.column width="45%"}
+
+<div style="font-size:16pt">
+
+\begin{align*}\left\{\left(\sum_{i=0}^{n}{\left(\left(y_i - \sum_{j = 0}^{m}{\left(\beta_j f_j\left(x_i\right)\right)}\right)f_k\left(x_i\right)\right)}\right)\right. &= 0\\
+\implies \left\{\sum_{i=0}^{n}{\left(y_if_k\left(x_i\right) - \sum_{j = 0}^{m}{\left(\beta_j f_j\left(x_i\right)f_k\left(x_i\right)\right)}\right)}\right. &= 0\\
+\implies \left\{\sum_{i=0}^{n}{\left(y_if_k\left(x_i\right)\right)} - \sum_{i=0}^{n}{\left(\sum_{j = 0}^{m}{\left(\beta_j f_j\left(x_i\right)f_k\left(x_i\right)\right)}\right)}\right. &= 0
+\end{align*}
+
+</div>
+
+:::
+
+:::{.column width="5%"}
+
+<div style="height:100%; border-right:3px solid #444;"></div>
+
+:::
+
+:::{.column width="5%"}
+
+<div style="height:100%; border-left:3px solid #444;"></div>
+
+:::
+
+:::{.column width="45%"}
+
+:::
+
+::::
+
+## Minimizing the Loss
+
+<div style="font-size:18pt">
+
+As a reminder, we are minimizing
+
+</div>
+
+<div style="font-size:16pt">
+
+$$\left\{\frac{\partial L}{\partial \beta_k} = -2\left(\sum_{i=0}^{n}{\left(\left(y_i - \sum_{j = 0}^{m}{\left(\beta_j f_j\left(x_i\right)\right)}\right)f_k\left(x_i\right)\right)}\right) = 0\right.~~\text{for}~~k = 0, 1, \cdots, m$$
+
+</div>
+
+<div style="font-size:18pt">
+
+We can divide both sides of each equation in the system by $-2$ and rearrange the summations.
+
+</div>
+
+::::{.columns}
+
+:::{.column width="45%"}
+
+<div style="font-size:16pt">
+
+\begin{align*}\left\{\left(\sum_{i=0}^{n}{\left(\left(y_i - \sum_{j = 0}^{m}{\left(\beta_j f_j\left(x_i\right)\right)}\right)f_k\left(x_i\right)\right)}\right)\right. &= 0\\
+\implies \left\{\sum_{i=0}^{n}{\left(y_if_k\left(x_i\right) - \sum_{j = 0}^{m}{\left(\beta_j f_j\left(x_i\right)f_k\left(x_i\right)\right)}\right)}\right. &= 0\\
+\implies \left\{\sum_{i=0}^{n}{\left(y_if_k\left(x_i\right)\right)} - \sum_{i=0}^{n}{\left(\sum_{j = 0}^{m}{\left(\beta_j f_j\left(x_i\right)f_k\left(x_i\right)\right)}\right)}\right. &= 0\\
+\implies \left\{\sum_{i=0}^{n}{\left(\sum_{j = 0}^{m}{\left(\beta_j f_j\left(x_i\right)f_k\left(x_i\right)\right)}\right)}\right. &= \sum_{i=0}^{n}{\left(y_if_k\left(x_i\right)\right)}
+\end{align*}
+
+</div>
+
+:::
+
+:::{.column width="5%"}
+
+<div style="height:100%; border-right:3px solid #444;"></div>
+
+:::
+
+:::{.column width="5%"}
+
+<div style="height:100%; border-left:3px solid #444;"></div>
+
+:::
+
+:::{.column width="45%"}
+
+:::
+
+::::
+
+
+## Minimizing the Loss
+
+<div style="font-size:18pt">
+
+As a reminder, we are minimizing
+
+</div>
+
+<div style="font-size:16pt">
+
+$$\left\{\frac{\partial L}{\partial \beta_k} = -2\left(\sum_{i=0}^{n}{\left(\left(y_i - \sum_{j = 0}^{m}{\left(\beta_j f_j\left(x_i\right)\right)}\right)f_k\left(x_i\right)\right)}\right) = 0\right.~~\text{for}~~k = 0, 1, \cdots, m$$
+
+</div>
+
+<div style="font-size:18pt">
+
+We can divide both sides of each equation in the system by $-2$ and rearrange the summations.
+
+</div>
+
+::::{.columns}
+
+:::{.column width="45%"}
+
+<div style="font-size:16pt">
+
+\begin{align*}\left\{\left(\sum_{i=0}^{n}{\left(\left(y_i - \sum_{j = 0}^{m}{\left(\beta_j f_j\left(x_i\right)\right)}\right)f_k\left(x_i\right)\right)}\right)\right. &= 0\\
+\implies \left\{\sum_{i=0}^{n}{\left(y_if_k\left(x_i\right) - \sum_{j = 0}^{m}{\left(\beta_j f_j\left(x_i\right)f_k\left(x_i\right)\right)}\right)}\right. &= 0\\
+\implies \left\{\sum_{i=0}^{n}{\left(y_if_k\left(x_i\right)\right)} - \sum_{i=0}^{n}{\left(\sum_{j = 0}^{m}{\left(\beta_j f_j\left(x_i\right)f_k\left(x_i\right)\right)}\right)}\right. &= 0\\
+\implies \left\{\sum_{i=0}^{n}{\left(\sum_{j = 0}^{m}{\left(\beta_j f_j\left(x_i\right)f_k\left(x_i\right)\right)}\right)}\right. &= \sum_{i=0}^{n}{\left(y_if_k\left(x_i\right)\right)}
+\end{align*}
+
+</div>
+
+:::
+
+:::{.column width="5%"}
+
+<div style="height:100%; border-right:3px solid #444;"></div>
+
+:::
+
+:::{.column width="5%"}
+
+<div style="height:100%; border-left:3px solid #444;"></div>
+
+:::
+
+:::{.column width="45%"}
+
+<div style="font-size:16pt">
+
+\begin{align*} 
+\implies \left\{\sum_{j=0}^{m}{\left(\sum_{i = 0}^{n}{\left(\beta_j f_j\left(x_i\right)f_k\left(x_i\right)\right)}\right)}\right. &= \sum_{i=0}^{n}{\left(y_if_k\left(x_i\right)\right)}
+\end{align*}
+
+</div>
+
+:::
+
+::::
+
+## Minimizing the Loss
+
+<div style="font-size:18pt">
+
+As a reminder, we are minimizing
+
+</div>
+
+<div style="font-size:16pt">
+
+$$\left\{\frac{\partial L}{\partial \beta_k} = -2\left(\sum_{i=0}^{n}{\left(\left(y_i - \sum_{j = 0}^{m}{\left(\beta_j f_j\left(x_i\right)\right)}\right)f_k\left(x_i\right)\right)}\right) = 0\right.~~\text{for}~~k = 0, 1, \cdots, m$$
+
+</div>
+
+<div style="font-size:18pt">
+
+We can divide both sides of each equation in the system by $-2$ and rearrange the summations.
 
 </div>
 
@@ -704,8 +1179,6 @@ We can divide both sides of each equation in the system by $-2$ and rearrange th
 :::
 
 ::::
-
-:::::
 
 ## Minimizing the Loss
 
@@ -1003,20 +1476,28 @@ The previous slide gave your four new functions that are useful for least square
 
 :::{.column width="70%"}
 
+<div style="font-size:20pt">
+
 **Example:** Fit a second-order (quadratic) linear regression model to the observed data on the right.
+
+</div>
 
 :::
 
 :::{.column width="30%"}
 
+<div style="font-size:16pt">
+
 $x$ | $y$ 
 ----|----
-4 | 3.33
-10 | 47.64
-0 | 11.76
-9 | 33.51
-6 | 9.54
-5 | 2.19
+4 | -4.35
+10 | 29.15
+0 | 31.64
+9 | 37.23
+6 | 12.27
+5 | 8.20
+
+</div>
 
 :::
 
@@ -1035,7 +1516,7 @@ $x$ | $y$
 #| eval: false
 
 xData = np.array([4.0, 10, 0, 9, 6, 5])
-yData = np.array([3.33, 47.64, 11.76, 33.51, 9.54, 2.19])
+yData = np.array([-4.35, 29.15, 31.64, 37.23, 12.27, 8.2])
 
 coefs = polyFit(xData, yData, 2)
 se = getStdError(xData, yData, coefs)
@@ -1053,7 +1534,7 @@ plotPoly(xData, yData, coefs)
 #| eval: true
 
 xData = np.array([4.0, 10, 0, 9, 6, 5])
-yData = np.array([3.33, 47.64, 11.76, 33.51, 9.54, 2.19])
+yData = np.array([-4.35, 29.15, 31.64, 37.23, 12.27, 8.2])
 
 coefs = polyFit(xData, yData, 2)
 se = getStdError(xData, yData, coefs)
