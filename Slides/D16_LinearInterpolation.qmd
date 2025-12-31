@@ -1319,7 +1319,7 @@ In step 3 of *Ridder's Method*, we've constructed three points:
 
 <div style="font-size:18pt">
 
-These three points will be collinear if 
+These three points will be collinear in $\log$-$g$ space if 
 
 $$\displaystyle{g_3 = \frac{g_1 + g_2}{2}}$$
 
@@ -1397,7 +1397,7 @@ In step 3 of *Ridder's Method*, we've constructed three points:
 
 <div style="font-size:18pt">
 
-These three points will be collinear if 
+These three points will be collinear in $\log$-$g$ space if 
 
 $$\displaystyle{g_3 = \frac{g_1 + g_2}{2}}$$
 
@@ -1462,7 +1462,7 @@ In step 3 of *Ridder's Method*, we've constructed three points:
 
 <div style="font-size:18pt">
 
-These three points will be collinear if 
+These three points will be collinear in $\log$-$g$ space if 
 
 $$\displaystyle{g_3 = \frac{g_1 + g_2}{2}}$$
 
@@ -1528,7 +1528,7 @@ In step 3 of *Ridder's Method*, we've constructed three points:
 
 <div style="font-size:18pt">
 
-These three points will be collinear if 
+These three points will be collinear in $\log$-$g$ space if 
 
 $$\displaystyle{g_3 = \frac{g_1 + g_2}{2}}$$
 
@@ -1595,7 +1595,7 @@ In step 3 of *Ridder's Method*, we've constructed three points:
 
 <div style="font-size:18pt">
 
-These three points will be collinear if 
+These three points will be collinear in $\log$-$g$ space if 
 
 $$\displaystyle{g_3 = \frac{g_1 + g_2}{2}}$$
 
@@ -1663,7 +1663,7 @@ In step 3 of *Ridder's Method*, we've constructed three points:
 
 <div style="font-size:18pt">
 
-These three points will be collinear if 
+These three points will be collinear in $\log$-$g$ space if 
 
 $$\displaystyle{g_3 = \frac{g_1 + g_2}{2}}$$
 
