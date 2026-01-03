@@ -844,7 +844,7 @@ plt.show()
 
 ## Explanations of Grade Items
 
-<div style="font-size:20pt">
+<div style="font-size:18pt">
 
 + **Participation:** Your collaboration in developing and implementing routines for solving problems is critical to our success in this course. You'll earn credit for that work.
 + **Homework:** We'll develop our routines in class together and you'll apply those routines to solving problems on homework assignments.
@@ -1335,19 +1335,29 @@ Always check your work.
 
 ## Arrays and `{numpy}`
 
-. . . 
+<div style="font-size:18pt">
+
+:::{.fragment}
 
 We won't actually use lists very often in our course
 
-. . . 
+:::
+
+:::{.fragment}
 
 We're much more interested in special structures, like arrays (think: vectors or matrices)
 
-. . . 
+:::
+
+:::{.fragment}
 
 We can import the `{numpy}` module and use it to create these special structures
 
-. . .
+:::
+
+</div>
+
+:::{.fragment}
 
 ```{python}
 #| echo: true
@@ -1355,19 +1365,29 @@ We can import the `{numpy}` module and use it to create these special structures
 import numpy as np
 ```
 
-. . . 
+:::
+
+<div style="font-size:18pt">
+
+:::{.fragment}
 
 *Note.* We used the *alias* `np` so that we can type `np.function_name()` instead of `numpy.function_name()` when we want to use functionality from this module. Doing this is common in Python.
 
-. . .
+:::
+
+:::{.fragment}
 
 Now we can use `np.array()` with lists to define our structures.
 
-. . .
+:::
+
+</div>
 
 ::::{.columns}
 
 :::{.column width="55%"}
+
+:::{.fragment}
 
 ```{python}
 #| echo: true
@@ -1383,6 +1403,8 @@ myMatrix = np.array([
 print("My vector is: ", myVector)
 print("My matrix is: ", myMatrix)
 ```
+
+:::
 
 :::
 
@@ -1735,19 +1757,29 @@ for x in range(101):
 
 ## Programming Paradigm: Functions
 
-. . .
+<div style="font-size:18pt">
+
+:::{.fragment}
 
 It will often be the case that we'd like to write functions in our course. 
 
-. . .
+:::
+
+:::{.fragment}
 
 Functions begin with the `def` keyword and end with a `return` statement. 
 
-. . . 
+:::
+
+:::{.fragment}
 
 Consider the following silly function which multiplies two numbers together.
 
-. . . 
+:::
+
+</div>
+
+:::{.fragment}
 
 ```{python}
 #| echo: true
@@ -1760,15 +1792,23 @@ def product(a, b):
   return myProduct
 ```
 
-. . . 
+:::
+
+:::{.fragment}
+
+<div style="font-size:18pt">
 
 Now that the `product()` function has been defined, we can use it!
 
-. . .
+</div>
+
+:::
 
 ::::{.columns}
 
 :::{.column width="50%"}
+
+:::{.fragment}
 
 ```{python}
 #| echo: true
@@ -1776,6 +1816,8 @@ Now that the `product()` function has been defined, we can use it!
 
 product(3, 6)
 ```
+
+:::
 
 :::
 
@@ -1796,15 +1838,21 @@ product(3, 6)
 
 ::::
 
-. . . 
+:::{.fragment}
+
+<div style="font-size:18pt">
 
 Below is a perhaps more useful application.
 
-. . . 
+</div>
+
+:::
 
 ::::{.columns}
 
 :::{.column width="50%"}
+
+:::{.fragment}
 
 ```{python}
 #| echo: true
@@ -1816,6 +1864,8 @@ def f(x):
   my_output = term1 + term2 + 8
   return my_output
 ```
+
+:::
 
 :::
 
@@ -1837,19 +1887,29 @@ f(4)
 
 ## Summary and a Motivating Example
 
-<div style="font-size:18pt">
+<div style="font-size:17pt">
 
 + In this notebook, you learned some basics about Python and the Jupyter Notebook environment. 
 + I expect (and you should, too) that you'll come back here often over the next couple of weeks as you continue to gain familiarity with Python. 
 + In particular, you should feel free to copy/paste/edit from this notebook, especially when you are constructing functions and/or loops.
 
-:::{.fragment}
+</div>
 
-We'll leave this notebook with a simple example which will motivate our study for the remainder of the semester. 
+## Summary and a Motivating Example
+
+<div style="font-size:17pt">
+
+:::{.nonincremental}
+
++ In this notebook, you learned some basics about Python and the Jupyter Notebook environment. 
++ I expect (and you should, too) that you'll come back here often over the next couple of weeks as you continue to gain familiarity with Python. 
++ In particular, you should feel free to copy/paste/edit from this notebook, especially when you are constructing functions and/or loops.
 
 :::
 
-:::{.fragment}
+We'll leave this notebook with a simple example which will motivate our study for the remainder of the semester. 
+
+:::{.fragment data-fragment-index=1}
 
 In Python, and in many computing languages, we can use a double equal (`==`) operator to test equality. We can also use the usual inequalities to test sizes of numbers.
 
@@ -1857,11 +1917,11 @@ In Python, and in many computing languages, we can use a double equal (`==`) ope
 
 </div>
 
-. . .
-
 ::::{.columns}
 
 :::{.column width="50%"}
+
+:::{.fragment data-fragment-index=2}
 
 ```{python}
 #| echo: true
@@ -1874,9 +1934,33 @@ print(5 == 3 + 2)
 
 :::
 
-:::{.column width="50%"}
+:::{.fragment data-fragment-index=4}
 
-:::{.fragment}
+<div style="font-size:18pt">
+
+Just once more for good measure...
+
+</div>
+
+:::
+
+:::{.fragment data-fragment-index=5}
+
+```{python}
+#| echo: true
+#| eval: false
+
+print(0.1 + 0.2 == 0.3)
+```
+
+
+:::
+
+:::
+
+:::{.column width="20%"}
+
+:::{.fragment data-fragment-index=3}
 
 ```{python}
 #| echo: false
@@ -1889,38 +1973,9 @@ print(5 == 3 + 2)
 
 :::
 
-:::
+<br/>
 
-::::
-
-:::{.fragment}
-
-<div style="font-size:18pt">
-
-Just once more, for good measure...
-
-</div>
-
-:::
-
-. . .
-
-::::{.columns}
-
-:::{.column width="50%"}
-
-```{python}
-#| echo: true
-#| eval: false
-
-print(0.1 + 0.2 == 0.3)
-```
-
-:::
-
-:::{.column width="50%"}
-
-:::{.fragment}
+:::{.fragment data-fragment-index=6}
 
 ```{python}
 #| echo: false
@@ -1933,12 +1988,27 @@ print(0.1 + 0.2 == 0.3)
 
 :::
 
-::::
-
-. . . 
+:::{.column width="30%"}
 
 <div style="font-size:18pt">
 
-...and everything had been going so well -- we'll investigate this next time!
+:::{.fragment data-fragment-index=7}
+
+...and everything had been going so well!
+
+:::
+
+:::{.fragment data-fragment-index=8}
+
+We'll investigate this next time.
+
+:::
 
 </div>
+
+:::
+
+:::
+
+::::
+
