@@ -836,10 +836,10 @@ plt.show()
   Grade Item                     | Value
   -------------------------------|-----------
   Participation                  |  5%
-  Homework (~8)                  | 40%
+  Homework (~8)                  | 30%
   Unit Problem Sets / Exams (2)  | 30%
   Final Project and Reflection   | 15%
-  Debrief Interviews             | 10%
+  Debrief Interviews             | 20%
   </center>
 
 ## Explanations of Grade Items
@@ -853,7 +853,7 @@ plt.show()
 
     + These will stay unit problem sets unless unauthorized collaboration with AI, websites, or people becomes a problem. 
 + **Final Project and Reflection:** In the final weeks of the semester, you’ll complete a short project that combines reflection and application. You'll choose a numerical method we’ve studied and apply it to a meaningful problem in a domain you care about, resulting in a short paper and five slides. 
-+ **Debrief Interviews:** In the final two weeks of the semester, you'll meet briefly with me to talk through a few problems and ideas from the course, explaining what you’ve learned in your own words. This conversation is an important part of your course assessment and focuses on understanding rather than memorization.
++ **Debrief Interviews:** During the final two weeks of the semester, you’ll schedule a 15- to 20-minute meeting with me where we’ll discuss some course material and your project. You’ll have a practice interview at approximately the midpoint of the semester worth 5% and the final interview will account for 15% of your course grade. I’ll provide you with example questions to prepare from.
 
 </div>
 
