@@ -642,7 +642,7 @@ Double precision uses 64-bits, including
 
 :::{.fragment}
 
-Similarly, the range for *double-precision* floats is approximately between $\pm 2.2\times 10^{-308}$ and $\pm 1.8\times 10^{308}$.
+Similarly, the range for *double-precision* floats is approximately between $\pm 2.2\times 10^{-308}$ and $\pm 1.8\times 10^{308}$ with a precision of around 15 decimal places.
 
 :::
 
