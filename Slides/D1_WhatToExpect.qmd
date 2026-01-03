@@ -122,7 +122,7 @@ plt.title("Solving Systems")
 plt.show()
 ```
 
-## What Are We Here For?
+## Contexts We'll Encounter
 
 ```{python}
 #| echo: false
@@ -178,7 +178,7 @@ plt.title("Interpolation and Fitting")
 plt.show()
 ```
 
-## What Are We Here For?
+## Contexts We'll Encounter
 
 ```{python}
 #| echo: false
@@ -256,7 +256,7 @@ plt.title("Root Finding")
 plt.show()
 ```
 
-## What Are We Here For?
+## Contexts We'll Encounter
 
 ```{python}
 #| echo: false
@@ -361,7 +361,7 @@ plt.title("Differentiation / Approximation")
 plt.show()
 ```
 
-## What Are We Here For?
+## Contexts We'll Encounter
 
 ```{python}
 #| echo: false
@@ -487,7 +487,7 @@ plt.title("Integration")
 plt.show()
 ```
 
-## What Are We Here For?
+## Contexts We'll Encounter
 
 ```{python}
 #| echo: false
@@ -645,7 +645,7 @@ plt.title("Initial Value Problems")
 plt.show()
 ```
 
-## What Are We Here For?
+## Contexts We'll Encounter
 
 ```{python}
 #| echo: false
@@ -918,7 +918,7 @@ My goal in this course is for all of you to learn as much about numerical method
 
 <center>
 
-Open our [Day 1 Notebook](https://colab.research.google.com/drive/1HI1jjQwaNEvCqhO0oB6G0poNf8U0xhAR?usp=share_link) and let's get started.
+Open a new Colab notebook from your Google Drive or open the pre-built [Day 1 Notebook](https://colab.research.google.com/drive/1HI1jjQwaNEvCqhO0oB6G0poNf8U0xhAR?usp=share_link) and let's get started.
 
 </center>
 
@@ -1234,11 +1234,13 @@ print(myList)
 
 ## A Warning: Test Everything
 
-. . . 
+:::{.fragment data-fragment-index=1}
 
 Not everything works the way you would expect it to...
 
-. . . 
+:::
+
+:::{.fragment data-fragment-index=2}
 
 ```{python}
 #| echo: true
@@ -1246,11 +1248,13 @@ Not everything works the way you would expect it to...
 print(myList)
 ```
 
+:::
+
 :::::{.columns}
 
 ::::{.column width="50%"}
 
-:::{.fragment}
+:::{.fragment data-fragment-index=3}
 
 ```{python}
 #| echo: true
@@ -1262,7 +1266,7 @@ print(myNewList)
 
 :::
 
-:::{.fragment}
+:::{.fragment data-fragment-index=4}
 
 ```{python}
 #| echo: true
@@ -1274,7 +1278,7 @@ print(myNewList)
 
 :::
 
-:::{.fragment}
+:::{.fragment data-fragment-index=5}
 
 ```{python}
 #| echo: true
@@ -1284,7 +1288,7 @@ print(myList)
 
 :::
 
-:::{.fragment}
+:::{.fragment data-fragment-index=8}
 
 ```{python}
 #| echo: true
@@ -1303,25 +1307,25 @@ print(myNewList_copy)
 
 <div style="font-size:18pt">
 
-:::{.fragment}
+:::{.fragment data-fragment-index=6}
 
-Sometimes behaviors are unexpected, like overwriting the entry of `myList` in index `1` resulting in the same change in `myNewList`.
+Sometimes behaviors are unexpected, like overwriting the entry of `myNewList` in index `1` resulting in the same change in `myList`.
 
 :::
 
-:::{.fragment}
+:::{.fragment data-fragment-index=7}
 
 There are always reasons for this...For example, when we assigned `myNewList = myList`, Python saves space by just having both objects reference the same location in memory.
 
 :::
 
-:::{.fragment}
+:::{.fragment data-fragment-index=9}
 
 Requesting a true copy of the object with `.copy()` was the appropriate thing to do, but such a thing is not *obviously* required.
 
 :::
 
-:::{.fragment}
+:::{.fragment data-fragment-index=10}
 
 Always check your work.
 
@@ -2005,8 +2009,6 @@ We'll investigate this next time.
 :::
 
 </div>
-
-:::
 
 :::
 
