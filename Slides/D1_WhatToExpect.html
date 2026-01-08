@@ -11,7 +11,7 @@
   <meta name="generator" content="quarto-1.5.43">
 
   <meta name="author" content="Dr.&nbsp;Gilbert">
-  <meta name="dcterms.date" content="2026-01-06">
+  <meta name="dcterms.date" content="2026-01-07">
   <title>MAT 370: Introduction and What to Expect</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -402,7 +402,7 @@ Dr.&nbsp;Gilbert
 </div>
 </div>
 
-  <p class="date">January 6, 2026</p>
+  <p class="date">January 7, 2026</p>
 </section>
 <section class="slide level2">
 
@@ -1022,370 +1022,14 @@ a:visited {
 </div>
 </div>
 </section>
-<section id="arrays-and-numpy" class="slide level2">
-<h2>Arrays and <code>{numpy}</code></h2>
-<div style="font-size:18pt">
-<div class="fragment">
-<p>We won’t actually use lists very often in our course</p>
-</div>
-<div class="fragment">
-<p>We’re much more interested in special structures, like arrays (think: vectors or matrices)</p>
-</div>
-<div class="fragment">
-<p>We can import the <code>{numpy}</code> module and use it to create these special structures</p>
-</div>
-</div>
-<div class="fragment">
-<div class="cell">
-<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href=""></a><span class="im">import</span> numpy <span class="im">as</span> np</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</div>
-<div style="font-size:18pt">
-<div class="fragment">
-<p><em>Note.</em> We used the <em>alias</em> <code>np</code> so that we can type <code>np.function_name()</code> instead of <code>numpy.function_name()</code> when we want to use functionality from this module. Doing this is common in Python.</p>
-</div>
-<div class="fragment">
-<p>Now we can use <code>np.array()</code> with lists to define our structures.</p>
-</div>
-</div>
-<div class="columns">
-<div class="column" style="width:55%;">
-<div class="fragment">
-<div class="cell">
-<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb50-1"><a href=""></a>myVector <span class="op">=</span> np.array([<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>])</span>
-<span id="cb50-2"><a href=""></a>myMatrix <span class="op">=</span> np.array([</span>
-<span id="cb50-3"><a href=""></a>  [<span class="dv">4</span>, <span class="dv">5</span>], <span class="co">#row 1</span></span>
-<span id="cb50-4"><a href=""></a>  [<span class="dv">6</span>, <span class="dv">7</span>], <span class="co">#row 2</span></span>
-<span id="cb50-5"><a href=""></a>  [<span class="dv">8</span>, <span class="dv">9</span>]  <span class="co">#row 3</span></span>
-<span id="cb50-6"><a href=""></a>])</span>
-<span id="cb50-7"><a href=""></a></span>
-<span id="cb50-8"><a href=""></a><span class="bu">print</span>(<span class="st">"My vector is: "</span>, myVector)</span>
-<span id="cb50-9"><a href=""></a><span class="bu">print</span>(<span class="st">"My matrix is: "</span>, myMatrix)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</div>
-</div><div class="column" style="width:45%;">
-<div class="fragment">
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>My vector is:  [1 2 3]</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>My matrix is:  [[4 5]
- [6 7]
- [8 9]]</code></pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-</section>
-<section id="arithmetic-with-numpy-arrays" class="slide level2">
-<h2>Arithmetic with <code>{numpy}</code> Arrays</h2>
-<div class="fragment">
-<p>Arithmetic on arrays works the way you would want it to work, mathematically.</p>
-</div>
-<div class="fragment">
-<div class="columns">
-<div class="column" style="width:50%;">
-<div class="cell">
-<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb53-1"><a href=""></a>myVec_v1 <span class="op">=</span> np.array([<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>])</span>
-<span id="cb53-2"><a href=""></a>myVec_v2 <span class="op">=</span> np.array([<span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">6</span>])</span>
-<span id="cb53-3"><a href=""></a></span>
-<span id="cb53-4"><a href=""></a><span class="bu">print</span>(myVec_v1 <span class="op">+</span> myVec_v2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</div><div class="column" style="width:50%;">
-<div class="fragment">
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>[5 7 9]</code></pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="fragment">
-<div class="columns">
-<div class="column" style="width:50%;">
-<div class="cell">
-<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb55-1"><a href=""></a>myMatrix_A <span class="op">=</span> np.array([</span>
-<span id="cb55-2"><a href=""></a>  [<span class="dv">4</span>, <span class="dv">5</span>],</span>
-<span id="cb55-3"><a href=""></a>  [<span class="dv">6</span>, <span class="dv">7</span>],</span>
-<span id="cb55-4"><a href=""></a>  [<span class="dv">8</span>, <span class="dv">9</span>]</span>
-<span id="cb55-5"><a href=""></a>  ])</span>
-<span id="cb55-6"><a href=""></a></span>
-<span id="cb55-7"><a href=""></a><span class="bu">print</span>(<span class="dv">5</span><span class="op">*</span>myMatrix_A)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</div><div class="column" style="width:50%;">
-<div class="fragment">
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>[[20 25]
- [30 35]
- [40 45]]</code></pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="fragment">
-<p>Developers also build in some conveniences which aren’t mathematically meaningful, but are colloquially understandable and useful!</p>
-</div>
-<div class="fragment">
-<div class="columns">
-<div class="column" style="width:50%;">
-<div class="cell">
-<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb57-1"><a href=""></a>myVec_v3 <span class="op">=</span> myVec_v1 <span class="op">+</span> <span class="dv">7</span></span>
-<span id="cb57-2"><a href=""></a></span>
-<span id="cb57-3"><a href=""></a><span class="bu">print</span>(myVec_v3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</div><div class="column" style="width:50%;">
-<div class="fragment">
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>[ 8  9 10]</code></pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</section>
-<section id="programming-paradigm-loops" class="slide level2">
-<h2>Programming Paradigm: Loops</h2>
-<div class="fragment">
-<p>Computers are excellent at following instructions and performing tedious tasks.</p>
-</div>
-<div class="fragment">
-<p>It is often the case where we’ll want to perform the same set of instructions over and over again.</p>
-</div>
-<div class="fragment">
-<p>If we find ourselves in this situation, <em>loops</em> will be helpful.</p>
-</div>
-<div class="fragment">
-<p>We’ll encounter two types of loop in our course.</p>
-<ul>
-<li class="fragment"><p>A <code>for</code> loop is useful when we know ahead of time how many iterations our instructions must be run for.</p></li>
-<li class="fragment"><p>A <code>while</code> loop can be used when we would like to run a set of instructions over and over again until a condition is no longer satisfied.</p>
-<ul>
-<li class="fragment">Be careful with these <code>while</code> loops though – using the wrong stopping condition can lead to <em>infinite loops</em> or unnecessarily lengthy procedures.</li>
-</ul></li>
-</ul>
-</div>
-</section>
-<section id="programming-paradigm-loops-1" class="slide level2">
-<h2>Programming Paradigm: Loops</h2>
-<div>
-<ul>
-<li><p>A <code>for</code> loop is useful when we know ahead of time how many iterations our instructions must be run for.</p></li>
-<li><p>A <code>while</code> loop can be used when we would like to run a set of instructions over and over again until a condition is no longer satisfied.</p>
-<ul>
-<li>Be careful with these <code>while</code> loops though – using the wrong stopping condition can lead to <em>infinite loops</em> or unnecessarily lengthy procedures.</li>
-</ul></li>
-</ul>
-</div>
-<div class="fragment">
-<div class="columns">
-<div class="column" style="width:50%;">
-<div class="cell">
-<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb59-1"><a href=""></a><span class="co">#A for loop</span></span>
-<span id="cb59-2"><a href=""></a>my_sum <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb59-3"><a href=""></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">6</span>):</span>
-<span id="cb59-4"><a href=""></a>  my_sum <span class="op">=</span> my_sum <span class="op">+</span> i</span>
-<span id="cb59-5"><a href=""></a>  <span class="bu">print</span>(<span class="st">"i is "</span>, i, <span class="st">" and my_sum is "</span>, my_sum)</span>
-<span id="cb59-6"><a href=""></a></span>
-<span id="cb59-7"><a href=""></a></span>
-<span id="cb59-8"><a href=""></a><span class="bu">print</span>(<span class="st">"The total sum is: "</span>, my_sum)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</div><div class="column" style="width:50%;">
-<div class="fragment">
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>i is  0  and my_sum is  0
-i is  1  and my_sum is  1
-i is  2  and my_sum is  3
-i is  3  and my_sum is  6
-i is  4  and my_sum is  10
-i is  5  and my_sum is  15</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>The total sum is:  15</code></pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</section>
-<section id="programming-paradigm-loops-2" class="slide level2">
-<h2>Programming Paradigm: Loops</h2>
-<div>
-<ul>
-<li><p>A <code>for</code> loop is useful when we know ahead of time how many iterations our instructions must be run for.</p></li>
-<li><p>A <code>while</code> loop can be used when we would like to run a set of instructions over and over again until a condition is no longer satisfied.</p>
-<ul>
-<li>Be careful with these <code>while</code> loops though – using the wrong stopping condition can lead to <em>infinite loops</em> or unnecessarily lengthy procedures.</li>
-</ul></li>
-</ul>
-</div>
-<div class="fragment">
-<div class="columns">
-<div class="column" style="width:50%;">
-<div class="cell">
-<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb62-1"><a href=""></a><span class="co">#A while loop</span></span>
-<span id="cb62-2"><a href=""></a>x <span class="op">=</span> <span class="dv">1</span></span>
-<span id="cb62-3"><a href=""></a><span class="cf">while</span> x <span class="op">&lt;=</span> <span class="dv">100</span>:</span>
-<span id="cb62-4"><a href=""></a>  x <span class="op">=</span> <span class="dv">2</span><span class="op">*</span>x</span>
-<span id="cb62-5"><a href=""></a>  <span class="bu">print</span>(x)</span>
-<span id="cb62-6"><a href=""></a></span>
-<span id="cb62-7"><a href=""></a><span class="bu">print</span>(<span class="st">"The final value of x is: "</span>, x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</div><div class="column" style="width:50%;">
-<div class="fragment">
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>2
-4
-8
-16
-32
-64
-128</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>The final value of x is:  128</code></pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</section>
-<section id="programming-paradigm-conditional-statements" class="slide level2">
-<h2>Programming Paradigm: Conditional Statements</h2>
-<div class="fragment">
-<p>Another useful way to control your code is with the use of conditional statements.</p>
-</div>
-<div class="fragment">
-<p>This allows for code to be executed if a condition is true, and perhaps other (or no) code to be executed if it is false.</p>
-</div>
-<div class="fragment">
-<p>We use <code>if</code>, <code>elif</code>, and <code>else</code> statements for this.</p>
-</div>
-<div class="fragment">
-<p>For example, look at the following <code>for</code> loop which will print out values of <code>x</code> between <span class="math inline">\(0\)</span> and <span class="math inline">\(100\)</span> which are divisible by <span class="math inline">\(13\)</span>.</p>
-</div>
-<div class="fragment">
-<div class="columns">
-<div class="column" style="width:50%;">
-<div class="cell">
-<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb65-1"><a href=""></a>x <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb65-2"><a href=""></a></span>
-<span id="cb65-3"><a href=""></a><span class="cf">for</span> x <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">101</span>):</span>
-<span id="cb65-4"><a href=""></a>  <span class="cf">if</span> x <span class="op">%</span> <span class="dv">13</span> <span class="op">==</span> <span class="dv">0</span>:</span>
-<span id="cb65-5"><a href=""></a>    <span class="bu">print</span>(x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</div><div class="column" style="width:50%;">
-<div class="fragment">
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>0
-13
-26
-39
-52
-65
-78
-91</code></pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</section>
-<section id="programming-paradigm-functions" class="slide level2">
-<h2>Programming Paradigm: Functions</h2>
-<div style="font-size:18pt">
-<div class="fragment">
-<p>It will often be the case that we’d like to write functions in our course.</p>
-</div>
-<div class="fragment">
-<p>Functions begin with the <code>def</code> keyword and end with a <code>return</code> statement.</p>
-</div>
-<div class="fragment">
-<p>Consider the following silly function which multiplies two numbers together.</p>
-</div>
-</div>
-<div class="fragment">
-<div class="cell">
-<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb67-1"><a href=""></a><span class="kw">def</span> product(a, b):</span>
-<span id="cb67-2"><a href=""></a>  <span class="co">#Function instructions</span></span>
-<span id="cb67-3"><a href=""></a>  myProduct <span class="op">=</span> a<span class="op">*</span>b</span>
-<span id="cb67-4"><a href=""></a>  </span>
-<span id="cb67-5"><a href=""></a>  <span class="co">#What the function results in</span></span>
-<span id="cb67-6"><a href=""></a>  <span class="cf">return</span> myProduct</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</div>
-<div class="fragment">
-<div style="font-size:18pt">
-<p>Now that the <code>product()</code> function has been defined, we can use it!</p>
-</div>
-</div>
-<div class="columns">
-<div class="column" style="width:50%;">
-<div class="fragment">
-<div class="cell">
-<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb68-1"><a href=""></a>product(<span class="dv">3</span>, <span class="dv">6</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</div>
-</div><div class="column" style="width:50%;">
-<div class="fragment">
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>18</code></pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="fragment">
-<div style="font-size:18pt">
-<p>Below is a perhaps more useful application.</p>
-</div>
-</div>
-<div class="columns">
-<div class="column" style="width:50%;">
-<div class="fragment">
-<div class="cell">
-<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb70-1"><a href=""></a><span class="kw">def</span> f(x):</span>
-<span id="cb70-2"><a href=""></a>  <span class="co">#my_output = -3*(x**2) -5*x + 8</span></span>
-<span id="cb70-3"><a href=""></a>  term1 <span class="op">=</span> <span class="op">-</span><span class="dv">3</span><span class="op">*</span>x<span class="op">**</span><span class="dv">2</span></span>
-<span id="cb70-4"><a href=""></a>  term2 <span class="op">=</span> <span class="op">-</span><span class="dv">5</span><span class="op">*</span>x</span>
-<span id="cb70-5"><a href=""></a>  my_output <span class="op">=</span> term1 <span class="op">+</span> term2 <span class="op">+</span> <span class="dv">8</span></span>
-<span id="cb70-6"><a href=""></a>  <span class="cf">return</span> my_output</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</div>
-</div><div class="column" style="width:50%;">
-<div class="fragment">
-<div class="cell">
-<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb71-1"><a href=""></a>f(<span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>-60</code></pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-</section>
 <section id="summary-and-a-motivating-example" class="slide level2">
 <h2>Summary and a Motivating Example</h2>
 <div style="font-size:17pt">
 <ul>
 <li class="fragment">In this notebook, you learned some basics about Python and the Jupyter Notebook environment.</li>
 <li class="fragment">I expect (and you should, too) that you’ll come back here often over the next couple of weeks as you continue to gain familiarity with Python.</li>
-<li class="fragment">In particular, you should feel free to copy/paste/edit from this notebook, especially when you are constructing functions and/or loops.</li>
+<li class="fragment">In particular, you should feel free to copy/paste/edit from this notebook.</li>
+<li class="fragment">We’ll spend additional time over the coming days gaining more familiarity and comfort with Python.</li>
 </ul>
 </div>
 </section>
@@ -1396,7 +1040,8 @@ i is  5  and my_sum is  15</code></pre>
 <ul>
 <li>In this notebook, you learned some basics about Python and the Jupyter Notebook environment.</li>
 <li>I expect (and you should, too) that you’ll come back here often over the next couple of weeks as you continue to gain familiarity with Python.</li>
-<li>In particular, you should feel free to copy/paste/edit from this notebook, especially when you are constructing functions and/or loops.</li>
+<li>In particular, you should feel free to copy/paste/edit from this notebook.</li>
+<li>We’ll spend additional time over the coming days gaining more familiarity and comfort with Python.</li>
 </ul>
 </div>
 <p>We’ll leave this notebook with a simple example which will motivate our study for the remainder of the semester.</p>
@@ -1408,9 +1053,9 @@ i is  5  and my_sum is  15</code></pre>
 <div class="column" style="width:50%;">
 <div class="fragment" data-fragment-index="2">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb73-1"><a href=""></a><span class="bu">print</span>(<span class="dv">7</span> <span class="op">&gt;=</span> <span class="dv">3</span>)</span>
-<span id="cb73-2"><a href=""></a><span class="bu">print</span>(<span class="fl">3.5</span> <span class="op">&lt;</span> <span class="dv">3</span>)</span>
-<span id="cb73-3"><a href=""></a><span class="bu">print</span>(<span class="dv">5</span> <span class="op">==</span> <span class="dv">3</span> <span class="op">+</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href=""></a><span class="bu">print</span>(<span class="dv">7</span> <span class="op">&gt;=</span> <span class="dv">3</span>)</span>
+<span id="cb49-2"><a href=""></a><span class="bu">print</span>(<span class="fl">3.5</span> <span class="op">&lt;</span> <span class="dv">3</span>)</span>
+<span id="cb49-3"><a href=""></a><span class="bu">print</span>(<span class="dv">5</span> <span class="op">==</span> <span class="dv">3</span> <span class="op">+</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 <div class="fragment" data-fragment-index="4">
@@ -1420,7 +1065,7 @@ i is  5  and my_sum is  15</code></pre>
 </div>
 <div class="fragment" data-fragment-index="5">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb74-1"><a href=""></a><span class="bu">print</span>(<span class="fl">0.1</span> <span class="op">+</span> <span class="fl">0.2</span> <span class="op">==</span> <span class="fl">0.3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb50-1"><a href=""></a><span class="bu">print</span>(<span class="fl">0.1</span> <span class="op">+</span> <span class="fl">0.2</span> <span class="op">==</span> <span class="fl">0.3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 </div><div class="column" style="width:20%;">
