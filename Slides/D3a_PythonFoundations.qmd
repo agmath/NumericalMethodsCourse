@@ -1,0 +1,686 @@
+---
+title: "MAT 370: Python Foundations"
+author: Dr. Gilbert
+format: 
+  revealjs:
+    smaller: true
+date: today
+date-format: long
+theme: serif
+incremental: true
+execute: 
+  error: true
+---
+
+```{r global-options, include=FALSE}
+library(tidyverse)
+library(reticulate)
+
+theme_set(theme_bw(base_size = 20))
+```
+
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+```
+
+```{css}
+code.sourceCode {
+  font-size: 1.3em;
+  /* or try font-size: xx-large; */
+}
+
+a {
+  color: purple;
+}
+
+a:link {
+  color: purple;
+}
+
+a:visited {
+  color: purple;
+}
+```
+
+## Purpose
+
+:::{.fragment}
+
+Because we'll be using Python heavily in our course, having a foundation in python and programming paradigms will be useful.
+
+:::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+In our Day 1 discussion, we got exposure to using python for 
+
+:::
+
++ scalar arithmetic
++ storing values into named variables and operating with those variables
++ initializing and operating with lists
++ testing logical expressions
+
+:::{.fragment}
+
+We also saw that there exist some python "quirks" that we should be aware of and that we should check the contents of our objects to ensure they contain what we expect/want/assume/intend.
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+This discussion will address the following items.
+
+:::
+
++ Extending Python functionality with modules.
++ The `{numpy}` module and creating/operating with vectors, matrices, and other arrays.
++ Repeating sets of instructions via loops (`for` and `while`)
++ Defining reusable functions
+
+:::
+
+::::
+
+## Arrays and `{numpy}`
+
+<div style="font-size:18pt">
+
+:::{.fragment}
+
+We won't actually use lists very often in our course
+
+:::
+
+:::{.fragment}
+
+We're much more interested in special structures, like arrays (think: vectors or matrices)
+
+:::
+
+:::{.fragment}
+
+We can import the `{numpy}` module and use it to create these special structures
+
+:::
+
+</div>
+
+:::{.fragment}
+
+```{python}
+#| echo: true
+
+import numpy as np
+```
+
+:::
+
+<div style="font-size:18pt">
+
+:::{.fragment}
+
+*Note.* We used the *alias* `np` so that we can type `np.function_name()` instead of `numpy.function_name()` when we want to use functionality from this module. Doing this is common in Python.
+
+:::
+
+:::{.fragment}
+
+Now we can use `np.array()` with lists to define our structures.
+
+:::
+
+</div>
+
+::::{.columns}
+
+:::{.column width="55%"}
+
+:::{.fragment}
+
+```{python}
+#| echo: true
+#| eval: false
+
+myVector = np.array([1, 2, 3])
+myMatrix = np.array([
+  [4, 5], #row 1
+  [6, 7], #row 2
+  [8, 9]  #row 3
+])
+
+print("My vector is: ", myVector)
+print("My matrix is: ", myMatrix)
+```
+
+:::
+
+:::
+
+:::{.column width="45%"}
+
+:::{.fragment}
+
+```{python}
+#| echo: false
+#| eval: true
+
+myVector = np.array([1, 2, 3])
+myMatrix = np.array([
+  [4, 5], #row 1
+  [6, 7], #row 2
+  [8, 9]  #row 3
+])
+
+print("My vector is: ", myVector)
+print("My matrix is: ", myMatrix)
+```
+
+:::
+
+:::
+
+::::
+
+## Arithmetic with `{numpy}` Arrays
+
+. . . 
+
+Arithmetic on arrays works the way you would want it to work, mathematically.
+
+. . . 
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+```{python}
+#| echo: true
+#| eval: false
+
+myVec_v1 = np.array([1, 2, 3])
+myVec_v2 = np.array([4, 5, 6])
+
+print(myVec_v1 + myVec_v2)
+```
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+```{python}
+#| echo: false
+#| eval: true
+
+myVec_v1 = np.array([1, 2, 3])
+myVec_v2 = np.array([4, 5, 6])
+
+print(myVec_v1 + myVec_v2)
+```
+
+:::
+
+:::
+
+::::
+
+. . . 
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+```{python}
+#| echo: true
+#| eval: false
+
+myMatrix_A = np.array([
+  [4, 5],
+  [6, 7],
+  [8, 9]
+  ])
+
+print(5*myMatrix_A)
+```
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+```{python}
+#| echo: false
+#| eval: true
+
+myMatrix_A = np.array([
+  [4, 5],
+  [6, 7],
+  [8, 9]
+  ])
+
+print(5*myMatrix_A)
+```
+
+:::
+
+:::
+
+::::
+
+. . . 
+
+Developers also build in some conveniences which aren't mathematically meaningful, but are colloquially understandable and useful!
+
+. . .
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+```{python}
+#| echo: true
+#| eval: false
+
+myVec_v3 = myVec_v1 + 7
+
+print(myVec_v3)
+```
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+```{python}
+#| echo: false
+#| eval: true
+
+myVec_v3 = myVec_v1 + 7
+
+print(myVec_v3)
+```
+
+:::
+
+:::
+
+::::
+
+## Programming Paradigm: Loops
+
+. . . 
+
+Computers are excellent at following instructions and performing tedious tasks. 
+
+. . .
+
+It is often the case where we'll want to perform the same set of instructions over and over again. 
+
+. . .
+
+If we find ourselves in this situation, *loops* will be helpful. 
+
+. . .
+
+We'll encounter two types of loop in our course.
+
++ A `for` loop is useful when we know ahead of time how many iterations our instructions must be run for.
++ A `while` loop can be used when we would like to run a set of instructions over and over again until a condition is no longer satisfied.  
+
+  + Be careful with these `while` loops though -- using the wrong stopping condition can lead to *infinite loops* or unnecessarily lengthy procedures.
+  
+## Programming Paradigm: Loops
+
+:::{.nonincremental}
+
++ A `for` loop is useful when we know ahead of time how many iterations our instructions must be run for.
++ A `while` loop can be used when we would like to run a set of instructions over and over again until a condition is no longer satisfied.  
+
+  + Be careful with these `while` loops though -- using the wrong stopping condition can lead to *infinite loops* or unnecessarily lengthy procedures.
+
+:::
+
+. . . 
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+```{python}
+#| echo: true
+#| eval: false
+
+#A for loop
+my_sum = 0
+for i in range(6):
+  my_sum = my_sum + i
+  print("i is ", i, " and my_sum is ", my_sum)
+
+
+print("The total sum is: ", my_sum)
+```
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+```{python}
+#| echo: false
+#| eval: true
+
+#A for loop
+my_sum = 0
+for i in range(6):
+  my_sum = my_sum + i
+  print("i is ", i, " and my_sum is ", my_sum)
+
+
+print("The total sum is: ", my_sum)
+```
+
+:::
+
+:::
+
+::::
+
+## Programming Paradigm: Loops
+
+:::{.nonincremental}
+
++ A `for` loop is useful when we know ahead of time how many iterations our instructions must be run for.
++ A `while` loop can be used when we would like to run a set of instructions over and over again until a condition is no longer satisfied.  
+
+  + Be careful with these `while` loops though -- using the wrong stopping condition can lead to *infinite loops* or unnecessarily lengthy procedures.
+
+:::
+
+. . .
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+```{python}
+#| echo: true
+#| eval: false
+
+#A while loop
+x = 1
+while x <= 100:
+  x = 2*x
+  print(x)
+
+print("The final value of x is: ", x)
+```
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+```{python}
+#| echo: false
+#| eval: true
+
+#A while loop
+x = 1
+while x <= 100:
+  x = 2*x
+  print(x)
+
+print("The final value of x is: ", x)
+```
+
+:::
+
+:::
+
+::::
+
+## Programming Paradigm: Conditional Statements
+
+. . .
+
+Another useful way to control your code is with the use of conditional statements. 
+
+. . .
+
+This allows for code to be executed if a condition is true, and perhaps other (or no) code to be executed if it is false. 
+
+. . .
+
+We use `if`, `elif`, and `else` statements for this. 
+
+. . .
+
+For example, look at the following `for` loop which will print out values of `x` between $0$ and $100$ which are divisible by $13$.
+
+. . .
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+```{python}
+#| echo: true
+#| eval: false
+
+x = 0
+
+for x in range(101):
+  if x % 13 == 0:
+    print(x)
+```
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+```{python}
+#| echo: false
+#| eval: true
+
+x = 0
+
+for x in range(101):
+  if x % 13 == 0:
+    print(x)
+```
+
+:::
+
+
+:::
+
+::::
+
+## Programming Paradigm: Functions
+
+<div style="font-size:18pt">
+
+:::{.fragment}
+
+It will often be the case that we'd like to write functions in our course. 
+
+:::
+
+:::{.fragment}
+
+Functions begin with the `def` keyword and end with a `return` statement. 
+
+:::
+
+:::{.fragment}
+
+Consider the following silly function which multiplies two numbers together.
+
+:::
+
+</div>
+
+:::{.fragment}
+
+```{python}
+#| echo: true
+
+def product(a, b):
+  #Function instructions
+  myProduct = a*b
+  
+  #What the function results in
+  return myProduct
+```
+
+:::
+
+:::{.fragment}
+
+<div style="font-size:18pt">
+
+Now that the `product()` function has been defined, we can use it!
+
+</div>
+
+:::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+```{python}
+#| echo: true
+#| eval: false
+
+product(3, 6)
+```
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+```{python}
+#| echo: false
+#| eval: true
+
+product(3, 6)
+```
+
+:::
+
+:::
+
+::::
+
+:::{.fragment}
+
+<div style="font-size:18pt">
+
+Below is a perhaps more useful application.
+
+</div>
+
+:::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+```{python}
+#| echo: true
+
+def f(x):
+  #my_output = -3*(x**2) -5*x + 8
+  term1 = -3*x**2
+  term2 = -5*x
+  my_output = term1 + term2 + 8
+  return my_output
+```
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+```{python}
+#| echo: true
+
+f(4)
+```
+
+:::
+
+:::
+
+::::
+
+## Practice with Python Basics
+
+:::{.nonincremental}
+
+<div style="font-size:18pt">
+
+See how many of the following tasks you can complete. Talk with one another and work together.
+
+1. Write a Python function `mood()` that takes a single parameter (`temp`) and returns
+
++ `"miserable"` if `temp < 0`
++ `"unhappy"` if `temp` is at least 0 but less than 25
++ `"fine"` if `temp` is between 25 and 80
++ `"it's too hot"` if `temp` is above 80
+
+2. Write a loop that counts down from 10 to 0 and prints `"Liftoff!"` at the end. Repackage your loop as a function that will take the start of the countdown (`countdown_time`) as an input parameter, counts down from `countdown_time` to 0, and then prints `"Liftoff!"`.
+
+3. Create a function that, given an input array of integers, will print out whether each entry contains an `"even"` or `"odd"` number.
+
+4. Create a function that prints out the first `n` Fibonacci Numbers. Update your function so that it stores the numbers in a numpy array and returns the array.
+
+</div>
+
+:::
+
+## Summary
+
+<div style="font-size:17pt">
+
++ In this notebook, you learned some basics about Python and the Jupyter Notebook environment. 
++ You were exposed to some of the foundational Python that we'll need throughout the semester -- in particular, 
+
+  + `import`ing modules, 
+  + working with `{numpy}`, 
+  + using `for` and `while` loops to execute the same instructions over and over again, 
+  + and `def`ining functions to make your code reusable.
+
++ I expect (and you should, too) that you'll come back here often over the next couple of weeks as you continue to gain familiarity with Python. 
++ In particular, you should feel free to copy/paste/edit from this notebook, especially when you are constructing functions and/or loops.
+
+</div>
