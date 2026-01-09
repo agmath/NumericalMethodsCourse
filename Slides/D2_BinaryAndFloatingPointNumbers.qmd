@@ -259,7 +259,7 @@ Below we show how we can use the *Euclidean Algorithm* to convert an integer ($8
 \begin{align*} 84 &= 2\left(42\right) + 0\\
 42 &= 2\left(21\right) + 0\\
 21 &= 2\left(10\right) + 1\\
-10 &= 2\left(5\right) + 1
+10 &= 2\left(5\right) + 0
 \end{align*}
 
 :::
@@ -300,7 +300,7 @@ Below we show how we can use the *Euclidean Algorithm* to convert an integer ($8
 \begin{align*} 84 &= 2\left(42\right) + 0\\
 42 &= 2\left(21\right) + 0\\
 21 &= 2\left(10\right) + 1\\
-10 &= 2\left(5\right) + 1\\
+10 &= 2\left(5\right) + 0\\
 5 &= 2\left(2\right) + 1
 \end{align*}
 
@@ -342,7 +342,7 @@ Below we show how we can use the *Euclidean Algorithm* to convert an integer ($8
 \begin{align*} 84 &= 2\left(42\right) + 0\\
 42 &= 2\left(21\right) + 0\\
 21 &= 2\left(10\right) + 1\\
-10 &= 2\left(5\right) + 1\\
+10 &= 2\left(5\right) + 0\\
 5 &= 2\left(2\right) + 1\\
 2 &= 2\left(1\right) + 0
 \end{align*}
@@ -385,7 +385,7 @@ Below we show how we can use the *Euclidean Algorithm* to convert an integer ($8
 \begin{align*} 84 &= 2\left(42\right) + 0\\
 42 &= 2\left(21\right) + 0\\
 21 &= 2\left(10\right) + 1\\
-10 &= 2\left(5\right) + 1\\
+10 &= 2\left(5\right) + 0\\
 5 &= 2\left(2\right) + 1\\
 2 &= 2\left(1\right) + 0\\
 1 &= 2\left(0\right) + 1
@@ -397,7 +397,7 @@ Below we show how we can use the *Euclidean Algorithm* to convert an integer ($8
 
 :::{.fragment}
 
-Reading the remainders from bottom to top, we find that $\left(84\right)_{10} = \left(1011100\right)_{2}$. 
+Reading the remainders from bottom to top, we find that $\left(84\right)_{10} = \left(1010100\right)_{2}$. 
 
 :::
 
@@ -409,7 +409,7 @@ Each *bi*nary dig*it* is referred to as a *bit*, and it is common to consider co
 
 :::{.fragment}
 
-That is, we would more commonly write $\left(01011100\right)_{2}$ as the binary representation of $84$.
+That is, we would more commonly write $\left(01010100\right)_{2}$ as the binary representation of $84$.
 
 :::
 
