@@ -82,7 +82,7 @@ Let's start with why it matters...
   }
 
   function onPlayerReady(event) {
-    event.target.setPlaybackRate(1.5);
+    event.target.setPlaybackRate(1.25);
   }
 
   function onPlayerStateChange(event) {
