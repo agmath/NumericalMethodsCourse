@@ -1,0 +1,77 @@
+---
+title: "MAT 370: Solving Non-Linear Systems"
+subtitle: "A Multidimensional Newton-Raphson Method"
+author: Dr. Gilbert
+format: 
+  revealjs:
+    smaller: true
+date: today
+date-format: long
+theme: serif
+incremental: true
+execute: 
+  error: true
+---
+
+```{r global-options, include=FALSE}
+library(tidyverse)
+library(reticulate)
+
+theme_set(theme_bw(base_size = 20))
+```
+
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+import time
+```
+
+```{css}
+code.sourceCode {
+  font-size: 1.3em;
+  /* or try font-size: xx-large; */
+}
+
+a {
+  color: purple;
+}
+
+a:link {
+  color: purple;
+}
+
+a:visited {
+  color: purple;
+}
+```
+
+## Motivation and Context
+
+<div style="font-size:18pt">
+
+:::{.fragment}
+
+You spent an entire semester learning about linear systems and their solutions.
+
+:::
+
+:::{.fragment}
+
+Unfortunately, throw a non-linear system at you, and you've got nearly no tools available to your for solving it!
+
+$$\left\{\begin{array}{rcr} \cos\left(x\right) + \sin\left(y\right) + 1 & = & 0\\
+xy - 9 & = & 0\end{array}\right.$$
+
+:::
+
+:::{.fragment}
+
+That changes today!
+
+:::
+
+</div>
+
+
+
+
