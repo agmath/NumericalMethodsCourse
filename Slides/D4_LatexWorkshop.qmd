@@ -81,7 +81,7 @@ $\bigstar$ You shouldn't expect to feel fully confident, especially in using Pyt
 
 :::{.fragment}
 
-Navigate to your Google Drive and open a new Colab notebook.
+Navigate to your Google Drive and open a new Colab notebook or [create a copy of this *ready to go* notebook](https://colab.research.google.com/drive/1TJSmoRkBTAQABnpeksx5snvc9bzzYeMG?usp=drive_link).
 
 :::
 
@@ -197,7 +197,7 @@ The following slides contain some tasks to help you gain familiarity.
 
 :::{.fragment}
 
-**Task 2:** We'll sometimes want to utilize fractions, we can do this using \frac{numerator}{denominator}. Add the required dollar signs to format the rational function r(x) = (x + 3)/(x - 5)} as math type. Use \\frac{}{} to further format the function.
+**Task 2:** We'll sometimes want to utilize fractions, we can do this using \frac{numerator}{denominator}. Add the required dollar signs to format the rational function r(x) = (x + 3)/(x - 5) as math type. Use \\frac{}{} to further format the function. Finally, wrap the entire function in \\displaystyle{} to improve readability.
 
 :::
 
