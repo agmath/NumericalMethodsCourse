@@ -450,7 +450,7 @@ $\left[\begin{array}{r} 0\\
 + If you want the curly brace to show up, then you'll need to escape that special character with a backslash.
 + Every `\left` bracket must have a corresponding `\right` bracket (if you don't want the right bracket to show up, then you can just use a period, like `\right.`).
 
-**Task 4:** Define a $5\times 4$ matrix below, use any entries you like.
+**Task 4:** Define a $5\times 4$ matrix using any entries you like.
 
 :::
 
@@ -490,7 +490,7 @@ Over the past few class meetings, we've gotten more familiar with the Google Col
 
 :::{.fragment}
 
-*Hint.* Look back to our Day 3 notebook or slides for help.
+*Hint.* Look back to our previous day's notebook or discussion slides for help.
 
 :::
 
