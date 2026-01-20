@@ -594,22 +594,22 @@ a:visited {
 <div class="fragment" data-fragment-index="4">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource latex number-lines code-with-copy"><code class="sourceCode latex"><span id="cb3-1"><a href=""></a><span class="co">%Matrix</span></span>
-<span id="cb3-2"><a href=""></a><span class="ss">$</span><span class="sc">\left</span><span class="ss">[</span><span class="kw">\begin</span>{<span class="ex">array</span>}<span class="ss">{rrr} </span></span>
+<span id="cb3-2"><a href=""></a><span class="ss">$</span><span class="kw">\begin</span>{<span class="ex">bmatrix</span>}<span class="ss"> </span></span>
 <span id="cb3-3"><a href=""></a><span class="ss">2 &amp; 3 &amp; 8</span><span class="sc">\\</span><span class="ss"> </span></span>
 <span id="cb3-4"><a href=""></a><span class="ss">-4 &amp; 1 &amp; -2</span></span>
-<span id="cb3-5"><a href=""></a><span class="kw">\end</span>{<span class="ex">array</span>}<span class="sc">\right</span><span class="ss">]$</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-5"><a href=""></a><span class="kw">\end</span>{<span class="ex">bmatrix</span>}<span class="ss">$</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 <div class="fragment" data-fragment-index="5">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource latex number-lines code-with-copy"><code class="sourceCode latex"><span id="cb4-1"><a href=""></a><span class="co">%Vector</span></span>
-<span id="cb4-2"><a href=""></a><span class="ss">$</span><span class="sc">\left</span><span class="ss">[</span><span class="kw">\begin</span>{<span class="ex">array</span>}<span class="ss">{r} 0</span><span class="sc">\\</span></span>
-<span id="cb4-3"><a href=""></a><span class="ss">0</span><span class="kw">\end</span>{<span class="ex">array</span>}<span class="sc">\right</span><span class="ss">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb4-2"><a href=""></a><span class="ss">$</span><span class="kw">\begin</span>{<span class="ex">bmatrix</span>}<span class="ss"> 0</span><span class="sc">\\</span></span>
+<span id="cb4-3"><a href=""></a><span class="ss">0</span><span class="kw">\end</span>{<span class="ex">bmatrix</span>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 </div><div class="column" style="width:50%;">
 <div class="fragment" data-fragment-index="2">
-<p>For example, the system <span class="math inline">\(\left\{\begin{array}{rcr} 2x_1 + 3x_2 + 8x_3 &amp; = &amp; 0\\ -4x_1 + x_2 - 2x_3 &amp; = &amp; 0\end{array}\right.\)</span> corresponds to the coefficient matrix <span class="math inline">\(\left[\begin{array}{rrr} 2 &amp; 3 &amp; 8\\ -4 &amp; 1 &amp; -2\end{array}\right]\)</span> and constant vector <span class="math inline">\(\left[\begin{array}{r} 0\\ 0\end{array}\right]\)</span>.</p>
+<p>For example, the system <span class="math inline">\(\left\{\begin{array}{rcr} 2x_1 + 3x_2 + 8x_3 &amp; = &amp; 0\\ -4x_1 + x_2 - 2x_3 &amp; = &amp; 0\end{array}\right.\)</span> corresponds to the coefficient matrix <span class="math inline">\(\begin{bmatrix} 2 &amp; 3 &amp; 8\\ -4 &amp; 1 &amp; -2\end{bmatrix}\)</span> and constant vector <span class="math inline">\(\begin{bmatrix} 0\\ 0\end{bmatrix}\)</span>.</p>
 </div>
 </div>
 </div>
@@ -632,15 +632,15 @@ a:visited {
 </div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource latex number-lines code-with-copy"><code class="sourceCode latex"><span id="cb6-1"><a href=""></a><span class="co">%Matrix</span></span>
-<span id="cb6-2"><a href=""></a><span class="ss">$</span><span class="sc">\left</span><span class="ss">[</span><span class="kw">\begin</span>{<span class="ex">array</span>}<span class="ss">{rrr} </span></span>
+<span id="cb6-2"><a href=""></a><span class="ss">$</span><span class="kw">\begin</span>{<span class="ex">bmatrix</span>}<span class="ss"> </span></span>
 <span id="cb6-3"><a href=""></a><span class="ss">2 &amp; 3 &amp; 8</span><span class="sc">\\</span><span class="ss"> </span></span>
 <span id="cb6-4"><a href=""></a><span class="ss">-4 &amp; 1 &amp; -2</span></span>
-<span id="cb6-5"><a href=""></a><span class="kw">\end</span>{<span class="ex">array</span>}<span class="sc">\right</span><span class="ss">]$</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb6-5"><a href=""></a><span class="kw">\end</span>{<span class="ex">bmatrix</span>}<span class="ss">$</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource latex number-lines code-with-copy"><code class="sourceCode latex"><span id="cb7-1"><a href=""></a><span class="co">%Vector</span></span>
-<span id="cb7-2"><a href=""></a><span class="ss">$</span><span class="sc">\left</span><span class="ss">[</span><span class="kw">\begin</span>{<span class="ex">array</span>}<span class="ss">{r} 0</span><span class="sc">\\</span></span>
-<span id="cb7-3"><a href=""></a><span class="ss">0</span><span class="kw">\end</span>{<span class="ex">array</span>}<span class="sc">\right</span><span class="ss">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb7-2"><a href=""></a><span class="ss">$</span><span class="kw">\begin</span>{<span class="ex">bmatrix</span>}<span class="ss"> 0</span><span class="sc">\\</span></span>
+<span id="cb7-3"><a href=""></a><span class="ss">0</span><span class="kw">\end</span>{<span class="ex">bmatrix</span>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div><div class="column" style="width:50%;">
 <ul>
@@ -650,10 +650,10 @@ a:visited {
 </div>
 </div>
 <ul>
-<li class="fragment"><p>The array environment allows you to construct aligned columns.</p>
+<li class="fragment"><p>The <code>array</code> or <code>bmatrix</code> environments allow you to construct aligned columns.</p>
 <ul>
-<li class="fragment">The number of columns is determined by the number of characters in the curly braces after <code>\begin{array}</code>.</li>
-<li class="fragment">The <code>r</code> character indicates that a column should be <em>right</em>-aligned, while the <code>c</code> and <code>l</code> characters indicated <em>center</em>- and <em>left</em>-alignment, respectively.</li>
+<li class="fragment">For an <code>array</code>, the number of columns is determined by the number of characters in the curly braces after <code>\begin{array}</code>.</li>
+<li class="fragment">The <code>r</code> character indicates that a column should be <em>right</em>-aligned, while the <code>c</code> and <code>l</code> characters indicate <em>center</em>- and <em>left</em>-alignment, respectively.</li>
 <li class="fragment">Columns in an array are separated by the ampersand (<code>&amp;</code>).</li>
 <li class="fragment">Rows in an array are separated using the double backslash (<code>\\</code>)</li>
 </ul></li>

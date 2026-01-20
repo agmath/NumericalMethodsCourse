@@ -300,10 +300,10 @@ $\left\{\begin{array}{rcr}
 #| eval: false
 
 %Matrix
-$\left[\begin{array}{rrr} 
+$\begin{bmatrix} 
 2 & 3 & 8\\ 
 -4 & 1 & -2
-\end{array}\right]$
+\end{bmatrix}$
 ```
 
 :::
@@ -315,8 +315,8 @@ $\left[\begin{array}{rrr}
 #| eval: false
 
 %Vector
-$\left[\begin{array}{r} 0\\
-0\end{array}\right]
+$\begin{bmatrix} 0\\
+0\end{bmatrix}
 ```
 
 :::
@@ -327,7 +327,7 @@ $\left[\begin{array}{r} 0\\
 
 :::{.fragment data-fragment-index=2}
 
-For example, the system $\left\{\begin{array}{rcr} 2x_1 + 3x_2 + 8x_3 & = & 0\\ -4x_1 + x_2 - 2x_3 & = & 0\end{array}\right.$ corresponds to the coefficient matrix $\left[\begin{array}{rrr} 2 & 3 & 8\\ -4 & 1 & -2\end{array}\right]$ and constant vector $\left[\begin{array}{r} 0\\ 0\end{array}\right]$. 
+For example, the system $\left\{\begin{array}{rcr} 2x_1 + 3x_2 + 8x_3 & = & 0\\ -4x_1 + x_2 - 2x_3 & = & 0\end{array}\right.$ corresponds to the coefficient matrix $\begin{bmatrix} 2 & 3 & 8\\ -4 & 1 & -2\end{bmatrix}$ and constant vector $\begin{bmatrix} 0\\ 0\end{bmatrix}$. 
 
 :::
 
@@ -367,10 +367,10 @@ $\left\{\begin{array}{rcr}
 #| eval: false
 
 %Matrix
-$\left[\begin{array}{rrr} 
+$\begin{bmatrix} 
 2 & 3 & 8\\ 
 -4 & 1 & -2
-\end{array}\right]$
+\end{bmatrix}$
 ```
 
 ```{latex}
@@ -378,8 +378,8 @@ $\left[\begin{array}{rrr}
 #| eval: false
 
 %Vector
-$\left[\begin{array}{r} 0\\
-0\end{array}\right]
+$\begin{bmatrix} 0\\
+0\end{bmatrix}
 ```
 
 :::
@@ -393,10 +393,10 @@ $\left[\begin{array}{r} 0\\
 
 ::::
 
-+ The array environment allows you to construct aligned columns.
++ The `array` or `bmatrix` environments allow you to construct aligned columns.
 
-  + The number of columns is determined by the number of characters in the curly braces after `\begin{array}`.
-  + The `r` character indicates that a column should be *right*-aligned, while the `c` and `l` characters indicated *center*- and *left*-alignment, respectively.
+  + For an `array`, the number of columns is determined by the number of characters in the curly braces after `\begin{array}`.
+  + The `r` character indicates that a column should be *right*-aligned, while the `c` and `l` characters indicate *center*- and *left*-alignment, respectively.
   + Columns in an array are separated by the ampersand (`&`).
   + Rows in an array are separated using the double backslash (`\\`)
 
