@@ -11,7 +11,7 @@
   <meta name="generator" content="quarto-1.5.43">
 
   <meta name="author" content="Dr.&nbsp;Gilbert">
-  <meta name="dcterms.date" content="2025-12-26">
+  <meta name="dcterms.date" content="2026-01-22">
   <title>MAT 370: Linear Systems and Gaussian Elimination</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -402,7 +402,7 @@ Dr.&nbsp;Gilbert
 </div>
 </div>
 
-  <p class="date">December 26, 2025</p>
+  <p class="date">January 22, 2026</p>
 </section>
 <section class="slide level2">
 
@@ -473,7 +473,7 @@ a:visited {
 <section id="solving-systems" class="slide level2">
 <h2>Solving Systems</h2>
 <div class="fragment">
-<p>From Linear Algebra, we remember that we can efficiently solve linear systems by reducing an <em>augmented coefficient matrix</em>.</p>
+<p>From Linear Algebra, we remember that we can “efficiently” solve linear systems by reducing an <em>augmented coefficient matrix</em>.</p>
 </div>
 <div class="columns">
 <div class="column" style="width:60%;">
@@ -529,11 +529,11 @@ a:visited {
 </div>
 </div>
 <div class="fragment">
-<div style="font-size:12pt">
-<p><span class="math display">\[\left\{\begin{array}{ccccccccc} A_{11}x_1 &amp; + &amp; A_{12}x_2 &amp; + &amp; \cdots &amp; + &amp; A_{1n}x_n &amp; = &amp; b_1\\
-A_{21}x_1 &amp; + &amp; A_{22}x_2 &amp; + &amp; \cdots &amp; + &amp; A_{2n}x_n &amp; = &amp; b_2\\
-\vdots &amp;  &amp;  &amp;  &amp;  &amp;  &amp;  &amp; \vdots\\
-A_{n1}x_1 &amp; + &amp; A_{n2}x_2 &amp; + &amp; \cdots &amp; + &amp; A_{nn}x_n &amp; = &amp; b_n
+<div style="font-size:14pt">
+<p><span class="math display">\[\left\{\begin{array}{lcc} A_{11}x_1 + A_{12}x_2 + \cdots + A_{1n}x_n &amp; = &amp; b_1\\
+A_{21}x_1 + A_{22}x_2 + \cdots + A_{2n}x_n &amp; = &amp; b_2\\
+&amp; \vdots  &amp;\\
+A_{n1}x_1 + A_{n2}x_2 + \cdots + A_{nn}x_n &amp; = &amp; b_n
 \end{array}\right.~~~~~~~~~~\left[\begin{array}{cccc} A_{11} &amp; A_{12} &amp; \cdots &amp; A_{1n}\\
 A_{21} &amp; A_{22} &amp; \cdots &amp; A_{2n}\\
 \vdots &amp; \vdots &amp; \ddots &amp; \vdots\\
@@ -542,7 +542,7 @@ A_{n1} &amp; A_{n2} &amp; \cdots &amp; A_{nn}\end{array}\right]\cdot\left[\begin
 </div>
 <div style="font-size:18pt">
 <div class="fragment">
-<p>Each of the above equations is associated with the augmented matrix</p>
+<p>Each of the above scenarios is associated with the augmented matrix</p>
 <p><span class="math display">\[\left[\begin{array}{cccc|c} A_{11} &amp; A_{12} &amp; \cdots &amp; A_{n1} &amp; b_1\\
 A_{21} &amp; A_{22} &amp; \cdots &amp; A_{2n} &amp; b_2\\
 \vdots &amp; \vdots &amp; \ddots &amp; \vdots &amp; \vdots\\
