@@ -202,7 +202,7 @@ Before we move to an example, its worth considering some common matrix forms tha
 
 + Converting $A\vec{x} = \vec{b}$ to $I\vec{x} = \vec{c}$, where $I$ is the $n\times n$ identity matrix is known as Gauss-Jordan Elimination.
 + Converting $A\vec{x} = \vec{b}$ to $U\vec{x} = \vec{c}$, where $U$ is an *upper-triangular* matrix is known as Gaussian Elimination.
-+ Converting $A\vec{x} = \vec{b}$ to $LU\vec{x} = \vec{b}$, where $L$ isa *lower-triangular* matrix and $U$ is an *upper-triangular* matrix is known as LU decomposition.
++ Converting $A\vec{x} = \vec{b}$ to $LU\vec{x} = \vec{b}$, where $L$ is a *lower-triangular* matrix and $U$ is an *upper-triangular* matrix is known as LU decomposition.
 
 :::{.fragment}
 
