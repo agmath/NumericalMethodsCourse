@@ -385,7 +385,7 @@ We impose a few additional constraints on our cubic splines as well.
 
 :::{.fragment}
 
-Because of these constraints, our cubic splines will have more moe controlled behavior.
+Because of these constraints, our cubic splines will have much more controlled behavior.
 
 :::
 
