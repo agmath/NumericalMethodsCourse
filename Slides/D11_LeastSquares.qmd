@@ -330,7 +330,7 @@ Consider a function $f\left(x\right) = f\left(x\mid \beta_0, \beta_1,\cdots,\bet
 
 :::{.fragment}
 
-This function includes $m+1$ parameters ($\beta_0, \cdots, \beta_m$), so $m+1 < n+1$. 
+This function includes $m+1$ parameters ($\beta_0, \cdots, \beta_m$), so $m+1 \leq n+1$. 
 
 :::
 
