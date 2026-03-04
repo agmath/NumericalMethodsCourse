@@ -11,7 +11,7 @@
   <meta name="generator" content="quarto-1.5.43">
 
   <meta name="author" content="Dr.&nbsp;Gilbert">
-  <meta name="dcterms.date" content="2025-12-31">
+  <meta name="dcterms.date" content="2026-03-04">
   <title>MAT 370: Solving Non-Linear Systems</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -30,6 +30,71 @@
       margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
       vertical-align: middle;
     }
+    /* CSS for syntax highlighting */
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      { color: #003b4f; background-color: #f1f3f5; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #003b4f; } /* Normal */
+    code span.al { color: #ad0000; } /* Alert */
+    code span.an { color: #5e5e5e; } /* Annotation */
+    code span.at { color: #657422; } /* Attribute */
+    code span.bn { color: #ad0000; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #003b4f; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #20794d; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #5e5e5e; } /* Comment */
+    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+    code span.dt { color: #ad0000; } /* DataType */
+    code span.dv { color: #ad0000; } /* DecVal */
+    code span.er { color: #ad0000; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #ad0000; } /* Float */
+    code span.fu { color: #4758ab; } /* Function */
+    code span.im { color: #00769e; } /* Import */
+    code span.in { color: #5e5e5e; } /* Information */
+    code span.kw { color: #003b4f; font-weight: bold; } /* Keyword */
+    code span.op { color: #5e5e5e; } /* Operator */
+    code span.ot { color: #003b4f; } /* Other */
+    code span.pp { color: #ad0000; } /* Preprocessor */
+    code span.sc { color: #5e5e5e; } /* SpecialChar */
+    code span.ss { color: #20794d; } /* SpecialString */
+    code span.st { color: #20794d; } /* String */
+    code span.va { color: #111111; } /* Variable */
+    code span.vs { color: #20794d; } /* VerbatimString */
+    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
   <link rel="stylesheet" href="D17_NonlinearSystems_files/libs/revealjs/dist/theme/quarto.css">
   <link href="D17_NonlinearSystems_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
@@ -338,7 +403,7 @@ Dr.&nbsp;Gilbert
 </div>
 </div>
 
-  <p class="date">December 31, 2025</p>
+  <p class="date">March 4, 2026</p>
 </section>
 <section class="slide level2">
 
@@ -375,8 +440,278 @@ a:visited {
 xy - 9 &amp; = &amp; 0\end{array}\right.\]</span></p>
 </div>
 <div class="fragment">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="D17_NonlinearSystems_files/figure-revealjs/unnamed-chunk-3-1.png" width="1152"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div class="fragment">
 <p>That changes today!</p>
 </div>
+</div>
+</section>
+<section id="extending-what-weve-done" class="slide level2">
+<h2>Extending What We’ve Done</h2>
+<div style="font-size:16pt">
+<div class="fragment">
+<p>In the previous three notebooks we were focused on solving the single equation <span class="math inline">\(f\left(x\right) = 0\)</span>, but there are higher-dimensional versions to consider.</p>
+</div>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="fragment">
+<p>Namely,</p>
+<p><span class="math display">\[\vec{f}\left(\vec{x}\right) = \vec{0}\]</span></p>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="fragment">
+<p>which is equivalent to</p>
+<p><span class="math display">\[\left\{\begin{array}{lcl} f_1\left(x_1, x_2, \cdots, x_n\right) &amp;= &amp; 0\\
+f_2\left(x_1, x_2, \cdots, x_n\right) &amp; = &amp; 0\\
+&amp; \vdots &amp;\\
+f_n\left(x_1, x_2, \cdots, x_n\right) &amp; = &amp; 0\\
+\end{array}\right.\]</span></p>
+</div>
+</div>
+</div>
+<ul>
+<li class="fragment">Solving a system like this one is much more difficult than solving a single equation.</li>
+<li class="fragment">There is no reliable method for bracketing the solution <span class="math inline">\(\vec{x^*}\)</span>.</li>
+<li class="fragment">This means that we can’t guarantee any algorithm a “good” starting estimate unless there exist some theoretical rationale for the location of the root.</li>
+</ul>
+<div class="fragment">
+<p><span class="math inline">\(\bigstar\)</span> The systems we’re considering now may no longer be <em>linear</em> systems, so we’ll need methods beyond those we encountered earlier in our course.</p>
+</div>
+<div class="fragment">
+<p>The <em>Newton-Raphson Method</em> works well with these simultaneous equations, as long as we provide a <em>reasonable</em> starting value.</p>
+</div>
+</div>
+</section>
+<section id="deriving-a-multidimensional-newton-raphson-method" class="slide level2">
+<h2>Deriving a Multidimensional Newton-Raphson Method</h2>
+<div class="fragment">
+<p>Because the math here is in higher dimensions, the details look more complicated.</p>
+</div>
+<div class="fragment">
+<p>The foundational idea, though, is the same…</p>
+</div>
+<ol type="1">
+<li class="fragment"><p>Begin from an initial point in space (a reasonable initial guess at the solution).</p></li>
+<li class="fragment"><p>Replace the nonlinear system with its best linear approximation (its Jacobian) at the current point.</p>
+<ul>
+<li class="fragment">In the single-variable case, we replaced the curve with its tangent line.</li>
+<li class="fragment">Now, we replace the nonlinear map with its local linear approximation.</li>
+</ul></li>
+<li class="fragment"><p>Solve that linear system to determine the update to your previous guess.</p></li>
+<li class="fragment"><p>Using the updated guess, repeat steps 2 and 3 until the estimate for the solution converges within some acceptable tolerance.</p></li>
+</ol>
+</section>
+<section id="deriving-a-multidimensional-newton-raphson-method-1" class="slide level2">
+<h2>Deriving a Multidimensional Newton-Raphson Method</h2>
+<div style="font-size:16pt">
+<div class="columns">
+<div class="column" style="width:55;">
+<div class="fragment">
+<p>Start with the Taylor Series expansion of <span class="math inline">\(f_i\left(\vec{x}\right)\)</span> truncated to first degree about the point <span class="math inline">\(\vec{x^*}\)</span>.</p>
+</div>
+</div><div class="column" style="width:45%;">
+<div class="fragment">
+<p><span class="math display">\[f_i\left(\vec{x^*} + \Delta\vec{x}\right) \approx f_i\left(\vec{x^*}\right) + \sum_{j = 1}^{n}{\frac{\partial f_i}{\partial x_j}\Delta x_j}\]</span></p>
+</div>
+</div>
+</div>
+<div class="columns">
+<div class="column" style="width:55%;">
+<div class="fragment">
+<p>Defining the <em>Jacobian Matrix</em> <span class="math inline">\(J\left(\vec{x^*}\right)\)</span> to be the <span class="math inline">\(n\times n\)</span> matrix such that <span class="math inline">\(\displaystyle{J_{ij} = \frac{\partial f_i}{\partial x_j}\left(\vec{x^*}\right)}\)</span> allows us to rewrite the above as the matrix equation:</p>
+</div>
+</div><div class="column" style="width:45%;">
+<div class="fragment">
+<p><span class="math display">\[\vec{f}\left(\vec{x^*} + \Delta \vec{x}\right) \approx \vec{f}\left(\vec{x^*}\right) + J\left(\vec{x^*}\right)\Delta\vec{x}\]</span></p>
+</div>
+</div>
+</div>
+<div class="columns">
+<div class="column" style="width:55%;">
+<div class="fragment">
+<p>With <span class="math inline">\(\vec{x^*}\)</span> as the previous approximate solution to <span class="math inline">\(\vec{f}\left(\vec{x}\right) = \vec{0}\)</span>, then <span class="math inline">\(\left(\vec{x^*} + \Delta\vec{x}\right)\)</span> is the improved solution.</p>
+</div>
+<div class="fragment">
+<p>To find <span class="math inline">\(\Delta\vec{x}\)</span>, we set <span class="math inline">\(\vec{f}\left(\vec{x^*} + \Delta\vec{x}\right) = \vec{0}\)</span> and get an approximate solution by solving</p>
+</div>
+</div><div class="column" style="width:45%;">
+<div class="fragment">
+<p><span class="math display">\[\begin{align*} \vec{f}\left(\vec{x^*}\right) + J\left(\vec{x^*}\right)\Delta\vec{x} &amp;= 0\\
+\implies J\left(\vec{x^*}\right)\Delta\vec{x} &amp;= -\vec{f}\left(\vec{x^*}\right)
+\end{align*}\]</span></p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="implementation-details" class="slide level2">
+<h2>Implementation Details</h2>
+<div class="fragment">
+<p>So the update requires solving the matrix equation <span class="math inline">\(\displaystyle{J\left(\vec{x^*}\right)\Delta\vec{x} = -\vec{f}\left(\vec{x^*}\right)}\)</span></p>
+</div>
+<div class="columns">
+<div class="column" style="width:55%;">
+<div class="fragment">
+<p>We won’t calculate each <span class="math inline">\(\displaystyle{\frac{\partial f_i}{\partial x_j}}\)</span> explicitly – instead, we’ll approximate them via the finite difference method (difference quotient).</p>
+</div>
+</div><div class="column" style="width:45%;">
+<div class="fragment">
+<p><span class="math display">\[\frac{\partial f_i}{\partial x_j} \approx \frac{f_i\left(\vec{x^*} + \vec{e_j}h\right) - f_i\left(\vec{x^*}\right)}{h}\]</span></p>
+</div>
+</div>
+</div>
+<div class="fragment">
+<p>Notice that <span class="math inline">\(h\)</span> is a “small” step size and <span class="math inline">\(\vec{e_j}\)</span> is the <span class="math inline">\(j^{th}\)</span> component identity vector.</p>
+</div>
+<div class="fragment">
+<p>Luckily the <em>Newton-Raphson Method</em> is relatively insensitive to small errors in <span class="math inline">\(J\left(\vec{x}\right)\)</span> – making these approximations is very convenient because we avoid needing to compute and define each partial derivative for the routine.</p>
+</div>
+</section>
+<section id="writing-the-routine" class="slide level2">
+<h2>Writing the Routine</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div style="font-size:18pt">
+<div class="fragment">
+<p>We’re now ready to write the routine.</p>
+</div>
+<div class="fragment">
+<p>Just remember, that success of this method depends on having a quality initial estimate for <span class="math inline">\(\vec{x^*}\)</span> – otherwise, the results are quite unpredictable.</p>
+</div>
+<div class="fragment">
+<p>Having some expectation for where the root should occur is necessary because we cannot follow these results blindly.</p>
+</div>
+<div class="fragment">
+<p>One more thing – since <span class="math inline">\(J\left(\vec{x^*}\right) \Delta\vec{x} = - \vec{f}\left(\vec{x^*}\right)\)</span> is system of linear equations, we’ll need access to our <code>gaussPivot()</code> routine from earlier here as well (not shown).</p>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href=""></a><span class="co">## Jacobian Constructor</span></span>
+<span id="cb1-2"><a href=""></a><span class="kw">def</span> jacobian(f, x, h <span class="op">=</span> <span class="fl">1.0e-4</span>):</span>
+<span id="cb1-3"><a href=""></a>  n <span class="op">=</span> <span class="bu">len</span>(x)</span>
+<span id="cb1-4"><a href=""></a>  jac <span class="op">=</span> np.zeros((n, n))</span>
+<span id="cb1-5"><a href=""></a>  f0 <span class="op">=</span> f(x)</span>
+<span id="cb1-6"><a href=""></a></span>
+<span id="cb1-7"><a href=""></a>  <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n):</span>
+<span id="cb1-8"><a href=""></a>    temp <span class="op">=</span> x[i]</span>
+<span id="cb1-9"><a href=""></a>    x[i] <span class="op">=</span> temp <span class="op">+</span> h</span>
+<span id="cb1-10"><a href=""></a>    f1 <span class="op">=</span> f(x)</span>
+<span id="cb1-11"><a href=""></a>    x[i] <span class="op">=</span> temp</span>
+<span id="cb1-12"><a href=""></a>    jac[:, i] <span class="op">=</span> (f1 <span class="op">-</span> f0)<span class="op">/</span>h</span>
+<span id="cb1-13"><a href=""></a></span>
+<span id="cb1-14"><a href=""></a>  <span class="cf">return</span> jac, f0</span>
+<span id="cb1-15"><a href=""></a></span>
+<span id="cb1-16"><a href=""></a><span class="co">## Newton-Raphson Method for Multiple Dimensions</span></span>
+<span id="cb1-17"><a href=""></a><span class="kw">def</span> newtonRaphsonMultiDim(f, x, tol <span class="op">=</span> <span class="fl">1.0e-9</span>, max_its <span class="op">=</span> <span class="dv">30</span>):</span>
+<span id="cb1-18"><a href=""></a>  <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(max_its):</span>
+<span id="cb1-19"><a href=""></a>    jac, f0 <span class="op">=</span> jacobian(f, x)</span>
+<span id="cb1-20"><a href=""></a>    <span class="co">#print("Jacobian \n", jac)</span></span>
+<span id="cb1-21"><a href=""></a>    <span class="co">#print("f0: ", f0)</span></span>
+<span id="cb1-22"><a href=""></a>    <span class="cf">if</span> (np.dot(f0, f0)<span class="op">/</span><span class="bu">len</span>(x))<span class="op">**</span><span class="fl">0.5</span> <span class="op">&lt;</span> tol:</span>
+<span id="cb1-23"><a href=""></a>      <span class="cf">return</span> x</span>
+<span id="cb1-24"><a href=""></a></span>
+<span id="cb1-25"><a href=""></a>    dx <span class="op">=</span> gaussPivot(jac, <span class="op">-</span>f0)</span>
+<span id="cb1-26"><a href=""></a>    x <span class="op">=</span> x <span class="op">+</span> dx</span>
+<span id="cb1-27"><a href=""></a>    <span class="cf">if</span> (np.dot(dx, dx))<span class="op">**</span><span class="fl">0.5</span> <span class="op">&lt;</span> tol<span class="op">*</span><span class="bu">max</span>(<span class="bu">max</span>(<span class="bu">abs</span>(x)), <span class="fl">1.0</span>):</span>
+<span id="cb1-28"><a href=""></a>      <span class="cf">return</span> x</span>
+<span id="cb1-29"><a href=""></a></span>
+<span id="cb1-30"><a href=""></a>  <span class="bu">print</span>(<span class="st">"Newton-Raphson did not converge."</span>)</span>
+<span id="cb1-31"><a href=""></a>  <span class="cf">return</span> <span class="va">None</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="example-usage" class="slide level2">
+<h2>Example Usage</h2>
+<div class="fragment" data-fragment-index="1">
+<p><strong>Example 1:</strong> Use the Mutli-Dimensional Newton-Raphson routine you just constructed to determine the points of intersection between the circle <span class="math inline">\(x^2 + y^2 = 3\)</span> and the hyperbola <span class="math inline">\(xy = 1\)</span>.</p>
+</div>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="fragment" data-fragment-index="2">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="D17_NonlinearSystems_files/figure-revealjs/unnamed-chunk-5-3.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div class="fragment" data-fragment-index="4">
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>I found the four intersection points to be at:
+     [-1.61803399 -0.61803399] (upper left)
+     [-0.61803399 -1.61803399] (lower left)
+     [0.61803399 1.61803399] (upper right)
+     [1.61803399 0.61803399] (lower right)</code></pre>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="fragment" data-fragment-index="3">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href=""></a><span class="kw">def</span> f(x):</span>
+<span id="cb3-2"><a href=""></a>  F <span class="op">=</span> np.zeros(<span class="dv">2</span>)</span>
+<span id="cb3-3"><a href=""></a>  F[<span class="dv">0</span>] <span class="op">=</span> x[<span class="dv">0</span>]<span class="op">**</span><span class="dv">2</span> <span class="op">+</span> x[<span class="dv">1</span>]<span class="op">**</span><span class="dv">2</span> <span class="op">-</span><span class="dv">3</span></span>
+<span id="cb3-4"><a href=""></a>  F[<span class="dv">1</span>] <span class="op">=</span> x[<span class="dv">0</span>]<span class="op">*</span>x[<span class="dv">1</span>] <span class="op">-</span> <span class="dv">1</span></span>
+<span id="cb3-5"><a href=""></a></span>
+<span id="cb3-6"><a href=""></a>  <span class="cf">return</span> F</span>
+<span id="cb3-7"><a href=""></a></span>
+<span id="cb3-8"><a href=""></a>est_upper_left <span class="op">=</span> newtonRaphsonMultiDim(f, [<span class="op">-</span><span class="fl">0.5</span>, <span class="dv">0</span>])</span>
+<span id="cb3-9"><a href=""></a>est_lower_left <span class="op">=</span> newtonRaphsonMultiDim(f, [<span class="dv">0</span>, <span class="op">-</span><span class="fl">1.5</span>])</span>
+<span id="cb3-10"><a href=""></a>est_upper_right <span class="op">=</span> newtonRaphsonMultiDim(f, [<span class="fl">0.5</span>, <span class="fl">1.5</span>])</span>
+<span id="cb3-11"><a href=""></a>est_lower_right <span class="op">=</span> newtonRaphsonMultiDim(f, [<span class="fl">1.5</span>, <span class="fl">0.5</span>])</span>
+<span id="cb3-12"><a href=""></a></span>
+<span id="cb3-13"><a href=""></a><span class="bu">print</span>(<span class="st">"I found the four intersection points to be at:</span><span class="ch">\n</span><span class="st">"</span>, </span>
+<span id="cb3-14"><a href=""></a>      <span class="st">"</span><span class="ch">\t</span><span class="st">"</span>, est_upper_left, <span class="st">"(upper left)</span><span class="ch">\n</span><span class="st">"</span>,</span>
+<span id="cb3-15"><a href=""></a>      <span class="st">"</span><span class="ch">\t</span><span class="st">"</span>, est_lower_left, <span class="st">"(lower left)</span><span class="ch">\n</span><span class="st">"</span>,</span>
+<span id="cb3-16"><a href=""></a>      <span class="st">"</span><span class="ch">\t</span><span class="st">"</span>, est_upper_right, <span class="st">"(upper right)</span><span class="ch">\n</span><span class="st">"</span>,</span>
+<span id="cb3-17"><a href=""></a>      <span class="st">"</span><span class="ch">\t</span><span class="st">"</span>, est_lower_right, <span class="st">"(lower right)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="an-example-to-try" class="slide level2">
+<h2>An Example to Try</h2>
+<div class="fragment">
+<p><strong>Example 2:</strong> Find a solution to the system</p>
+<p><span class="math display">\[\left\{\begin{array}{rcr} \sin\left(x\right) + y^2 + \ln\left(z\right) - 7 &amp;= 0\\
+3x + 2^y - z^3 + 1 &amp;= 0\\
+x + y + z - 5 &amp;= 0\end{array}\right.\]</span></p>
+<p>knowing that a solution exists near <span class="math inline">\(\left(1, 1, 1\right)\)</span>.</p>
+</div>
+</section>
+<section id="summary-and-next-time" class="slide level2">
+<h2>Summary and Next Time</h2>
+<ul>
+<li class="fragment"><p>We extended our understanding of the single-variable Newton-Raphson Method to multidimensional, non-linear systems.</p>
+<ul>
+<li class="fragment">This is an enormous gain in your ability to solve systems of equations, allowing you to move beyond linear systems only.</li>
+</ul></li>
+<li class="fragment"><p>The crux of the idea is to approximate the non-linear system with a local linearization, use that local linearization to identify how to update our current guess, and then to iterate the process until convergence.</p></li>
+<li class="fragment"><p>Our implementation is the <code>newtonRaphsonMultiDim()</code> routine, which requires a vector-valued function <code>f</code> that encodes a [perhaps non-linear] system whose constraint vector is <span class="math inline">\(\vec{0}\)</span>, and an initial guess at the solution, <code>x</code>.</p>
+<ul>
+<li class="fragment">The trickiest part of using the functionality is creating the vector-valued function.</li>
+</ul></li>
+</ul>
+<div class="fragment">
+<p><strong>Next Time:</strong> Numerical Differentiation via Finite Difference Approximation</p>
 </div>
 <div class="quarto-auto-generated-content">
 <div class="footer footer-default">

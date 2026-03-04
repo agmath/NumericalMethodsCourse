@@ -24,6 +24,55 @@ theme_set(theme_bw(base_size = 20))
 import numpy as np
 import matplotlib.pyplot as plt
 import time
+
+## Gaussian Pivot for Solving Jacobian Equation
+def swapRows(v, i, j):
+  if len(v.shape) == 1:
+    v[i], v[j] = v[j], v[i]
+  else:
+    v[[i, j], :] = v[[j, i], :]
+
+def scaleFactors(A):
+  n = A.shape[1]
+  s = np.zeros(n)
+  for i in range(n):
+    s[i] = max(np.abs(A[i, :]))
+
+  return s
+
+def gaussPivot(A, b, tol = 1.0e-12):
+  n = len(b)
+  s = scaleFactors(A)
+
+  for k in range(0, n-1):
+    p = np.argmax(np.abs(A[k:n, k])/s[k:n]) + k
+    if abs(A[p, k]) < tol:
+      print("Matrix is Singular")
+      return None
+
+    #Row Pivot if necessary
+    if p != k:
+      swapRows(b, k, p)
+      swapRows(s, k, p)
+      swapRows(A, k, p)
+
+    #Elimination
+    for i in range(k+1, n):
+      if A[i, k] != 0.0:
+        lam = A[i, k]/A[k, k]
+        A[i, (k+1):n] = A[i, (k+1):n] - lam*A[k, (k+1):n]
+        b[i] = b[i] - lam*b[k]
+
+  if abs(A[n-1, n-1]) < tol:
+    print("Matrix is Singular")
+    return None
+
+  #back substitution
+  b[n-1] = b[n-1]/A[n-1, n-1]
+  for k in range(n-2, -1, -1):
+    b[k] = (b[k] - np.dot(A[k, (k+1):n], b[(k+1):n]))/A[k, k]
+
+  return b
 ```
 
 ```{css}
@@ -66,12 +115,485 @@ xy - 9 & = & 0\end{array}\right.$$
 
 :::{.fragment}
 
+```{python}
+#@title
+def f(x, y):
+  return np.cos(x) + np.sin(y) + 1.0
+
+def g(x, y):
+  return x*y - 9.0
+
+x = np.linspace(-10, 10, 250)
+y = np.linspace(-10, 10, 250)
+
+X, Y = np.meshgrid(x, y)
+
+Z_f = f(X, Y)
+Z_g = g(X, Y)
+
+plt.figure(figsize = (12, 3.5))
+plt.subplot(1, 3, 1)
+plt.contour(X, Y, Z_f, levels = [0])
+plt.contour(X, Y, Z_g, levels = [0])
+plt.xlim((-10, 10));
+plt.ylim((-10, 10));
+plt.xlabel("x")
+plt.ylabel("y")
+plt.title("Plotting the System")
+
+plt.subplot(1, 3, 2)
+plt.contour(X, Y, Z_f, levels = [0])
+plt.contour(X, Y, Z_g, levels = [0])
+plt.contourf(X, Y, Z_f, levels = 20)
+plt.xlim((-10, 10));
+plt.ylim((-10, 10));
+plt.xlabel("x")
+plt.ylabel("y")
+plt.title("Plotting the System Over \nContours of First Function")
+
+plt.subplot(1, 3, 3)
+plt.contour(X, Y, Z_f, levels = [0])
+plt.contour(X, Y, Z_g, levels = [0])
+plt.contourf(X, Y, Z_g, levels = 20)
+plt.xlim((-10, 10));
+plt.ylim((-10, 10));
+plt.xlabel("x")
+plt.ylabel("y")
+plt.title("Plotting the System Over \nContours of Second Function")
+
+plt.show()
+```
+
+:::
+
+:::{.fragment}
+
 That changes today!
 
 :::
 
 </div>
 
+## Extending What We've Done
 
+<div style="font-size:16pt">
 
+:::{.fragment}
 
+In the previous three notebooks we were focused on solving the single equation $f\left(x\right) = 0$, but there are higher-dimensional versions to consider. 
+
+:::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+Namely,
+
+$$\vec{f}\left(\vec{x}\right) = \vec{0}$$
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+which is equivalent to
+
+$$\left\{\begin{array}{lcl} f_1\left(x_1, x_2, \cdots, x_n\right) &= & 0\\
+f_2\left(x_1, x_2, \cdots, x_n\right) & = & 0\\
+& \vdots &\\
+f_n\left(x_1, x_2, \cdots, x_n\right) & = & 0\\
+\end{array}\right.$$
+
+:::
+
+:::
+
+::::
+
++ Solving a system like this one is much more difficult than solving a single equation. 
++ There is no reliable method for bracketing the solution $\vec{x^*}$. 
++ This means that we can't guarantee any algorithm a "good" starting estimate unless there exist some theoretical rationale for the location of the root.
+
+:::{.fragment}
+
+$\bigstar$ The systems we're considering now may no longer be *linear* systems, so we'll need methods beyond those we encountered earlier in our course.
+
+:::
+
+:::{.fragment}
+
+The *Newton-Raphson Method* works well with these simultaneous equations, as long as we provide a *reasonable* starting value.
+
+:::
+
+</div>
+
+## Deriving a Multidimensional Newton-Raphson Method
+
+:::{.fragment}
+
+Because the math here is in higher dimensions, the details look more complicated.
+
+:::
+
+:::{.fragment}
+
+The foundational idea, though, is the same...
+
+:::
+
+1. Begin from an initial point in space (a reasonable initial guess at the solution).
+2. Replace the nonlinear system with its best linear approximation (its Jacobian) at the current point.
+
+    + In the single-variable case, we replaced the curve with its tangent line.
+    + Now, we replace the nonlinear map with its local linear approximation.
+3. Solve that linear system to determine the update to your previous guess.
+4. Using the updated guess, repeat steps 2 and 3 until the estimate for the solution converges within some acceptable tolerance.
+
+## Deriving a Multidimensional Newton-Raphson Method
+
+<div style="font-size:16pt">
+
+::::{.columns}
+
+:::{.column width="55"}
+
+:::{.fragment}
+
+Start with the Taylor Series expansion of $f_i\left(\vec{x}\right)$ truncated to first degree about the point $\vec{x^*}$.
+
+:::
+
+:::
+
+:::{.column width="45%"}
+
+:::{.fragment}
+
+$$f_i\left(\vec{x^*} + \Delta\vec{x}\right) \approx f_i\left(\vec{x^*}\right) + \sum_{j = 1}^{n}{\frac{\partial f_i}{\partial x_j}\Delta x_j}$$
+
+:::
+
+:::
+
+::::
+
+::::{.columns}
+
+:::{.column width="55%"}
+
+:::{.fragment}
+
+Defining the *Jacobian Matrix* $J\left(\vec{x^*}\right)$ to be the $n\times n$ matrix such that $\displaystyle{J_{ij} = \frac{\partial f_i}{\partial x_j}\left(\vec{x^*}\right)}$ allows us to rewrite the above as the matrix equation:
+
+:::
+
+:::
+
+:::{.column width="45%"}
+
+:::{.fragment}
+
+$$\vec{f}\left(\vec{x^*} + \Delta \vec{x}\right) \approx \vec{f}\left(\vec{x^*}\right) + J\left(\vec{x^*}\right)\Delta\vec{x}$$
+
+:::
+
+:::
+
+::::
+
+::::{.columns}
+
+:::{.column width="55%"}
+
+:::{.fragment}
+
+With $\vec{x^*}$ as the previous approximate solution to $\vec{f}\left(\vec{x}\right) = \vec{0}$, then $\left(\vec{x^*} + \Delta\vec{x}\right)$ is the improved solution. 
+
+:::
+
+:::{.fragment}
+
+To find $\Delta\vec{x}$, we set $\vec{f}\left(\vec{x^*} + \Delta\vec{x}\right) = \vec{0}$ and get an approximate solution by solving
+
+:::
+
+:::
+
+:::{.column width="45%"}
+
+:::{.fragment}
+
+\begin{align*} \vec{f}\left(\vec{x^*}\right) + J\left(\vec{x^*}\right)\Delta\vec{x} &= 0\\
+\implies J\left(\vec{x^*}\right)\Delta\vec{x} &= -\vec{f}\left(\vec{x^*}\right)
+\end{align*}
+
+:::
+
+:::
+
+::::
+
+</div>
+
+## Implementation Details
+
+:::{.fragment}
+
+So the update requires solving the matrix equation $\displaystyle{J\left(\vec{x^*}\right)\Delta\vec{x} = -\vec{f}\left(\vec{x^*}\right)}$
+
+:::
+
+::::{.columns}
+
+:::{.column width="55%"}
+
+:::{.fragment}
+
+We won't calculate each $\displaystyle{\frac{\partial f_i}{\partial x_j}}$ explicitly -- instead, we'll approximate them via the finite difference method (difference quotient).
+
+:::
+
+:::
+
+:::{.column width="45%"}
+
+:::{.fragment}
+
+$$\frac{\partial f_i}{\partial x_j} \approx \frac{f_i\left(\vec{x^*} + \vec{e_j}h\right) - f_i\left(\vec{x^*}\right)}{h}$$
+
+:::
+
+:::
+
+::::
+
+:::{.fragment}
+
+Notice that $h$ is a "small" step size and $\vec{e_j}$ is the $j^{th}$ component identity vector.
+
+:::
+
+:::{.fragment}
+
+Luckily the *Newton-Raphson Method* is relatively insensitive to small errors in $J\left(\vec{x}\right)$ -- making these approximations is very convenient because we avoid needing to compute and define each partial derivative for the routine.
+
+:::
+
+## Writing the Routine
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+<div style="font-size:18pt">
+
+:::{.fragment}
+
+We're now ready to write the routine. 
+
+:::
+
+:::{.fragment}
+
+Just remember, that success of this method depends on having a quality initial estimate for $\vec{x^*}$ -- otherwise, the results are quite unpredictable.
+
+:::
+
+:::{.fragment}
+
+Having some expectation for where the root should occur is necessary because we cannot follow these results blindly. 
+
+:::
+
+:::{.fragment}
+
+One more thing -- since $J\left(\vec{x^*}\right) \Delta\vec{x} = - \vec{f}\left(\vec{x^*}\right)$ is system of linear equations, we'll need access to our `gaussPivot()` routine from earlier here as well (not shown).
+
+:::
+
+</div>
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+```{python}
+#| echo: true
+#| eval: true
+
+## Jacobian Constructor
+def jacobian(f, x, h = 1.0e-4):
+  n = len(x)
+  jac = np.zeros((n, n))
+  f0 = f(x)
+
+  for i in range(n):
+    temp = x[i]
+    x[i] = temp + h
+    f1 = f(x)
+    x[i] = temp
+    jac[:, i] = (f1 - f0)/h
+
+  return jac, f0
+
+## Newton-Raphson Method for Multiple Dimensions
+def newtonRaphsonMultiDim(f, x, tol = 1.0e-9, max_its = 30):
+  for i in range(max_its):
+    jac, f0 = jacobian(f, x)
+    #print("Jacobian \n", jac)
+    #print("f0: ", f0)
+    if (np.dot(f0, f0)/len(x))**0.5 < tol:
+      return x
+
+    dx = gaussPivot(jac, -f0)
+    x = x + dx
+    if (np.dot(dx, dx))**0.5 < tol*max(max(abs(x)), 1.0):
+      return x
+
+  print("Newton-Raphson did not converge.")
+  return None
+```
+
+:::
+
+:::
+
+::::
+
+## Example Usage
+
+:::{.fragment fragment-index=1}
+
+**Example 1:** Use the Mutli-Dimensional Newton-Raphson routine you just constructed to determine the points of intersection between the circle $x^2 + y^2 = 3$ and the hyperbola $xy = 1$.
+
+:::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment fragment-index=2}
+
+```{python}
+def f(x, y):
+  return x**2 + y**2 - 3
+
+def g(x,y):
+  return x*y - 1
+
+x = np.linspace(-2, 2, 250)
+y = np.linspace(-2, 2, 250)
+
+X, Y = np.meshgrid(x, y)
+Z_f = f(X, Y)
+Z_g = g(X, Y)
+
+plt.contour(X, Y, Z_f, levels = [0])
+plt.contour(X, Y, Z_g, levels = [0])
+plt.xlim((-2, 2));
+plt.ylim((-2, 2));
+
+plt.show()
+```
+
+:::
+
+:::{.fragment fragment-index=4}
+
+```{python}
+def f(x):
+  F = np.zeros(2)
+  F[0] = x[0]**2 + x[1]**2 -3
+  F[1] = x[0]*x[1] - 1
+
+  return F
+
+est_upper_left = newtonRaphsonMultiDim(f, [-0.5, 0])
+est_lower_left = newtonRaphsonMultiDim(f, [0, -1.5])
+est_upper_right = newtonRaphsonMultiDim(f, [0.5, 1.5])
+est_lower_right = newtonRaphsonMultiDim(f, [1.5, 0.5])
+
+print("I found the four intersection points to be at:\n", 
+      "\t", est_upper_left, "(upper left)\n",
+      "\t", est_lower_left, "(lower left)\n",
+      "\t", est_upper_right, "(upper right)\n",
+      "\t", est_lower_right, "(lower right)")
+```
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment fragment-index=3}
+
+```{python}
+#| echo: true
+#| eval: false
+
+def f(x):
+  F = np.zeros(2)
+  F[0] = x[0]**2 + x[1]**2 -3
+  F[1] = x[0]*x[1] - 1
+
+  return F
+
+est_upper_left = newtonRaphsonMultiDim(f, [-0.5, 0])
+est_lower_left = newtonRaphsonMultiDim(f, [0, -1.5])
+est_upper_right = newtonRaphsonMultiDim(f, [0.5, 1.5])
+est_lower_right = newtonRaphsonMultiDim(f, [1.5, 0.5])
+
+print("I found the four intersection points to be at:\n", 
+      "\t", est_upper_left, "(upper left)\n",
+      "\t", est_lower_left, "(lower left)\n",
+      "\t", est_upper_right, "(upper right)\n",
+      "\t", est_lower_right, "(lower right)")
+```
+
+:::
+
+:::
+
+::::
+
+## An Example to Try
+
+:::{.fragment}
+
+**Example 2:** Find a solution to the system
+
+$$\left\{\begin{array}{rcr} \sin\left(x\right) + y^2 + \ln\left(z\right) - 7 &= 0\\
+3x + 2^y - z^3 + 1 &= 0\\
+x + y + z - 5 &= 0\end{array}\right.$$
+
+knowing that a solution exists near $\left(1, 1, 1\right)$.
+
+:::
+
+## Summary and Next Time
+
++ We extended our understanding of the single-variable Newton-Raphson Method to multidimensional, non-linear systems.
+
+  + This is an enormous gain in your ability to solve systems of equations, allowing you to move beyond linear systems only.
+
++ The crux of the idea is to approximate the non-linear system with a local linearization, use that local linearization to identify how to update our current guess, and then to iterate the process until convergence.
+
++ Our implementation is the `newtonRaphsonMultiDim()` routine, which requires a vector-valued function `f` that encodes a [perhaps non-linear] system whose constraint vector is $\vec{0}$, and an initial guess at the solution, `x`.
+
+  + The trickiest part of using the functionality is creating the vector-valued function.
+  
+:::{.fragment}
+
+**Next Time:** Numerical Differentiation via Finite Difference Approximation
+
+:::
