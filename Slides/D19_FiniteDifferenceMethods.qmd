@@ -1,0 +1,718 @@
+---
+title: "MAT 370: Finite Difference Methods"
+subtitle: "Numerical Differentiation"
+author: Dr. Gilbert
+format: 
+  revealjs:
+    smaller: true
+date: today
+date-format: long
+theme: serif
+incremental: true
+execute: 
+  error: true
+---
+
+```{r global-options, include=FALSE}
+library(tidyverse)
+library(reticulate)
+
+theme_set(theme_bw(base_size = 20))
+```
+
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+import time
+```
+
+```{css}
+code.sourceCode {
+  font-size: 1.3em;
+  /* or try font-size: xx-large; */
+}
+
+a {
+  color: purple;
+}
+
+a:link {
+  color: purple;
+}
+
+a:visited {
+  color: purple;
+}
+```
+
+## A Motivating Example
+
+:::{.fragment}
+
+**Motivating Example:** A lander approaching the surface of Mars takes altitude readings every $0.02$ seconds. Mission Control needs the *instantaneous vertical velocity* in order to determine whether to fire retro-rockets that are designed to decelerate the descent. Three consecutive readings are reported below:
+
+<center>
+
+**Time (sec)** | **Altitude (m)**
+-------------|-----------------
+112.48 | 238.4
+112.50 | 230.9
+112.52 | 222.7
+
+</center>
+
+Approximate the vertical velocity of the lander *as accurately as possible* at time $t = 112.50~(\text{sec})$.
+
+:::
+
+## Reminder on Taylor Series
+
+<div style="font-size:16pt">
+
+:::{.fragment}
+
+Recall from Calculus II that the Taylor Series expansion of $f\left(x\right)$ at $x = x_0$ is given by
+
+:::
+
+:::{.fragment}
+
+$$f\left(x\right) \approx \sum_{k = 0}^{\infty}{\frac{\left(x - x_0\right)^k\cdot f^{\left(k\right)}\left(x_0\right)}{k!}}$$
+
+:::
+
+:::{.fragment}
+
+We can build expressions for the Taylor Series of $f\left(x + h\right)$, $f\left(x - h\right)$, $f\left(x + 2h\right)$, and $f\left(x - 2h\right)$ centered at a generic position $x$.
+
+:::
+
+:::{.fragment}
+
+\begin{align*} f\left(x + h\right) &\approx f\left(x\right) + h\cdot f'\left(x\right) + \frac{h^2}{2!}f''\left(x\right) + \frac{h^3}{3!}f'''\left(x\right) + \frac{h^4}{4!}f^\left(4\right)\left(x\right) + \cdots &(a)\\
+f\left(x - h\right) &\approx f\left(x\right) - h\cdot f'\left(x\right) + \frac{h^2}{2!}f''\left(x\right) - \frac{h^3}{3!}f'''\left(x\right) + \frac{h^4}{4!}f^\left(4\right)\left(x\right) + \cdots &(b)\\
+f\left(x + 2h\right) &\approx f\left(x\right) + 2h\cdot f'\left(x\right) + \frac{4h^2}{2!}f''\left(x\right) + \frac{8h^3}{3!}f'''\left(x\right) + \frac{16h^4}{4!}f^\left(4\right)\left(x\right) + \cdots &(c)\\
+f\left(x -2h\right) &\approx f\left(x\right) - 2h\cdot f'\left(x\right) + \frac{4h^2}{2!}f''\left(x\right) - \frac{8h^3}{3!}f'''\left(x\right) + \frac{16h^4}{4!}f^\left(4\right)\left(x\right) + \cdots &(d)
+\end{align*}
+
+:::
+
+</div>
+
+## Sums and Differences
+
+<div style="font-size:16pt">
+
+\begin{align*} f\left(x + h\right) &\approx f\left(x\right) + h\cdot f'\left(x\right) + \frac{h^2}{2!}f''\left(x\right) + \frac{h^3}{3!}f'''\left(x\right) + \frac{h^4}{4!}f^\left(4\right)\left(x\right) + \cdots &(a)\\
+f\left(x - h\right) &\approx f\left(x\right) - h\cdot f'\left(x\right) + \frac{h^2}{2!}f''\left(x\right) - \frac{h^3}{3!}f'''\left(x\right) + \frac{h^4}{4!}f^\left(4\right)\left(x\right) + \cdots &(b)\\
+f\left(x + 2h\right) &\approx f\left(x\right) + 2h\cdot f'\left(x\right) + \frac{4h^2}{2!}f''\left(x\right) + \frac{8h^3}{3!}f'''\left(x\right) + \frac{16h^4}{4!}f^\left(4\right)\left(x\right) + \cdots &(c)\\
+f\left(x -2h\right) &\approx f\left(x\right) - 2h\cdot f'\left(x\right) + \frac{4h^2}{2!}f''\left(x\right) - \frac{8h^3}{3!}f'''\left(x\right) + \frac{16h^4}{4!}f^\left(4\right)\left(x\right) + \cdots &(d)
+\end{align*}
+
+:::{.fragment}
+
+We can also compute the sums and differences of these series as follows.
+
+:::
+
+:::{.fragment}
+
+\begin{align*} f\left(x + h\right) + f\left(x - h\right) &\approx 2f\left(x\right) + h^2f''\left(x\right) + \frac{h^4}{12}f^\left(4\right)\left(x\right) + \cdots &(e)\\
+f\left(x + h\right) - f\left(x - h\right) &\approx 2hf'\left(x\right) + \frac{h^3}{3}f'''\left(x\right) + \frac{h^5}{60}f^\left(5\right)\left(x\right) + \cdots &(f)\\
+f\left(x + 2h\right) + f\left(x - 2h\right) &\approx 2f\left(x\right) + 4h^2f''\left(x\right) + \frac{4h^4}{3}f^{\left(4\right)}\left(x\right) + \cdots &(g)\\
+f\left(x + 2h\right) - f\left(x - 2h\right) &\approx 4hf'\left(x\right) + \frac{8h^3}{3}f'''\left(x\right) + \frac{8h^5}{15}f^{\left(5\right)}\left(x\right) + \cdots &(h)
+\end{align*}
+
+:::
+
+:::{.fragment}
+
+In the sums, only even-order derivatives remain, while odd-order derivatives are the only ones remaining in the differences.
+
+:::
+
+</div>
+
+## Finite Differences
+
+<div style="font-size:16pt">
+
+:::{.fragment}
+
+\begin{align*} f\left(x + h\right) &\approx f\left(x\right) + h\cdot f'\left(x\right) + \frac{h^2}{2!}f''\left(x\right) + \frac{h^3}{3!}f'''\left(x\right) + \frac{h^4}{4!}f^\left(4\right)\left(x\right) + \cdots &(a)\\
+f\left(x - h\right) &\approx f\left(x\right) - h\cdot f'\left(x\right) + \frac{h^2}{2!}f''\left(x\right) - \frac{h^3}{3!}f'''\left(x\right) + \frac{h^4}{4!}f^\left(4\right)\left(x\right) + \cdots &(b)\\
+f\left(x + 2h\right) &\approx f\left(x\right) + 2h\cdot f'\left(x\right) + \frac{4h^2}{2!}f''\left(x\right) + \frac{8h^3}{3!}f'''\left(x\right) + \frac{16h^4}{4!}f^\left(4\right)\left(x\right) + \cdots &(c)\\
+f\left(x -2h\right) &\approx f\left(x\right) - 2h\cdot f'\left(x\right) + \frac{4h^2}{2!}f''\left(x\right) - \frac{8h^3}{3!}f'''\left(x\right) + \frac{16h^4}{4!}f^\left(4\right)\left(x\right) + \cdots &(d)\\
+f\left(x + h\right) + f\left(x - h\right) &\approx 2f\left(x\right) + h^2f''\left(x\right) + \frac{h^4}{12}f^\left(4\right)\left(x\right) + \cdots &(e)\\
+f\left(x + h\right) - f\left(x - h\right) &\approx 2hf'\left(x\right) + \frac{h^3}{3}f'''\left(x\right) + \frac{h^5}{60}f^\left(5\right)\left(x\right) + \cdots &(f)\\
+f\left(x + 2h\right) + f\left(x - 2h\right) &\approx 2f\left(x\right) + 4h^2f''\left(x\right) + \frac{4h^4}{3}f^{\left(4\right)}\left(x\right) + \cdots &(g)\\
+f\left(x + 2h\right) - f\left(x - 2h\right) &\approx 4hf'\left(x\right) + \frac{8h^3}{3}f'''\left(x\right) + \frac{8h^5}{15}f^{\left(5\right)}\left(x\right) + \cdots &(h)
+\end{align*}
+
+:::
+
+:::{.fragment}
+
+The eight equations above can be thought of as a simultaneous system which can be solved for the derivatives of $f\left(x\right)$. 
+
+:::
+
+:::{.fragment}
+
+We choose the number of equations and the terms involved by considering (i) the order of the derivative we wish to approximate, and (ii) the desired level of accuracy in the approximation of the derivative.
+
+:::
+
+</div>
+
+## First Central Difference Approximations
+
+<div style="font-size:16pt">
+
+:::{.fragment}
+
+We could solve equation $(f)$ above for $f'\left(x\right)$. That solution is:
+
+:::
+
+:::{.fragment}
+
+\begin{align*} f\left(x + h\right) - f\left(x - h\right) &\approx 2hf'\left(x\right) + \frac{h^3}{3}f'''\left(x\right) + \frac{h^5}{60}f^\left(5\right)\left(x\right) + \cdots
+\end{align*}
+
+:::
+
+</div>
+
+## First Central Difference Approximations
+
+<div style="font-size:16pt">
+
+We could solve equation $(f)$ above for $f'\left(x\right)$. That solution is:
+
+\begin{align*} f\left(x + h\right) - f\left(x - h\right) &\approx 2hf'\left(x\right) + \frac{h^3}{3}f'''\left(x\right) + \frac{h^5}{60}f^\left(5\right)\left(x\right) + \cdots\\
+\implies 2hf'\left(x\right) &\approx f\left(x + h\right) - f\left(x - h\right) - \frac{h^3}{3}f'''\left(x\right) - \frac{h^5}{60}f^{\left(5\right)}\left(x\right) - \cdots
+\end{align*}
+
+</div>
+
+## First Central Difference Approximations
+
+<div style="font-size:16pt">
+
+We could solve equation $(f)$ above for $f'\left(x\right)$. That solution is:
+
+\begin{align*} f\left(x + h\right) - f\left(x - h\right) &\approx 2hf'\left(x\right) + \frac{h^3}{3}f'''\left(x\right) + \frac{h^5}{60}f^\left(5\right)\left(x\right) + \cdots\\
+\implies 2hf'\left(x\right) &\approx f\left(x + h\right) - f\left(x - h\right) - \frac{h^3}{3}f'''\left(x\right) - \frac{h^5}{60}f^{\left(5\right)}\left(x\right) - \cdots\\
+\implies f'\left(x\right) &\approx \frac{f\left(x + h\right) - f\left(x - h\right)}{2h} - \frac{h^2}{6}f'''\left(x\right) - \frac{h^4}{120}f^{\left(5\right)}\left(x\right) - \cdots
+\end{align*}
+
+</div>
+
+## First Central Difference Approximations
+
+<div style="font-size:16pt">
+
+We could solve equation $(f)$ above for $f'\left(x\right)$. That solution is:
+
+\begin{align*} f\left(x + h\right) - f\left(x - h\right) &\approx 2hf'\left(x\right) + \frac{h^3}{3}f'''\left(x\right) + \frac{h^5}{60}f^\left(5\right)\left(x\right) + \cdots\\
+\implies 2hf'\left(x\right) &\approx f\left(x + h\right) - f\left(x - h\right) - \frac{h^3}{3}f'''\left(x\right) - \frac{h^5}{60}f^{\left(5\right)}\left(x\right) - \cdots\\
+\implies f'\left(x\right) &\approx \frac{f\left(x + h\right) - f\left(x - h\right)}{2h} - \frac{h^2}{6}f'''\left(x\right) - \frac{h^4}{120}f^{\left(5\right)}\left(x\right) - \cdots\\
+\implies f'\left(x\right) &\approx \frac{f\left(x + h\right) - f\left(x - h\right)}{2h} + \mathscr{O}\left(h^2\right)
+\end{align*}
+
+:::{.fragment}
+
+Where $\mathscr{O}\left(h^2\right)$ are truncated higher-order terms which behave similarly to $h^2$. 
+
+:::
+
+:::{.fragment} 
+
+If $h$ is small enough, we can discard those terms -- or, at the very least, we can bound our error in approximating the derivative by it.
+
+:::
+
+</div>
+
+## Additional First Central Difference Approximations
+
+<div style="font-size:16pt">
+
+:::{.fragment}
+
+Using the same techniques, we can solve for additional deriviatives.
+
+:::
+
+:::{.fragment}
+
+\begin{align} f''\left(x\right) &\approx \frac{f\left(x + h\right) - 2f\left(x\right) + f\left(x - h\right)}{h^2} + \mathscr{O}\left(h^2\right)\end{align}
+
+:::
+
+</div>
+
+## Additional First Central Difference Approximations
+
+<div style="font-size:16pt">
+
+Using the same techniques, we can solve for additional deriviatives.
+
+\begin{align} f''\left(x\right) &\approx \frac{f\left(x + h\right) - 2f\left(x\right) + f\left(x - h\right)}{h^2} + \mathscr{O}\left(h^2\right)\\
+f'''\left(x\right) &\approx \frac{f\left(x + 2h\right) - 2f\left(x + h\right) + 2f\left(x - h\right) - f\left(x - 2h\right)}{2h^3} + \mathscr{O}\left(h^2\right)
+\end{align}
+
+</div>
+
+## Additional First Central Difference Approximations
+
+<div style="font-size:16pt">
+
+Using the same techniques, we can solve for additional deriviatives.
+
+\begin{align} f''\left(x\right) &\approx \frac{f\left(x + h\right) - 2f\left(x\right) + f\left(x - h\right)}{h^2} + \mathscr{O}\left(h^2\right)\\
+f'''\left(x\right) &\approx \frac{f\left(x + 2h\right) - 2f\left(x + h\right) + 2f\left(x - h\right) - f\left(x - 2h\right)}{2h^3} + \mathscr{O}\left(h^2\right)\\
+f^{\left(4\right)}\left(x\right) &\approx \frac{f\left(x + 2h\right) - 4f\left(x + h\right) + 6f\left(x\right) - 4f\left(x - h\right) + f\left(x - 2h\right)}{h^4} + \mathscr{O}\left(h^2\right)
+\end{align}
+
+:::{.fragment}
+
+The table below summarizes the coefficients on each term for the first through fourth derivatives of $f\left(x\right)$.
+
+:::
+
+:::{.fragment}
+
+<center>
+
+term/order of derivative | f(x - 2h) | f(x - h) | f(x) | f(x + h) | f(x + 2h)
+ ------ | --------- | -------- | ------ | ------ | ---------- |
+$2hf'\left(x\right)$ |  | -1 | 0 | 1 |  |  
+$h^2f''\left(x\right)$ |  | 1 | -2 | 1 |  |
+$2h^3f'''\left(x\right)$ | -1 | 2 | 0 | -2 | 1 |
+$h^4f^{\left(4\right)}\left(x\right)$ | 1 | -4 | 6 | -4 | 1
+
+</center>
+
+:::
+
+</div>
+
+## An Example To Complete
+
+:::{.fragment}
+
+**Example:** Use finite-difference approximations of $\mathscr{O}\left(h^2\right)$ to compute $f'\left(1.52\right)$ and $f''\left(1.52\right)$ from the following data (with $h = 0.01$)
+
+<center>
+
+$x$ | $f\left(x\right)$
+----|-----
+1.50 | 0.2231301601
+1.51 | 0.2209099780
+1.52 | 0.2187117769
+1.53 | 0.2165356673
+1.54 | 0.2143811014
+
+</center>
+
+:::
+
+## Limitations of Central Difference Approximations
+
+:::{.fragment}
+
+Unfortunately we can't always use central finite difference approximations. 
+
+:::
+
+:::{.fragment}
+
+Perhaps we have a finite number of data points $\left(x_0, y_0\right)$, $\left(x_1, y_1\right)$, $\cdots$, $\left(x_n, y_n\right)$ rather than an algebraically defined function.
+
+:::
+
+:::{.fragment}
+
+We couldn't use a central difference approximation for $f'\left(x_0\right)$ or $f'\left(x_n\right)$ -- or any higher-order derivative which would require knowledge of function values to the left of $x_0$ or to the right of $x_n$.
+
+:::
+
+:::{.fragment}
+
+We can use *forward-* or *backward-* finite difference approximations in these cases.
+
+:::
+
+## First Non-Central Finite Difference Approximations
+
+<div style="font-size:16pt">
+
+:::{.fragment}
+
+We begin by considering the first non-central finite difference approximations for the derivative using both *forward* and *backward* approaches.
+
+:::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+<center> **First Forward Finite Difference Approximation** </center>
+
+From equation (a), we can find...
+
+:::
+
+:::{.fragment}
+
+$$f'\left(x\right) \approx \frac{f\left(x + h\right) - f\left(x\right)}{h} + \mathscr{O}\left(h\right)$$
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+<center> **First Backward Finite Difference Approximation** </center>
+
+From equation (b), we can find...
+
+:::
+
+:::{.fragment}
+
+$$f'\left(x\right) \approx \frac{f\left(x\right) - f\left(x - h\right)}{h} + \mathscr{O}\left(h\right)$$
+
+:::
+
+:::
+
+::::
+
+:::{.fragment}
+
+The truncation error now is on the order of $h$ rather than $h^2$, which is not as good!
+
+:::
+
+:::{.fragment}
+
+We can obtain forward and backward approximations for higher-order derivatives in the same manner.
+
+\begin{align*} f''\left(x\right) &\approx \frac{f\left(x + 2h\right) - 2f\left(x + h\right) + f\left(x\right)}{h^2} + \mathscr{O}\left(h\right)
+\end{align*}
+
+:::
+
+</div>
+
+## First Non-Central Finite Difference Approximations
+
+<div style="font-size:16pt">
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+<center> **First Forward Finite Difference Approximation** </center>
+
+$$f'\left(x\right) \approx \frac{f\left(x + h\right) - f\left(x\right)}{h} + \mathscr{O}\left(h\right)$$
+
+:::
+
+:::{.column width="50%"}
+
+<center> **First Backward Finite Difference Approximation** </center>
+
+$$f'\left(x\right) \approx \frac{f\left(x\right) - f\left(x - h\right)}{h} + \mathscr{O}\left(h\right)$$
+
+:::
+
+::::
+
+:::{.fragment}
+
+The following tables provide coefficients on particular terms in the *first non-central finite difference approximation*.
+
+:::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+<center> **Forward Differences**</center>
+
+term/order of derivative | f(x) | f(x + h) | f(x + 2h) | f(x + 3h) | f(x + 4h)
+ ------ | --------- | -------- | ------ | ------ | ---------- |
+$hf'\left(x\right)$ | -1 | 1 |  |  |  |  
+$h^2f''\left(x\right)$ | 1 | -2 | 1 |  |  |
+$h^3f'''\left(x\right)$ | -1 | 3 | -3 | 1 |  |
+$h^4f^{\left(4\right)}\left(x\right)$ | 1 | -4 | 6 | -4 | 1
+
+:::
+
+:::
+
+:::{.column width="50%}
+
+:::{.fragment}
+
+<center> **Backward Differences** </center>
+
+term/order of derivative | f(x - 4h) | f(x - 3h) | f(x - 2h) | f(x - h) | f(x)
+ ------ | --------- | -------- | ------ | ------ | ---------- |
+$hf'\left(x\right)$ |  |  |  | -1 | 1 |  
+$h^2f''\left(x\right)$ |  |  | 1 | -2 | 1 |
+$h^3f'''\left(x\right)$ |  | -1 | 3 | -3 | 1 |
+$h^4f^{\left(4\right)}\left(x\right)$ | 1 | -4 | 6 | -4 | 1
+
+:::
+
+:::
+
+::::
+
+:::{.fragment}
+
+As a reminder, though, the error in these approximations are $\mathscr{O}\left(h\right)$ rather than $\mathscr{O}\left(h^2\right)$, which is worse than the central difference approximations.
+
+:::
+
+</div>
+
+## Reducing Error with Second Differences
+
+<div style="font-size:16pt">
+
+:::{.fragment}
+
+The first non-central finite difference approximations are not often used because their error is very large -- $\mathscr{O}\left(h\right)$. 
+
+:::
+
+:::{.fragment}
+
+More on these errors soon but, for now, let's develop the notion of the *second finite difference approximations*.
+
+:::
+
+:::{.fragment}
+
+Recall equations $(a)$ and $(c)$ from earlier:
+
+\begin{align*} f\left(x + h\right) &\approx f\left(x\right) + hf'\left(x\right) + \frac{h^2}{2}f''\left(x\right) + \frac{h^3}{3!}f'''\left(x\right) + \frac{h^4}{4!}f^{\left(4\right)}\left(x\right) + \cdots &(a)\\
+f\left(x + 2h\right) &\approx f\left(x\right) + 2hf'\left(x\right) + 2h^2f''\left(x\right) + \frac{8h^3}{3!}f'''\left(x\right) + \frac{16h^4}{4!}f^{\left(4\right)}\left(x\right) + \cdots &(c)
+\end{align*}
+
+:::
+
+:::{.fragment}
+
+We can compute $(c) - 4(a)$ to obtain the new equation:
+
+\begin{align*}f\left(x + 2h\right) - 4f\left(x + h\right) &\approx -3f\left(x\right) - 2hf'\left(x\right) + \mathscr{O}\left(h^3\right)\\
+\implies f'\left(x\right) &\approx \frac{- f\left(x + 2h\right)  + 4f\left(x + h\right) - 3f\left(x\right)}{2h} + \mathscr{O}\left(h^2\right)
+\end{align*}
+
+:::
+
+</div>
+
+## Reducing Error with Second Differences
+
+<div style="font-size:16pt">
+
+Recall equations $(a)$ and $(c)$ from earlier:
+
+\begin{align*} f\left(x + h\right) &\approx f\left(x\right) + hf'\left(x\right) + \frac{h^2}{2}f''\left(x\right) + \frac{h^3}{3!}f'''\left(x\right) + \frac{h^4}{4!}f^{\left(4\right)}\left(x\right) + \cdots &(a)\\
+f\left(x + 2h\right) &\approx f\left(x\right) + 2hf'\left(x\right) + 2h^2f''\left(x\right) + \frac{8h^3}{3!}f'''\left(x\right) + \frac{16h^4}{4!}f^{\left(4\right)}\left(x\right) + \cdots &(c)
+\end{align*}
+
+We can compute $(c) - 4(a)$ to obtain the new equation:
+
+\begin{align*}f\left(x + 2h\right) - 4f\left(x + h\right) &\approx -3f\left(x\right) - 2hf'\left(x\right) + \mathscr{O}\left(h^3\right)\\
+\implies f'\left(x\right) &\approx \frac{- f\left(x + 2h\right)  + 4f\left(x + h\right) - 3f\left(x\right)}{2h} + \mathscr{O}\left(h^2\right)
+\end{align*}
+
+:::{.fragment}
+
+This *second forward finite difference approximation* has error on the order of $h^2$, which is more commonly acceptable. 
+
+:::
+
+:::{.fragment}
+
+Note that the second forward finite difference approximation for $f'\left(x\right)$ uses $f\left(x\right)$, $f\left(x + h\right)$, and $f\left(x + 2h\right)$. 
+
+:::
+
+:::{.fragment}
+
+In general, a second forward finite difference approximation for $f^{\left(k\right)}\left(x\right)$ will use $f\left(x\right)$, $f\left(x + h\right)$, $\cdots$, $f\left(x + \left(k +1\right)h\right)$.
+
+:::
+
+</div>
+
+## Tabular Encodings of Second Differences
+
+<div style="font-size:16pt">
+
+:::{.fragment}
+
+The tables below summarize the coefficients for the second forward and backward finite difference approximations for the first through fourth derivatives of $f\left(x\right)$.
+
+:::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+<center> **Second Forward Differences** </center>
+
+term/order of derivative | f(x) | f(x + h) | f(x + 2h) | f(x + 3h) | f(x + 4h) | f(x + 5h) |
+ ------ | --------- | -------- | ------ | ------ | ---------- | ------ |
+$2hf'\left(x\right)$ | -3 | 4 | -1 |  |  |  |
+$h^2f''\left(x\right)$ | 2 | -5 | 4 | -1 |  |  |
+$2h^3f'''\left(x\right)$ | -5 | 18 | -24 | 14 | -3 |  |
+$h^4f^{\left(4\right)}\left(x\right)$ | 3 | -14 | 26 | -24 | 11 | -2
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+<center> **Second Backward Differences** </center>
+
+term/order of derivative | f(x - 5h| f(x - 4h) | f(x - 3h) | f(x - 2h) | f(x - h) | f(x)
+ ------ | --------- | -------- | ------ | ------ | ---------- | ----- |
+$2hf'\left(x\right)$ |  |  |  | 1 | -4 | 3 |  
+$h^2f''\left(x\right)$ |  |  | -1 | 4 | -5 | 2 |
+$2h^3f'''\left(x\right)$ |  | 3 | -14 | 34 | -18 | 5 |
+$h^4f^{\left(4\right)}\left(x\right)$ | -2 | 11 | -24 | 26 |  -14 | 3 |
+
+:::
+
+:::
+
+::::
+
+:::{.fragment}
+
+These second difference approximations have error $\mathscr{O}\left(h^2\right)$, which is an improvement over the first non-central differences.
+
+:::
+
+</div>
+
+## An Example to Complete
+
+:::{.fragment}
+
+**Example:** Use finite-difference approximations of $\mathscr{O}\left(h^2\right)$ to compute $f'\left(1.54\right)$ and $f''\left(1.54\right)$ from the following data (with $h = 0.01$)
+
+<center>
+
+$x$ | $f\left(x\right)$
+----|-----
+1.50 | 0.2231301601
+1.51 | 0.2209099780
+1.52 | 0.2187117769
+1.53 | 0.2165356673
+1.54 | 0.2143811014
+
+</center>
+
+:::
+
+## On Errors in Finite Difference Approximations
+
+<div style="font-size:16pt">
+
+:::{.fragmnet}
+
+Notice that in all of the rows of the finite difference approximation coefficient tables we've encountered, the row-sum is $0$. 
+
+:::
+
+:::{.fragment}
+
+Because of this, the effect of the roundoff error on our approximations can be significant. 
+
+:::
+
+:::{.fragment}
+
+If $h$ is very small, the values of $f\left(x\right)$, $f\left(x + h\right)$, $f\left(x + 2h\right)$, etc. will be approximately equal.
+
+:::
+
+:::{.fragment}
+
+When our numerators are computed, we can lose several significant figures. 
+
+:::
+
+:::{.fragment}
+
+However, we cannot make $h$ too large because then the truncation error -- that "term" which we have written as $\mathscr{O}\left(h^2\right)$ -- becomes larger. 
+
+:::
+
+:::{.fragment}
+
+We can use the following suggestions to help combat these two competing problems.
+
++ Use double-precision arithmetic (this is the default for Python 3.x)
++ Use finite difference methods which are accurate to at least $\mathscr{O}\left(h^2\right)$.
+
+:::
+
+:::{.fragment}
+
+We can highlight the issue with roundoff errors through an example.
+
+:::
+
+:::{.fragment}
+
+**Example:** Approximate $f''\left(x\right)$ for $f\left(x\right) = e^{-x}$ at $x = 1$ using the central difference formula. Note that $f''\left(1\right) = e^{-1} \approx 0.36787944$.
+
+:::
+
+</div>
+
+## Summary and Next Time
+
+:::{.fragment}
+
+In this notebook we introduced techniques for numerical differentiation. 
+
+:::
+
++ We use the Taylor Series for $f\left(x\right)$ and $f\left(x \pm k\cdot h\right)$ for $k = 1, 2, ...$ to do this. 
++ We obtained expressions for different ordered derivatives using *linear combinations* of these Taylor Series, choosing where to truncate according to our desired level of accuracy. 
++ We also saw that there is risk associated with rounding error when approximating derivatives -- we need to be careful in choosing the value of $h$ and also the precision with which our calculations will be carried out.
+
+:::{.fragment}
+
+**Next Time:** We'll examine numerical differentiation via the Newton-Cotes Formulae.
+
+:::
+
+
+
+
