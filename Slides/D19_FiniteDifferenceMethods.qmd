@@ -597,7 +597,7 @@ $h^4f^{\left(4\right)}\left(x\right)$ | 3 | -14 | 26 | -24 | 11 | -2
 
 <center> **Second Backward Differences** </center>
 
-term/order of derivative | f(x - 5h| f(x - 4h) | f(x - 3h) | f(x - 2h) | f(x - h) | f(x)
+term/order of derivative | f(x - 5h) | f(x - 4h) | f(x - 3h) | f(x - 2h) | f(x - h) | f(x)
  ------ | --------- | -------- | ------ | ------ | ---------- | ----- |
 $2hf'\left(x\right)$ |  |  |  | 1 | -4 | 3 |  
 $h^2f''\left(x\right)$ |  |  | -1 | 4 | -5 | 2 |
@@ -642,9 +642,9 @@ $x$ | $f\left(x\right)$
 
 <div style="font-size:16pt">
 
-:::{.fragmnet}
+:::{.fragment}
 
-Notice that in all of the rows of the finite difference approximation coefficient tables we've encountered, the row-sum is $0$. 
+Notice that, for most of the rows of the finite difference approximation coefficient tables we've encountered, the row-sum is $0$. 
 
 :::
 
