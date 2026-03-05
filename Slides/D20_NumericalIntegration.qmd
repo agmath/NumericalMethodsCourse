@@ -1,0 +1,985 @@
+---
+title: "MAT 370: Numerical Integration"
+subtitle: "Newton-Cotes Formulae"
+author: Dr. Gilbert
+format: 
+  revealjs:
+    smaller: true
+date: today
+date-format: long
+theme: serif
+incremental: true
+execute: 
+  error: true
+---
+
+```{r global-options, include=FALSE}
+library(tidyverse)
+library(reticulate)
+
+theme_set(theme_bw(base_size = 20))
+```
+
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+import time
+```
+
+```{css}
+code.sourceCode {
+  font-size: 1.3em;
+  /* or try font-size: xx-large; */
+}
+
+a {
+  color: purple;
+}
+
+a:link {
+  color: purple;
+}
+
+a:visited {
+  color: purple;
+}
+```
+
+## Reminder: You've Seen This Before
+
+:::{.fragment}
+
+Almost surely, integration was introduced to you in a way that was inherently numerical.
+
+:::
+
+:::{.fragment}
+
+Integration was introduced to you as a way to calculate area accumulation.
+
+:::
+
+:::{.fragment}
+
+You broke complex regions into rectangles and noted that the area of the region was approximately the area of the rectangles -- more rectangles generally meant better approximation.
+
+:::
+
+:::{.fragment}
+
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+
+def f(x):
+    return x + np.sin(np.pi*x)
+
+x_vals = np.linspace(0, 5, 500)
+y_vals = f(x_vals)
+
+# Partition
+n = 5
+x_abscissas = np.linspace(0, 5, n + 1)
+y_abscissas = f(x_abscissas)
+
+plt.figure(figsize = (12, 3))
+plt.plot(x_vals, y_vals, color = "purple")
+
+# Draw rectangles using left endpoints
+for i in range(n):
+    x_left = x_abscissas[i]
+    x_right = x_abscissas[i + 1]
+    height = y_abscissas[i]
+    
+    plt.gca().add_patch(
+        plt.Rectangle(
+            (x_left, 0),                # bottom-left corner
+            x_right - x_left,           # width
+            height,                     # height
+            color = "red",
+            alpha=0.3
+        )
+    )
+
+# Optional: show left endpoints
+plt.scatter(x_abscissas[:-1], y_abscissas[:-1], color = "red")
+
+plt.grid()
+plt.axvline(x=0, color = "black")
+plt.axhline(y=0, color = "black")
+plt.xlabel("x")
+plt.ylabel("y")
+plt.show()
+```
+
+:::
+
+## Reminder: You've Seen This Before
+
+Almost surely, integration was introduced to you in a way that was inherently numerical.
+
+Integration was introduced to you as a way to calculate area accumulation.
+
+You broke complex regions into rectangles and noted that the area of the region was approximately the area of the rectangles -- more rectangles generally meant better approximation.
+
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+
+def f(x):
+    return x + np.sin(np.pi*x)
+
+x_vals = np.linspace(0, 5, 500)
+y_vals = f(x_vals)
+
+# Partition
+n = 50
+x_abscissas = np.linspace(0, 5, n + 1)
+y_abscissas = f(x_abscissas)
+
+plt.figure(figsize = (12, 3))
+plt.plot(x_vals, y_vals, color = "purple")
+
+# Draw rectangles using left endpoints
+for i in range(n):
+    x_left = x_abscissas[i]
+    x_right = x_abscissas[i + 1]
+    height = y_abscissas[i]
+    
+    plt.gca().add_patch(
+        plt.Rectangle(
+            (x_left, 0),                # bottom-left corner
+            x_right - x_left,           # width
+            height,                     # height
+            color = "red",
+            alpha=0.3
+        )
+    )
+
+# Optional: show left endpoints
+plt.scatter(x_abscissas[:-1], y_abscissas[:-1], color = "red")
+
+plt.grid()
+plt.axvline(x=0, color = "black")
+plt.axhline(y=0, color = "black")
+plt.xlabel("x")
+plt.ylabel("y")
+plt.show()
+```
+
+## Numerical Integration Strategies
+
+<div style="font-size:16pt">
+
+:::{.fragment}
+
+The following table gives several methods which you were probably introduced to in order to approximate $\displaystyle{\int_{a}^{b}{f\left(x\right)dx}}$, where $x_0 = a$, $x_n = b$, and $x_0 < x_1 < x_2 < \cdots < x_n$.
+
+:::
+
+:::{.fragment}
+
+<center>
+
+Name | Expression for Approximating Integral
+--- | ---
+Left-Endpoint Method | $\displaystyle{\sum_{i = 0}^{n - 1}{f\left(x_i\right)\Delta x_i}}$
+Right-Endpoint Method | $\displaystyle{\sum_{i = 1}^{n}{f\left(x_i\right)\Delta x_i}}$
+Trapezoid Method | $\displaystyle{\sum_{i = 0}^{n - 1}{\frac{f\left(x_i\right) + f\left(x_{i+1}\right)}{2}\Delta x_i}}$
+
+</center>
+
+:::
+
+:::{.fragment}
+
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+
+def f(x):
+    return x + np.sin(np.pi*x)
+
+x_vals = np.linspace(0, 5, 500)
+y_vals = f(x_vals)
+
+# Partition
+n = 5
+x_abscissas = np.linspace(0, 5, n + 1)
+y_abscissas = f(x_abscissas)
+
+plt.figure(figsize = (12, 3))
+plt.plot(x_vals, y_vals, color = "purple")
+
+# Draw rectangles using left endpoints
+for i in range(n):
+    x_left = x_abscissas[i]
+    x_right = x_abscissas[i + 1]
+    height = y_abscissas[i]
+    
+    plt.gca().add_patch(
+        plt.Rectangle(
+            (x_left, 0),                # bottom-left corner
+            x_right - x_left,           # width
+            height,                     # height
+            color = "red",
+            alpha=0.3
+        )
+    )
+
+# Optional: show left endpoints
+plt.scatter(x_abscissas[:-1], y_abscissas[:-1], color = "red")
+
+plt.grid()
+plt.axvline(x=0, color = "black")
+plt.axhline(y=0, color = "black")
+plt.xlabel("x")
+plt.ylabel("y")
+plt.show()
+```
+
+:::
+
+</div>
+
+## Numerical Integration Strategies
+
+<div style="font-size:16pt">
+
+The following table gives several methods which you were probably introduced to in order to approximate $\displaystyle{\int_{a}^{b}{f\left(x\right)dx}}$, where $x_0 = a$, $x_n = b$, and $x_0 < x_1 < x_2 < \cdots < x_n$.
+
+<center>
+
+Name | Expression for Approximating Integral
+--- | ---
+Left-Endpoint Method | $\displaystyle{\sum_{i = 0}^{n - 1}{f\left(x_i\right)\Delta x_i}}$
+Right-Endpoint Method | $\displaystyle{\sum_{i = 1}^{n}{f\left(x_i\right)\Delta x_i}}$
+Trapezoid Method | $\displaystyle{\sum_{i = 0}^{n - 1}{\frac{f\left(x_i\right) + f\left(x_{i+1}\right)}{2}\Delta x_i}}$
+
+</center>
+
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+
+def f(x):
+    return x + np.sin(np.pi*x)
+
+x_vals = np.linspace(0, 5, 500)
+y_vals = f(x_vals)
+
+# Partition
+n = 5
+x_abscissas = np.linspace(0, 5, n + 1)
+y_abscissas = f(x_abscissas)
+
+plt.figure(figsize = (12, 3))
+plt.plot(x_vals, y_vals, color = "purple")
+
+# Draw rectangles using left endpoints
+for i in range(n):
+    x_left = x_abscissas[i]
+    x_right = x_abscissas[i + 1]
+    height = y_abscissas[i+1]
+    
+    plt.gca().add_patch(
+        plt.Rectangle(
+            (x_left, 0),                # bottom-left corner
+            x_right - x_left,           # width
+            height,                     # height
+            color = "red",
+            alpha=0.3
+        )
+    )
+
+# Optional: show left endpoints
+plt.scatter(x_abscissas[1:], y_abscissas[1:], color = "red")
+
+plt.grid()
+plt.axvline(x=0, color = "black")
+plt.axhline(y=0, color = "black")
+plt.xlabel("x")
+plt.ylabel("y")
+plt.show()
+```
+
+</div>
+
+## Numerical Integration Strategies
+
+<div style="font-size:16pt">
+
+The following table gives several methods which you were probably introduced to in order to approximate $\displaystyle{\int_{a}^{b}{f\left(x\right)dx}}$, where $x_0 = a$, $x_n = b$, and $x_0 < x_1 < x_2 < \cdots < x_n$.
+
+<center>
+
+Name | Expression for Approximating Integral
+--- | ---
+Left-Endpoint Method | $\displaystyle{\sum_{i = 0}^{n - 1}{f\left(x_i\right)\Delta x_i}}$
+Right-Endpoint Method | $\displaystyle{\sum_{i = 1}^{n}{f\left(x_i\right)\Delta x_i}}$
+Trapezoid Method | $\displaystyle{\sum_{i = 0}^{n - 1}{\frac{f\left(x_i\right) + f\left(x_{i+1}\right)}{2}\Delta x_i}}$
+
+</center>
+
+```{python}
+# Partition
+n = 5
+x_abscissas = np.linspace(0, 5, n + 1)
+y_abscissas = f(x_abscissas)
+
+plt.figure(figsize = (12, 3))
+plt.plot(x_vals, y_vals, color = "purple")
+plt.plot(x_abscissas, y_abscissas, color = "red")
+plt.fill_between(x_abscissas, y_abscissas, color = "red", alpha = 0.2)
+plt.scatter(x_abscissas, y_abscissas, color = "red")
+plt.vlines(x = x_abscissas, ymin = 0, ymax= y_abscissas, color = "red", ls = "--")
+plt.grid()
+plt.axvline(x = 0, color = "black")
+plt.axhline(y = 0, color = "black")
+plt.xlabel("x")
+plt.ylabel("y")
+plt.show()
+```
+
+</div>
+
+## Numerical Integration Strategies
+
+<div style="font-size:16pt">
+
+The following table gives several methods which you were probably introduced to in order to approximate $\displaystyle{\int_{a}^{b}{f\left(x\right)dx}}$, where $x_0 = a$, $x_n = b$, and $x_0 < x_1 < x_2 < \cdots < x_n$.
+
+<center>
+
+Name | Expression for Approximating Integral
+--- | ---
+Left-Endpoint Method | $\displaystyle{\sum_{i = 0}^{n - 1}{f\left(x_i\right)\Delta x_i}}$
+Right-Endpoint Method | $\displaystyle{\sum_{i = 1}^{n}{f\left(x_i\right)\Delta x_i}}$
+Trapezoid Method | $\displaystyle{\sum_{i = 0}^{n - 1}{\frac{f\left(x_i\right) + f\left(x_{i+1}\right)}{2}\Delta x_i}}$
+
+</center>
+
+```{python}
+# Partition
+n = 15
+x_abscissas = np.linspace(0, 5, n + 1)
+y_abscissas = f(x_abscissas)
+
+plt.figure(figsize = (12, 3))
+plt.plot(x_vals, y_vals, color = "purple")
+plt.plot(x_abscissas, y_abscissas, color = "red")
+plt.fill_between(x_abscissas, y_abscissas, color = "red", alpha = 0.2)
+plt.scatter(x_abscissas, y_abscissas, color = "red")
+plt.vlines(x = x_abscissas, ymin = 0, ymax= y_abscissas, color = "red", ls = "--")
+plt.grid()
+plt.axvline(x = 0, color = "black")
+plt.axhline(y = 0, color = "black")
+plt.xlabel("x")
+plt.ylabel("y")
+plt.show()
+```
+
+</div>
+
+## Newton-Cotes Formulae
+
+<div style="font-size:18pt">
+
+:::{.fragment}
+
+The *Newton-Cotes Formulae* are a set of strategies which try to approximate $\displaystyle{\int_{a}^{b}{f\left(x\right)dx} \approx \sum_{i = 0}^{n}{A_if\left(x_i\right)}}$, where...
+
+:::
+
++ $A_i$ is referred to as a *weight*, and 
++ the $x_i$ are called *nodal abscissas*. 
+
+:::{.fragment}
+
+Newton-Cotes Formulae include the *left-* and *right-endpoint* methods (using rectangles), the *trapezoidal method*, and others.
+
+:::
+
+:::{.fragment}
+
+$\bigstar$ These methods construct interpolants through the abscissas.
+
++ The left- and right-hand endpoint methods construct a degree-0 (constant) interpolant.
++ The trapezoidal method constructs a degree-1 (linear) interpolant.
++ Simpson's Rule (if you've seen it previously) constructs a degree-2 (quadratic) interpolant.
+
+:::
+
+</div>
+
+## Numerical Integration Ideas
+
+:::{.fragment}
+
+In order to approximate $\displaystyle{\int_{a}^{b}{f\left(x\right)}}$, Newton-Cotes Formulae take the following steps:
+
+:::
+
+1. Divide $\left[a, b\right]$ into $n$ equal intervals of width $h = \frac{b-a}{n}$.
+2. The *nodal abscissas* are the endpoints of the intervals resulting from the step above. 
+
+    + That is, we have nodal abscissas $x_0, x_1, x_2,\cdots, x_n$ where $x_0 = a$ and $x_{i+1} = x_i + h$.
+3. Approximate $f\left(x\right)$ by a [perhaps piecewise] polynomial of low degree that intersects all of the nodes.
+4. Integrate the piecewise polynomial as an approximation for $\displaystyle{\int_{a}^{b}{f\left(x\right)dx}}$.
+
+## General Newton-Cotes Formulas
+
+<div style="font-size:16pt">
+
+:::{.fragment}
+
+As a reminder, a Lagrange Polynomial of degree $n$ is defined as
+
+$$P_{n}\left(x\right) = \sum_{i = 0}^{n}{f\left(x_i\right)\ell_i\left(x\right)}$$
+
+where $\ell_i\left(x\right)$ are the *cardinal functions* evaluating to $1$ at $x_i$ but evaluating to $0$ at any of the other nodal abscissas. 
+
+:::
+
+:::{.fragment}
+
+Because the Lagrange interpolating polynomial matches $f\left(x\right)$ at the nodes, we approximate the integral of $f$ by the integral of its interpolant. 
+
+:::
+
+:::{.fragment}
+
+This means that we can obtain an approximation for $\displaystyle{\int_{a}^{b}{f\left(x\right)dx}}$ as follows:
+
+:::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+\begin{align*} \int_{a}^{b}{f\left(x\right)dx} &\approx \int_{a}^{b}{P_{n}\left(x\right)dx}\\
+&= \sum_{i = 0}^{n}{\left[f\left(x_i\right)\int_{a}^{b}{\ell_i\left(x\right)dx}\right]}\\
+&= \sum_{i = 0}^{n}{A_if\left(x_i\right)} & (\bigstar)
+\end{align*}
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+where $\displaystyle{A_i = \int_{a}^{b}{\ell_i\left(x\right)dx}}$.
+
+:::
+
+:::{.fragment}
+
+The equations to the left and above are referred to as the Newton-Cotes formulas.
+
+:::
+
+:::
+
+::::
+
+</div>
+
+## The Trapezoidal Rule
+
+<div style="font-size:16pt">
+
+:::{.fragment}
+
+The *Trapezoidal Rule* is obtained by the Newton-Cotes Formula when $n = 1$. 
+
+:::
+
+:::{.fragment}
+
+In this case, remember that the *cardinal function* $\displaystyle{\ell_0\left(x\right) = \frac{x - x_1}{x_0 - x_1} = \frac{b - x}{h}}$ and $\displaystyle{\ell_1\left(x\right) = \frac{x - x_0}{x_1 - x_0} = \frac{x - a}{h}}$. 
+
+:::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+From here, we can obtain
+
+\begin{align*} A_0 &= \frac{1}{h}\int_{a}^{b}{\left(b - x\right)dx}\\
+&= \frac{1}{2h}\left(b - a\right)^2\\
+&= \frac{h}{2}\\
+A_1 &= \frac{1}{h}\int_{a}^{b}{\left(x - a\right)dx}\\
+&= \frac{1}{2h}\left(b - a\right)^2\\
+&= \frac{h}{2}
+\end{align*}
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+Plugging these weights into the $(\bigstar)$ equation from above gives us that
+
+\begin{align*} \int_{a}^{b}{f\left(x\right)dx} &\approx \sum_{i = 0}^{1}{\frac{h}{2}f\left(x_i\right)}\\
+&= \frac{h}{2}\left[f\left(a\right) + f\left(b\right)\right]
+\end{align*}
+
+:::
+
+:::{.fragment}
+
+Note that this is for a single trapezoid.
+
+:::
+
+:::{.fragment}
+
+We'll see how to adapt this efficiently for more trapezoids, via the *composite* trapezoidal rule, shortly. 
+
+:::
+
+:::
+
+::::
+
+</div>
+
+## Error in Approximation
+
+<div style="font-size:16pt">
+
+:::{.fragment}
+
+As with nearly everything we do in numerical methods, there will be error in our approximation.
+
+:::
+
+:::{.fragment}
+
+The error in approximation using the *Trapezoidal Rule* is
+
+\begin{align*} E &= \int_{a}^{b}{f\left(x\right)dx} - \frac{h\left[f\left(a\right) + f\left(b\right)\right]}{2}
+\end{align*}
+
+:::
+
+:::{.fragment}
+
+It is possible to show that the error in interpolating a function with an $n^{th}$-degree polynomial is given by
+
+\begin{align*}f\left(x\right) - P_{n}\left(x\right) &= \frac{\left(x - x_0\right)\left(x - x_1\right)\cdots\left(x - x_n\right)}{\left(n+1\right)!}f^{\left(n+1\right)}\left(\xi\right)\\
+\implies \int_{a}^{b}{f\left(x\right) - P_{n}\left(x\right)dx} &= \int_{a}^{b}{\frac{\left(x - x_0\right)\left(x - x_1\right)\cdots\left(x - x_n\right)}{\left(n+1\right)!}f^{\left(n+1\right)}\left(\xi\right)dx}
+\end{align*}
+
+:::
+
+</div>
+
+## Error in Approximation
+
+<div style="font-size:16pt">
+
+As with nearly everything we do in numerical methods, there will be error in our approximation.
+
+The error in approximation using the *Trapezoidal Rule* is
+
+\begin{align*} E &= \int_{a}^{b}{f\left(x\right)dx} - \frac{h\left[f\left(a\right) + f\left(b\right)\right]}{2}
+\end{align*}
+
+:::{.fragment}
+
+Since we are using a linear function as our interpolant, we have
+
+\begin{align*}f\left(x\right) - P_{1}\left(x\right) &= \frac{\left(x - x_0\right)\left(x - x_1\right)}{2!}f''\left(\xi\right)\\
+\implies \int_{a}^{b}{f\left(x\right) - P_{1}\left(x\right)dx} &= \int_{a}^{b}{\frac{\left(x - x_0\right)\left(x - x_1\right)}{2!}f''\left(\xi\right)dx}\\
+&= \int_{a}^{b}{\frac{\left(x - a\right)\left(x - b\right)}{2!}f''\left(\xi\right)dx}\\
+&= \frac{1}{2}f''\left(\xi\right)\int_{a}^{b}{\left(x^2
+ - \left(a + b\right)x + ab\right)dx}\\
+&= \frac{-h^3}{12}f''\left(\xi\right)
+\end{align*}
+
+:::
+
+:::{.fragment}
+
+So the error is influenced both by the interval width ($h$) and by the second derivative (curvature) of the original function on the interval.
+
+:::
+
+</div>
+
+## Composite Trapezoidal Rule
+
+<div style="font-size:16pt">
+
+:::{.fragment}
+
+So far, the *Trapezoid Rule* we've discussed approximates the area under $f\left(x\right)$ along $\left[a, b\right]$ by a single trapezoid. 
+
+:::
+
+:::{.fragment}
+
+The trapezoid rule that we usually think of (and the one from our earlier plots) breaks up the interval $\left[a, b\right]$ into many sub-intervals and use a trapezoid on each interval, summing the areas of all of the trapezoids together in order to approximate the area.
+
+:::
+
+:::{.fragment}
+
+This process results in the *Composite* (or *Generalized*) *Trapezoid Rule*.
+
+$$\int_{a}^{b}{f\left(x\right)dx} \approx \sum_{i = 0}^{n-1}{\frac{f\left(x_i\right) + f\left(x_{i+1}\right)}{2}\Delta x}$$
+
+:::
+
+:::{.fragment}
+
+From what we computed previously, the truncation error in approximating the integral on each individual sub-interval is $E_i \approx \frac{-h^3}{12}f''\left(\xi_i\right)$
+
+:::
+
+:::{.fragment}
+
+The total error is then $\displaystyle{E \approx \sum_{i = 0}^{n-1}{\frac{-h^3}{12}f''\left(\xi_i\right)}}$
+
+:::
+
+:::{.fragment}
+
+Which, after using the Mean Value Theorem and some algebra, can be rewritten as $\displaystyle{E \approx \frac{-\left(b - a\right)h^2}{12}f''\left(\xi\right)}$
+
+:::
+
+:::{.fragment}
+
+Note that the error here is now $\mathscr{O}\left(h^2\right)$ rather than $\mathscr{O}\left(h^3\right)$, but we benefit from having smaller interval widths ($h$) here.
+
+:::
+
+</div>
+
+## Recursive Trapezoidal Rule
+
+<div style="font-size:16pt">
+
+:::{.fragment}
+
+In the interest of efficiency, let's see if we can identify patterns in evaluating the *Composite Trapezoid Rule* that could be exploited in our code.
+
+:::
+
+:::{.fragment}
+
+Consider the composite trapezoidal rule using $2^{k-1}$ subintervals. If $k$ is increased by $1$, the number of subintervals is doubled. For convenience, let $H = b - a$, and notice the following:
+
+:::
+
++ If $k = 1$, we have just a single interval, and the estimate ($I_1$) for the area using the trapezoidal rule is
+
+:::{.fragment}
+
+\begin{align*}\int_{a}^{b}{f\left(x\right)dx} \approx \left[f\left(a\right) + f\left(b\right)\right]\frac{H}{2}
+\end{align*}
+
+:::
+
++ If $k = 2$, we have two sub-intervals and the estimate ($I_2$) for the area is
+
+:::{.fragment}
+
+\begin{align*}\int_{a}^{b}{f\left(x\right)dx} &\approx \left[f\left(a\right) + 2f\left(a + \frac{H}{2}\right) + f\left(b\right)\right]\frac{H}{4}\\
+&= \frac{1}{2}\left(\left[f\left(a\right) + f\left(b\right)\right]\frac{H}{2}\right) + f\left(a + \frac{H}{2}\right)\frac{H}{2}\\
+&= \frac{1}{2}I_1 + f\left(a + \frac{H}{2}\right)\frac{H}{2}
+\end{align*}
+
+:::
+
+</div>
+
+## Recursive Trapezoidal Rule
+
+<div style="font-size:16pt">
+
+In the interest of efficiency, let's see if we can identify patterns in evaluating the *Composite Trapezoid Rule* that could be exploited in our code.
+
+Consider the composite trapezoidal rule using $2^{k-1}$ subintervals. If $k$ is increased by $1$, the number of subintervals is doubled. For convenience, let $H = b - a$, and notice the following:
+
++ If $k = 3$, we have four sub-intervals and the estimate ($I_3$) for the area is
+
+:::{.fragment}
+
+\begin{align*} \int_{a}^{b}{f\left(x\right)dx} &\approx \left[f\left(a\right) + 2f\left(a + \frac{H}{4}\right) + 2f\left(a + \frac{H}{2}\right) + 2f\left(a + \frac{3H}{4}\right) + f\left(b\right)\right]\frac{H}{8}\\
+&= \frac{1}{2}\left[f\left(a\right) + 2f\left(a + \frac{H}{2}\right) + f\left(b\right)\right]\frac{H}{4} + \left[2f\left(a + \frac{H}{4}\right) + 2f\left(a + \frac{3H}{4}\right)\right]\frac{H}{8}\\
+&= \frac{1}{2}I_2 + \left[f\left(a + \frac{H}{4}\right) + f\left(a + \frac{3H}{4}\right)\right]\frac{H}{4}
+\end{align*}
+
+:::
+
++ For general $k$, we'll have $2^{k-1}$ subintervals and the estimate ($I_k$) for the area will be
+
+:::{.fragment}
+
+\begin{align*} \frac{1}{2}I_{k-1} + \frac{H}{2^{k-1}}\sum_{i = 1}^{2^{k-2}}{f\left(a + \frac{\left(2i - 1\right)H}{2^{k-1}}\right)}
+\end{align*}
+
+:::
+
+</div>
+
+## Recursive Trapezoidal Rule
+
+<div style="font-size:16pt">
+
+In the interest of efficiency, let's see if we can identify patterns in evaluating the *Composite Trapezoid Rule* that could be exploited in our code.
+
+Consider the composite trapezoidal rule using $2^{k-1}$ subintervals. If $k$ is increased by $1$, the number of subintervals is doubled. For convenience, let $H = b - a$, and notice the following:
+
+:::{.nonincremental}
+
++ For general $k$, we'll have $2^{k-1}$ subintervals and the estimate ($I_k$) for the area will be
+
+\begin{align*} \frac{1}{2}I_{k-1} + \frac{H}{2^{k-1}}\sum_{i = 1}^{2^{k-2}}{f\left(a + \frac{\left(2i - 1\right)H}{2^{k-1}}\right)}
+\end{align*}
+
+:::
+
+:::{.fragment}
+
+Using this recursive rule doesn't actually require any additional operations beyond calculating the area using the composite trapezoidal rule directly. 
+
+:::
+
+:::{.fragment}
+
+The benefit that is provides is that it allows us to monitor the convergence of the total area estimate by tracking changes between $I_{k-1}$ and $I_k$. 
+
+:::
+
+:::{.fragment}
+
+We can terminate the process when $\left|I_{k-1} - I_k\right| < \text{tolerance}$.
+
+:::
+
+:::{.fragment}
+
+We are now ready to write a recursive `trapezoidMethod()` routine.
+
+:::
+
+</div>
+
+## Recursive Trapezoid Method Routine
+
+::::{.columns}
+
+:::{.column width="60%"}
+
+```{python}
+#| echo: true
+
+def trapezoid(f, a, b, Iold, k):
+  if k == 0:
+    Inew = (f(a) + f(b))*(b - a)/2.0
+  else:
+    n = 2**(k-1)
+    h = (b - a)/n
+    x = a + h/2.0
+    sum = 0.0
+    for i in range(n):
+      sum = sum + f(x)
+      x = x + h
+
+    Inew = (Iold + h*sum)/2.0
+
+  return Inew
+
+def trapezoidMethod(f, a, b, k):
+  Iold = (f(a) + f(b))*(b - a)/2.0
+
+  for i in range(1, k + 1):
+    print("The number of subdivisions I made is ", i, ", resulting in ", 2**i, " trapezoids")
+    Inew = trapezoid(f, a, b, Iold, i)
+    diff = Inew - Iold
+    print("The difference in approximation between using ", 2**(i-1), " trapezoids and ", 2**i, " trapezoids was ", diff)
+    Iold = Inew
+
+  return Inew
+```
+
+:::
+
+:::{.column width="40%"}
+
+<div style="font-size:16pt">
+
+:::{.fragment}
+
+Our implementation of the recursive, composite trapezoid method consists of two routines.
+
++ A *helper function* `trapezoid()`, which takes in the function whose integral to approximate (`f`), the left and right endpoints (`a` and `b`), the previous integral estimate (`Iold`), and a parameter `k` associated with the number of subintervals to create.
+
+  + You ***won't*** use `trapezoid()` directly.
+
++ The `trapezoidMethod()` routine, wich takes in `f`, `a`, `b`, and `k` whose descriptions are the same as those above.
+
+  + You ***will*** use the `trapezoidMethod()` routine.
+
+:::
+
+</div>
+
+:::
+
+::::
+
+## An Example
+
+:::{.fragment fragment-index=1}
+
+<div style="font-size:16pt">
+
+**Example:** The picture below shows the trapezoidal rule with $16$ subintervals being used to approximate $\displaystyle{\int_{0}^{10}{x + x\sin\left(2x\right)dx}}$. Use the routine defined on the previous slide to compute the estimated area.
+
+</div>
+
+```{python}
+#@title
+x_vals = np.linspace(0, 10, 500)
+y_vals = x_vals + x_vals*np.sin(2*x_vals)
+
+subdivisions = 4
+
+x_abscissas = np.linspace(0, 10, 2**subdivisions + 1)
+y_abscissas = x_abscissas + x_abscissas*np.sin(2*x_abscissas)
+
+x_next_abscissas = np.linspace(0, 10, 2**(subdivisions + 1) + 1)
+y_next_abscissas = x_next_abscissas + x_next_abscissas*np.sin(2*x_next_abscissas)
+
+plt.figure(figsize = (12, 3))
+plt.plot(x_vals, y_vals, color = "purple")
+plt.plot(x_abscissas, y_abscissas, color = "red")
+plt.fill_between(x_abscissas, y_abscissas, color = "red", alpha = 0.2)
+plt.scatter(x_abscissas, y_abscissas, color = "red", s = 25)
+plt.vlines(x = x_abscissas, ymin = 0, ymax= y_abscissas, color = "red", ls = "--")
+#plt.plot(x_next_abscissas, y_next_abscissas, color = "purple")
+#plt.fill_between(x_next_abscissas, y_next_abscissas, color = "purple", alpha = 0.2)
+#plt.scatter(x_next_abscissas, y_next_abscissas, color = "purple", s = 25)
+#plt.vlines(x = x_next_abscissas, ymin = 0, ymax= y_next_abscissas, color = "purple", ls = "--")
+plt.grid()
+plt.axvline(x = 0, color = "black")
+plt.axhline(y = 0, color = "black")
+plt.xlabel("x")
+plt.ylabel("y")
+plt.title("Trapezoidal Method for Approximating Integral of f(x) = x + x*sin(2x) from x = 0 to x = 10")
+plt.show()
+```
+
+:::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment fragment-index=2}
+
+```{python}
+#| echo: true
+#| eval: false
+
+def f(x):
+  return x + x*np.sin(2*x)
+
+trapezoidMethod(f, 0, 10, 4)
+```
+
+:::
+
+<div style="font-size:16pt">
+
+:::{.fragment fragment-index=4}
+
+The final estimate for the area was about 48.5 units.
+
+:::
+
+:::{.fragment fragment-index=5}
+
+The difference between the previous estimate (8 sub-intervals) and the final one (16 sub-intervals) was still quite large -- we haven't reached convergence yet.
+
+:::
+
+</div>
+
+:::
+
+:::{.column width="50%"}
+
+<div style="font-size:17pt">
+
+:::{.fragment fragment-index=3}
+
+```{python}
+#| echo: false
+#| eval: true
+
+def f(x):
+  return x + x*np.sin(2*x)
+
+trapezoidMethod(f, 0, 10, 4)
+```
+
+:::
+
+</div>
+
+:::
+
+::::
+
+## Summary and Next Time
+
+:::{.fragment}
+
+In this notebook we developed the *Newton-Cotes Formulae*. These are a set of approaches to numerical integration satisfying:
+
+\begin{align*} \int_{a}^{b}{f\left(x\right)dx} &\approx \sum_{i = 0}^{n}{A_if\left(x_i\right)}\\
+A_i &= \int_{a}^{b}{\ell_i\left(x\right)dx}
+\end{align*}
+
+:::
+
+:::{.fragment}
+
+Techniques such as *left-hand* and *right-hand Riemann Sums*, the *Trapezoidal Rule*, and *Simpson's Rule* all fall under the category of Newton-Cotes Formulae. 
+
+:::
+
+:::{.fragment}
+
+We implemented a routine `trapeoidMethod(f, a, b, k)` which can be used to approximate $\displaystyle{\int_{a}^{b}{f\left(x\right)dx}}$ using $2^{k-1}$ sub-intervals.
+
+:::
+
+:::{.fragment}
+
+**Next Time:** We'll move on to solving initial value problems resulting from ordinary differential equations.
+
+:::
+
+
+
+
+
+
+
