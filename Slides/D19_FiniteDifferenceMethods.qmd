@@ -1,6 +1,6 @@
 ---
-title: "MAT 370: Finite Difference Methods"
-subtitle: "Numerical Differentiation"
+title: "MAT 370: Numerical Differentiation"
+subtitle: "Finite Difference Methods"
 author: Dr. Gilbert
 format: 
   revealjs:
