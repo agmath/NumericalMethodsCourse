@@ -457,7 +457,7 @@ plt.show()
 
 ::::
 
-## Bisection by Hand
+## Secant Method by Hand
 
 :::{.fragment}
 
@@ -477,7 +477,7 @@ Let's work through an example by hand to make sure we understand the procedure.
 
 <div style="font-size:18pt">
 
-Given a *bracketed interval*, the strategy of our first *false position method* is simple:
+Given a *bracketed interval*, the strategy of our first *false position method* is also simple:
 
 </div>
 
